@@ -1,0 +1,15 @@
+node_modules
+dist
+*.log
+*.local
+engine/target
+engine/wasm/pkg
+
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.sw?
+
+local/
+local-*

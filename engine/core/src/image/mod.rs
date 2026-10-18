@@ -1,0 +1,20 @@
+mod bit_reader;
+mod ccitt;
+mod decoded_image;
+mod image_decoder;
+mod image_description;
+mod image_streams;
+mod jbig2;
+mod jpeg;
+mod jpeg_header;
+mod jpx;
+mod mq_decoder;
+mod png;
+
+pub use decoded_image::DecodedImage;
+pub use image_decoder::ImageDecoder;
+pub use image_description::{ImageDescription, Masking};
+pub use image_streams::ImageStreams;
+pub use jpeg_header::JpegHeader;
+pub use jpx::JpxImage;
+pub use png::decode_png;

@@ -1,0 +1,27 @@
+pub mod annotations;
+pub mod color;
+pub mod content;
+pub mod crypt;
+pub mod document;
+pub mod edit;
+pub mod error;
+pub mod file;
+pub mod fonts;
+pub mod forms;
+pub mod function;
+pub mod geometry;
+pub mod image;
+pub mod navigation;
+pub mod organize;
+pub mod page_images;
+pub mod pages;
+pub mod redact;
+pub mod render;
+pub mod save;
+pub mod shading;
+pub mod signing;
+pub mod store;
+pub mod syntax;
+pub mod text;
+
+pub use error::Error;

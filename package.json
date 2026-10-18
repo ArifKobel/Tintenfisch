@@ -1,0 +1,31 @@
+{
+  "name": "tintenfisch",
+  "private": true,
+  "version": "0.1.0",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build:wasm": "wasm-pack build engine/wasm --target web --profiling",
+    "predev": "pnpm build:wasm",
+    "dev": "vite",
+    "prebuild": "wasm-pack build engine/wasm --target web",
+    "build": "tsc -b && vite build",
+    "lint": "oxlint",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.2",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.3",
+    "oxlint": "^1.71.0",
+    "typescript": "~6.0.2",
+    "vite": "^8.1.1",
+    "vitest": "^4.1.10",
+    "wasm-pack": "^0.15.0"
+  }
+}

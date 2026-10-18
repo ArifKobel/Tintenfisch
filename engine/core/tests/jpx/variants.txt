@@ -1,0 +1,37 @@
+gray-lossless|gray.pgm||j2k
+gray-lossy|gray.pgm|-I -r 12|j2k
+gray-layers|gray.pgm|-r 40,10,1|j2k
+gray-one-level|gray.pgm|-n 1|j2k
+gray-blocks-16|gray.pgm|-b 16,16|j2k
+gray-blocks-wide|gray.pgm|-b 64,8|j2k
+gray-precincts-rlcp|gray.pgm|-c [32,32],[16,16] -p RLCP|j2k
+gray-rpcl|gray.pgm|-c [32,32],[16,16] -p RPCL|j2k
+gray-pcrl|gray.pgm|-c [32,32],[16,16] -p PCRL|j2k
+gray-cprl|gray.pgm|-c [32,32],[16,16] -p CPRL|j2k
+gray-bypass|gray.pgm|-M 1|j2k
+gray-reset|gray.pgm|-M 2|j2k
+gray-restart|gray.pgm|-M 4|j2k
+gray-causal|gray.pgm|-M 8|j2k
+gray-erterm|gray.pgm|-M 16|j2k
+gray-segmark|gray.pgm|-M 32|j2k
+gray-all-modes|gray.pgm|-M 63 -I -r 8|j2k
+gray-sop-eph|gray.pgm|-SOP -EPH|j2k
+gray-plt-tlm|gray.pgm|-PLT -TLM -t 48,36|j2k
+gray-subsampled|gray.pgm|-s 2,2|j2k
+gray-offset|gray.pgm|-d 13,7 -T 5,3 -t 40,40|j2k
+small-tiles|small.pgm|-t 16,16 -n 2|j2k
+deep-lossless|deep.pgm||j2k
+deep-lossy|deep.pgm|-I -r 10|j2k
+rgb-lossless|rgb.ppm||j2k
+rgb-lossy|rgb.ppm|-I -q 32|j2k
+rgb-tiles|rgb.ppm|-t 32,32|j2k
+rgb-no-mct|rgb.ppm|-mct 0|j2k
+rgb-jp2|rgb.ppm|-I -r 20|jp2
+gray-jp2|gray.pgm||jp2
+rgb-cprl-layers|rgb.ppm|-c [32,32] -b 16,16 -p CPRL -r 30,10,4 -I|j2k
+rgb-pcrl|rgb.ppm|-c [32,32],[16,16] -p PCRL|j2k
+deep16-lossless|deep16.pgm|-n 3|j2k
+gray-roi|gray.pgm|-ROI c=0,U=5|j2k
+rgb-poc|rgb.ppm|-n 4 -POC T1=0,0,1,3,3,CPRL/T1=3,0,1,5,3,LRCP|j2k
+gray-tile-parts|gray.pgm|-TP R -t 48,36|j2k
+rgba-jp2|rgba.png||jp2

@@ -1,0 +1,23 @@
+mod fill_color;
+mod glyph_origin;
+mod grapheme;
+mod layout_line;
+mod line_grouping;
+mod show_record;
+mod text_extractor;
+mod text_glyph;
+mod text_layout;
+mod text_machine;
+mod text_state;
+
+pub use fill_color::FillColor;
+pub use glyph_origin::GlyphOrigin;
+pub use grapheme::split_graphemes;
+pub use layout_line::{Cluster, LayoutLine};
+pub use line_grouping::group_lines;
+pub use show_record::{RecordedGlyph, ShowRecord};
+pub use text_extractor::TextExtractor;
+pub use text_glyph::{TextGlyph, to_display_space, to_line_space};
+pub use text_layout::{Caret, Motion, TextBox, TextLayout, TextPosition};
+pub use text_machine::{ShowItem, TextMachine};
+pub use text_state::TextState;
