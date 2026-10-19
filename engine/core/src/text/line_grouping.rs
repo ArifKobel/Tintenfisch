@@ -7,6 +7,7 @@ const COLUMN_GAP: f64 = 2.5;
 const WORD_GAP: f64 = 0.2;
 const LOOKBACK: usize = 8;
 const PARAGRAPH_STEP: f64 = 2.0;
+const LEADING_FLOOR: f64 = 0.75;
 
 const SHARED_BAND: f64 = 0.5;
 const SPACING_FACTOR: f64 = 1.6;
@@ -125,8 +126,10 @@ fn assign_paragraphs(lines: &mut [LayoutLine]) {
             let ratio = current.size / previous.size.max(0.01);
             let step = current.baseline - previous.baseline;
             let overlaps = current.left() < span.1 && current.right() > span.0;
-            let continues =
-                (0.8..=1.25).contains(&ratio) && step > 0.0 && step <= PARAGRAPH_STEP * previous.size && overlaps;
+            let continues = (0.8..=1.25).contains(&ratio)
+                && step >= LEADING_FLOOR * previous.size
+                && step <= PARAGRAPH_STEP * previous.size
+                && overlaps;
             if !continues {
                 paragraph += 1;
                 span = (f64::INFINITY, f64::NEG_INFINITY);

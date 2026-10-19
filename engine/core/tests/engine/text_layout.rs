@@ -273,3 +273,27 @@ fn combining_marks_and_joined_emoji_stay_one_caret_stop() {
     let after_first = layout.moved(TextPosition { line: 0, offset: 0 }, Motion::CharRight, None).0;
     assert_eq!(layout.selected_text(TextPosition { line: 0, offset: 0 }, after_first), "e\u{0301}");
 }
+
+fn line_glyph(text: &str, start: f64, baseline: f64, size: f64, ordinal: usize) -> TextGlyph {
+    let end = start + text.chars().count() as f64 * size * 0.5;
+    TextGlyph {
+        bounds: Rect::new(start, baseline - size * 0.8, end, baseline + size * 0.2),
+        baseline,
+        size,
+        ..glyph(text, start, end, ordinal)
+    }
+}
+
+#[test]
+fn lines_close_enough_to_overlap_are_separate_blocks_not_one_paragraph() {
+    let paragraph =
+        TextLayout::new(&[line_glyph("Subtitle", 54.0, 96.7, 12.0, 0), line_glyph("next line", 54.0, 111.0, 12.0, 1)]);
+    let paragraphs: Vec<usize> = paragraph.lines().iter().map(|line| line.paragraph).collect();
+    assert_eq!(paragraphs, [0, 0]);
+    let pushed = TextLayout::new(&[
+        line_glyph("Subtitle", 54.0, 119.7, 12.0, 0),
+        line_glyph("Smaller line below", 54.0, 124.5, 10.0, 1),
+    ]);
+    let paragraphs: Vec<usize> = pushed.lines().iter().map(|line| line.paragraph).collect();
+    assert_eq!(paragraphs, [0, 1]);
+}
