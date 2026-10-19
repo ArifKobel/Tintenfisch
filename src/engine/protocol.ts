@@ -323,6 +323,7 @@ export type Command =
   | ({ kind: 'renderTile' } & TileRequest)
   | { kind: 'save'; optimize: boolean }
   | { kind: 'hitText'; pageId: string; x: number; y: number }
+  | { kind: 'hitDraft'; pageId: string; x: number; y: number }
   | { kind: 'textBlocks'; pageId: string }
   | { kind: 'selectText'; pageId: string; anchor: TextPoint; focus: TextPoint; unit: SelectionUnit }
   | { kind: 'find'; query: string }
@@ -381,6 +382,7 @@ export interface Results {
   renderTile: RenderedTile
   save: Uint8Array
   hitText: TextPoint | null
+  hitDraft: number | null
   textBlocks: Highlight[]
   selectText: TextSelection
   find: FindMatch[]

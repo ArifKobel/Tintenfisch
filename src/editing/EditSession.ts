@@ -143,6 +143,18 @@ export class EditSession {
     return new EditSession({ ...this.#state, caret, anchor: this.anchor ?? this.caret, typing: null })
   }
 
+  selectWord(at: number): EditSession {
+    if (this.clusters.length === 0) return this
+    const blank = (index: number) => /^\s*$/u.test(this.clusters[index])
+    const probe = Math.min(Math.max(at, 0), this.clusters.length - 1)
+    const kind = blank(probe)
+    let start = probe
+    while (start > 0 && blank(start - 1) === kind) start--
+    let end = probe + 1
+    while (end < this.clusters.length && blank(end) === kind) end++
+    return new EditSession({ ...this.#state, anchor: start, caret: end, typing: null })
+  }
+
   selectAll(): EditSession {
     return new EditSession({ ...this.#state, anchor: 0, caret: this.clusters.length, typing: null })
   }

@@ -1,5 +1,5 @@
 use crate::geometry::Rect;
-use crate::text::{Caret, TextBox, TextLayout};
+use crate::text::{Caret, LayoutLine, TextBox, TextLayout, to_line_space};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct PlannedLine {
@@ -35,16 +35,32 @@ impl CaretLines {
             .collect()
     }
 
-    pub fn caret(&self, layout: &TextLayout, offset: usize) -> Option<Caret> {
-        let planned = self.lines.iter().rev().find(|line| line.start <= offset).or(self.lines.first())?;
-        let within = offset.saturating_sub(planned.start).min(planned.length);
-        let shown = layout
+    pub fn offset_at(&self, layout: &TextLayout, x: f64, y: f64) -> Option<usize> {
+        let (u, v) = to_line_space(self.angle, (x, y));
+        let planned = self.lines.iter().min_by(|a, b| {
+            let distance = |line: &PlannedLine| (v - line.baseline).abs();
+            distance(a).total_cmp(&distance(b))
+        })?;
+        let within = match self.shown(layout, planned) {
+            Some(line) if planned.length > 0 => line.nearest_offset(u).min(planned.length),
+            _ => 0,
+        };
+        Some(planned.start + within)
+    }
+
+    fn shown<'l>(&self, layout: &'l TextLayout, planned: &PlannedLine) -> Option<&'l LayoutLine> {
+        layout
             .lines()
             .iter()
             .filter(|line| (line.angle - self.angle).abs() < 1e-6 && !line.clusters.is_empty())
             .filter(|line| (line.baseline - planned.baseline).abs() < 0.3 * line.size.max(1.0))
-            .min_by(|a, b| (a.left() - planned.left).abs().total_cmp(&(b.left() - planned.left).abs()));
-        Some(match shown {
+            .min_by(|a, b| (a.left() - planned.left).abs().total_cmp(&(b.left() - planned.left).abs()))
+    }
+
+    pub fn caret(&self, layout: &TextLayout, offset: usize) -> Option<Caret> {
+        let planned = self.lines.iter().rev().find(|line| line.start <= offset).or(self.lines.first())?;
+        let within = offset.saturating_sub(planned.start).min(planned.length);
+        Some(match self.shown(layout, planned) {
             Some(line) if planned.length > 0 => {
                 Caret { x: line.caret_x(within), top: line.top, bottom: line.bottom, angle: self.angle }
             }

@@ -87,6 +87,13 @@ describe('EditSession', () => {
     expect(emptied.insert('x').look.size).toBe(40)
   })
 
+  it('selects the word or the run of spaces under a double click', () => {
+    const session = EditSession.open('3-0', 0, [...'one two  three'], 0)
+    expect(session.selectWord(5).selection).toEqual([4, 7])
+    expect(session.selectWord(7).selection).toEqual([7, 9])
+    expect(session.selectWord(14).selection).toEqual([9, 14])
+  })
+
   it('formats new text as a whole', () => {
     const fresh = EditSession.openNew('3-0', [10, 20]).insert('Hi').formatted({ bold: true, size: 20 })
     expect(fresh.newLook).toMatchObject({ bold: true, size: 20, font: { kind: 'bundled', family: 'sans' } })

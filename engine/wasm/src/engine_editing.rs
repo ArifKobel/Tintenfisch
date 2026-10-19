@@ -136,6 +136,23 @@ impl Engine {
         reply(&replies)
     }
 
+    #[wasm_bindgen(js_name = hitDraft)]
+    pub fn hit_draft(&mut self, page: &str, x: f64, y: f64) -> Result<JsValue, JsError> {
+        let page = page_id(page)?;
+        let Some(draft) = self.draft.take() else { return reply(&None::<usize>) };
+        let library = &self.library;
+        let document = self.document.as_mut().ok_or_else(|| JsError::new("no document is open"))?;
+        let offset = if draft.page == page {
+            document.preview(&draft.plan, library, |view| {
+                Ok::<_, tintenfisch::error::Error>(draft.plan.offset_at(&*view.text_layout(page)?, x, y))
+            })
+        } else {
+            Ok(Ok(None))
+        };
+        self.draft = Some(draft);
+        reply(&offset.and_then(|found| found).map_err(fail)?)
+    }
+
     #[wasm_bindgen(js_name = registerFontReplacement)]
     pub fn register_font_replacement(&mut self, key: &str, bytes: Vec<u8>) {
         self.library.register_replacement(key, bytes);

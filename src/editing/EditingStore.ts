@@ -69,6 +69,33 @@ export class EditingStore {
     return hit
   }
 
+  async press(pageId: string, x: number, y: number, clicks: number, extend: boolean): Promise<boolean> {
+    if (this.#session?.pageId !== pageId) return false
+    const offset = await this.#hitDraft(pageId, x, y)
+    if (offset === null || this.#session?.pageId !== pageId) return false
+    this.edit((session) => {
+      if (clicks >= 3) return session.selectAll()
+      if (clicks === 2) return session.selectWord(offset)
+      return extend ? session.extendTo(offset) : session.moveTo(offset)
+    })
+    return true
+  }
+
+  async dragTo(pageId: string, x: number, y: number) {
+    if (this.#session?.pageId !== pageId) return
+    const offset = await this.#hitDraft(pageId, x, y)
+    if (offset !== null && this.#session?.pageId === pageId) this.edit((session) => session.extendTo(offset))
+  }
+
+  async #hitDraft(pageId: string, x: number, y: number): Promise<number | null> {
+    try {
+      return await this.#client.request({ kind: 'hitDraft', pageId, x, y }, { group: 'edit-hit' })
+    } catch (error) {
+      if (error instanceof CancelledError) return null
+      throw error
+    }
+  }
+
   async beginNew(pageId: string, x: number, y: number) {
     void this.commit()
     const session = EditSession.openNew(pageId, [x, y])

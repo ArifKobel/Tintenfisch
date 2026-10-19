@@ -9,6 +9,7 @@ export type EngineBackend = Pick<
   | 'renderTile'
   | 'save'
   | 'hitText'
+  | 'hitDraft'
   | 'textBlocks'
   | 'selectText'
   | 'find'
@@ -99,6 +100,8 @@ export class EngineHost {
         return this.#engine.save(command.optimize)
       case 'hitText':
         return this.#engine.hitText(command.pageId, command.x, command.y)
+      case 'hitDraft':
+        return this.#engine.hitDraft(command.pageId, command.x, command.y)
       case 'textBlocks':
         return this.#engine.textBlocks(command.pageId)
       case 'selectText': {

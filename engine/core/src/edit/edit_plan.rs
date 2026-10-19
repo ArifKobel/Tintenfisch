@@ -25,6 +25,10 @@ impl EditPlan {
         self.lines.caret(layout, offset)
     }
 
+    pub fn offset_at(&self, layout: &TextLayout, x: f64, y: f64) -> Option<usize> {
+        self.lines.offset_at(layout, x, y)
+    }
+
     pub fn selection(&self, layout: &TextLayout, from: usize, to: usize) -> Vec<TextBox> {
         self.lines.selection(layout, from, to)
     }

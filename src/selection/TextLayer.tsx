@@ -49,21 +49,31 @@ export function TextLayer({ pageId, cssScale }: { pageId: string; cssScale: numb
         images.select({ pageId, index: foreground })
         return
       }
-      if (!TextBlocks.contain(active ? [...blocks, active.frame] : blocks, x, y)) {
+      const clicks = event.detail
+      if (active && TextBlocks.contain([active.frame], x, y)) {
+        void editing.press(pageId, x, y, clicks, event.shiftKey)
+        return
+      }
+      if (!TextBlocks.contain(blocks, x, y)) {
         void editing.commit()
         images.selectAt(pageId, x, y)
         return
       }
-      void editing.begin(pageId, x, y).then((opened) => (opened ? images.select(null) : images.selectAt(pageId, x, y)))
+      void editing.begin(pageId, x, y).then((opened) => {
+        if (!opened) return images.selectAt(pageId, x, y)
+        images.select(null)
+        if (clicks >= 2) void editing.press(pageId, x, y, clicks, false)
+      })
       return
     }
     void selection.begin(pageId, x, y, UNITS[Math.min(Math.max(event.detail, 1), 3) - 1])
   }
 
   function extend(event: PointerEvent<HTMLDivElement>) {
-    if ((event.buttons & 1) === 0 || edited.enabled) return
+    if ((event.buttons & 1) === 0) return
     const { x, y } = pointInPoints(event)
-    void selection.extend(pageId, x, y)
+    if (!edited.enabled) void selection.extend(pageId, x, y)
+    else if (active && tool !== 'addText') void editing.dragTo(pageId, x, y)
   }
 
   async function finish(event: MouseEvent<HTMLDivElement>) {

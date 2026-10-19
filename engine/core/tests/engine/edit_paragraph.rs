@@ -505,3 +505,27 @@ fn a_paragraph_that_grows_into_the_next_block_stays_apart_from_it() {
     );
     assert_ne!(above.paragraph, after.paragraph);
 }
+
+#[test]
+fn a_point_in_the_draft_maps_back_to_the_offset_whose_caret_is_there() {
+    let mut article = Article::open();
+    let second = article.line_index(SECOND_LINE);
+    let text = article.paragraph(second).replacen("precisely", "very precisely", 1);
+    let plan = article.document.plan_edit(&article.edit(second, &text), &article.library).unwrap();
+    for offset in [0, 5, text.chars().count() / 2, text.chars().count() - 3] {
+        let found = article
+            .document
+            .preview(&plan, &article.library, |view| {
+                let layout = view.text_layout(article.page)?;
+                let caret = plan.caret(&layout, offset).unwrap();
+                Ok::<_, tintenfisch::error::Error>(plan.offset_at(
+                    &layout,
+                    caret.x + 0.1,
+                    (caret.top + caret.bottom) / 2.0,
+                ))
+            })
+            .unwrap()
+            .unwrap();
+        assert_eq!(found, Some(offset), "offset {offset}");
+    }
+}
