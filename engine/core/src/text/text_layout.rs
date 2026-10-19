@@ -108,6 +108,16 @@ impl TextLayout {
             .collect()
     }
 
+    pub fn line_boxes(&self) -> Vec<TextBox> {
+        self.lines
+            .iter()
+            .map(|line| TextBox {
+                rect: Rect::new(line.left(), line.top, line.right(), line.bottom),
+                angle: line.angle,
+            })
+            .collect()
+    }
+
     pub fn selected_text(&self, anchor: TextPosition, focus: TextPosition) -> String {
         let (start, end) = Self::ordered(anchor, focus);
         let mut text = String::new();

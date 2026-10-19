@@ -297,3 +297,13 @@ fn lines_close_enough_to_overlap_are_separate_blocks_not_one_paragraph() {
     let paragraphs: Vec<usize> = pushed.lines().iter().map(|line| line.paragraph).collect();
     assert_eq!(paragraphs, [0, 1]);
 }
+
+#[test]
+fn every_line_has_a_box_around_its_text() {
+    let layout =
+        TextLayout::new(&[line_glyph("First line", 54.0, 100.0, 12.0, 0), line_glyph("Second", 54.0, 116.0, 12.0, 1)]);
+    let boxes = layout.line_boxes();
+    assert_eq!(boxes.len(), 2);
+    assert_eq!((boxes[0].rect.x0, boxes[0].rect.y0, boxes[0].rect.x1, boxes[0].rect.y1), (54.0, 90.4, 114.0, 102.4));
+    assert!(boxes[1].rect.y0 > boxes[0].rect.y0 && boxes[1].rect.width() < boxes[0].rect.width());
+}
