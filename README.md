@@ -23,11 +23,7 @@ cd engine && cargo test
 
 ## Docker
 
-```sh
-docker compose up -d --build
-```
-
-The app is served with nginx on port 8080 (`PORT` changes it). `VITE_SITE_URL` from the shell or `.env` is applied when the container starts, so changing it needs no rebuild.
+`docker-compose.yaml` builds the app and serves it with nginx on port 80 inside the container, without publishing a host port, so a reverse proxy such as Coolify's routes the domain to it. `VITE_SITE_URL` from the environment or `.env` is applied when the container starts, so changing it needs no rebuild.
 
 ## License
 
