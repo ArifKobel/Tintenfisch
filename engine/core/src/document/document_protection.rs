@@ -36,12 +36,14 @@ impl Document {
         }
         let (dictionary, handler) = protection.seal(entropy)?;
         self.encryption = Some(Encryption::Sealed { dictionary, handler });
+        self.protection_changes += 1;
         Ok(())
     }
 
     pub fn unprotect(&mut self) -> Result<()> {
         self.require_owner_rights()?;
         self.encryption = Some(Encryption::Plain);
+        self.protection_changes += 1;
         Ok(())
     }
 

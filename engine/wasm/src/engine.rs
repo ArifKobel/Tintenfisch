@@ -72,8 +72,8 @@ impl Engine {
         }
     }
 
-    pub fn revision(&self) -> f64 {
-        self.document.as_ref().map_or(0.0, |document| document.store().revision() as f64)
+    pub fn revision(&self) -> String {
+        self.document.as_ref().map_or_else(String::new, Document::revision)
     }
 
     pub fn pages(&self) -> Result<JsValue, JsError> {

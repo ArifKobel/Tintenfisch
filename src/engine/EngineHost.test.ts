@@ -59,7 +59,7 @@ function backend(overrides: Partial<EngineBackend> = {}): EngineBackend {
     setFieldProperties: () => ({ dirtyPages: ['3-0'] }),
     moveWidget: () => ({ dirtyPages: ['3-0'] }),
     deleteField: () => ({ dirtyPages: ['3-0'] }),
-    revision: () => 4,
+    revision: () => '4.0',
     ...overrides,
   }
 }
@@ -67,7 +67,7 @@ function backend(overrides: Partial<EngineBackend> = {}): EngineBackend {
 describe('EngineHost', () => {
   it('answers a command with the engine result under the request id', () => {
     const { response, transfer } = new EngineHost(backend()).handle({ id: 7, priority: 'interactive', kind: 'open', bytes: new Uint8Array(3) })
-    expect(response).toEqual({ id: 7, ok: true, result: { byteLength: 3 }, revision: 4 })
+    expect(response).toEqual({ id: 7, ok: true, result: { byteLength: 3 }, revision: '4.0' })
     expect(transfer).toEqual([])
   })
 

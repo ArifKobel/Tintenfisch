@@ -46,7 +46,7 @@ describe('TextSelectionStore', () => {
     const first = store.begin('3-0', 10, 20, 'character')
     const firstHit = port.lastId
     const second = store.begin('3-0', 30, 20, 'word')
-    port.answer({ id: firstHit, ok: true, result: { line: 0, offset: 0 }, revision: 0 })
+    port.answer({ id: firstHit, ok: true, result: { line: 0, offset: 0 }, revision: '' })
     await first
     await port.answerNext({ line: 0, offset: 2 })
     await port.answerNext(selection(0, 4))

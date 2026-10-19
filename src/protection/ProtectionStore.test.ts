@@ -40,7 +40,7 @@ describe('ProtectionStore', () => {
     const protecting = store.protect('open', 'boss', { ...everything, modify: false })
     const request = last(port) as Extract<Request, { kind: 'protect' }>
     expect(request).toMatchObject({ kind: 'protect', userPassword: 'open', ownerPassword: 'boss', permissions: { modify: false } })
-    expect(request.entropy).toHaveLength(100)
+    expect(request.entropy).toHaveLength(68)
     await port.answerNext(undefined)
     await protecting
     expect(store.getSnapshot()).toMatchObject({ dialogOpen: false, pending: 'The protection is written when you save the document' })

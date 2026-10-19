@@ -10,7 +10,7 @@ export interface ProtectionDialogState {
 
 export type RandomBytes = (length: number) => Uint8Array
 
-const ENTROPY = 100
+const ENTROPY = 68
 
 type Listener = () => void
 

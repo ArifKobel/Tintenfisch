@@ -14,15 +14,14 @@ pub struct Protection {
 }
 
 impl Protection {
-    pub const ENTROPY: usize = 100;
+    pub const ENTROPY: usize = 68;
 
     pub fn seal(&self, entropy: &[u8]) -> Result<(Dict, SecurityHandler)> {
         let entropy: &[u8; Protection::ENTROPY] =
-            entropy.try_into().map_err(|_| Error::new("sealing needs 100 random bytes"))?;
+            entropy.try_into().map_err(|_| Error::new("sealing needs 68 random bytes"))?;
         let key = &entropy[..32];
         let (user_salts, owner_salts, check) = (&entropy[32..48], &entropy[48..64], &entropy[64..68]);
-        let stand_in: String = entropy[68..].iter().map(|byte| format!("{byte:02x}")).collect();
-        let owner = if self.owner_password.is_empty() { stand_in.as_str() } else { self.owner_password.as_str() };
+        let owner = if self.owner_password.is_empty() { &self.user_password } else { &self.owner_password };
         let user = self.user_password.as_bytes();
         let mut user_entry = modern_hash(REVISION, user, &user_salts[..8], &[]).to_vec();
         user_entry.extend_from_slice(user_salts);

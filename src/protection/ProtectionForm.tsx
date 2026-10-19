@@ -55,6 +55,7 @@ export function ProtectionForm({ current }: { current: ProtectionState }) {
         <div className="protection-passwords">
           <input type="password" aria-label="Password to open" placeholder="Password" autoComplete="new-password" value={userPassword} onChange={(event) => setUserPassword(event.target.value)} />
           <input type="password" aria-label="Repeat the password to open" placeholder="Repeat" autoComplete="new-password" value={userRepeated} onChange={(event) => setUserRepeated(event.target.value)} />
+          {!restrict && <p className="hint">Anyone with this password can also change or remove the protection.</p>}
         </div>
       )}
       <label className="dialog-choice">

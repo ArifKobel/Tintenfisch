@@ -28,14 +28,14 @@ export class EngineClient {
   readonly #pending = new Map<number, PendingRequest>()
   readonly #changeListeners = new Set<() => void>()
   #nextId = 1
-  #revision = 0
+  #revision = ''
 
   constructor(port: EnginePort) {
     this.#port = port
     port.onmessage = (event) => this.#settle(event.data)
   }
 
-  get revision(): number {
+  get revision(): string {
     return this.#revision
   }
 

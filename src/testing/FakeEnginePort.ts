@@ -26,7 +26,7 @@ export class FakeEnginePort implements EnginePort {
     this.onmessage?.({ data: response } as MessageEvent<Response>)
   }
 
-  async answerNext(result: unknown, revision = 0) {
+  async answerNext(result: unknown, revision = '') {
     await Promise.resolve()
     this.answer({ id: this.lastId, ok: true, result, revision })
   }

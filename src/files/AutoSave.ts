@@ -26,7 +26,7 @@ export class AutoSave {
   readonly #listeners = new Set<Listener>()
   #state: AutoSaveState = { status: 'idle', error: null }
   #file: string | null = null
-  #savedRevision = 0
+  #savedRevision = ''
   #cancelTimer: (() => void) | null = null
   #queue: Promise<void> = Promise.resolve()
 

@@ -55,7 +55,7 @@ describe('DocumentStore', () => {
     await openSample(port, store)
     const saving = store.save()
     expect(port.requests[port.requests.length - 1]).toMatchObject({ kind: 'save', optimize: false })
-    port.answer({ id: port.lastId, ok: true, result: new Uint8Array([1, 2]), revision: 0 })
+    port.answer({ id: port.lastId, ok: true, result: new Uint8Array([1, 2]), revision: '' })
     expect(await saving).toEqual(new Uint8Array([1, 2]))
   })
 

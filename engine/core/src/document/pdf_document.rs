@@ -12,13 +12,24 @@ pub struct Document {
     pub(super) caches: DocumentCaches,
     pub(super) encryption: Option<Encryption>,
     pub(super) owner_rights: bool,
+    pub(super) protection_changes: u64,
 }
 
 impl Document {
     pub fn open(bytes: Vec<u8>, password: &str) -> Result<Document> {
         let mut store = ObjectStore::new(SourceFile::open_with_password(bytes, password)?);
         PageTree::separate_shared_pages(&mut store)?;
-        Ok(Document { store, caches: DocumentCaches::default(), encryption: None, owner_rights: false })
+        Ok(Document {
+            store,
+            caches: DocumentCaches::default(),
+            encryption: None,
+            owner_rights: false,
+            protection_changes: 0,
+        })
+    }
+
+    pub fn revision(&self) -> String {
+        format!("{}.{}", self.store.revision(), self.protection_changes)
     }
 
     pub fn store(&self) -> &ObjectStore {

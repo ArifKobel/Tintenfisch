@@ -81,12 +81,17 @@ fn a_permissions_password_alone_opens_freely_and_guards_the_protection() {
 }
 
 #[test]
-fn without_an_owner_password_nobody_gets_owner_rights() {
+fn a_password_to_open_alone_also_lets_its_holder_change_the_protection() {
     let mut document = Document::open(fixtures::editing_features(), "").unwrap();
     document.protect(&protection("user", "", Permissions::ALL), &entropy(3)).unwrap();
     let saved = document.save(false).unwrap();
-    assert!(!Document::open(saved.clone(), "user").unwrap().protection().owner_rights);
-    assert!(Document::open(saved, "").is_err());
+    assert!(Document::open(saved.clone(), "").is_err());
+    let mut reopened = Document::open(saved, "user").unwrap();
+    assert!(reopened.protection().owner_rights);
+    let before = reopened.revision();
+    reopened.unprotect().unwrap();
+    assert_ne!(reopened.revision(), before, "changing the protection is a change to save");
+    assert!(!SourceFile::open(reopened.save(false).unwrap()).unwrap().trailer().contains("Encrypt"));
     let mut document = Document::open(fixtures::editing_features(), "").unwrap();
     assert!(document.protect(&protection("", "", Permissions::ALL), &entropy(4)).is_err());
     assert!(document.protect(&protection("user", "boss", Permissions::ALL), &[0; 12]).is_err());
