@@ -174,14 +174,17 @@ impl<'a> ParagraphPlanner<'a> {
             bytes.extend(append_lines(&mut placer, &source, last, &items, &appended, edit.offset)?);
             replacements.insert(last.ordinal, bytes);
         }
-        if edit.moves() {
+        if let Ok(paragraph) = paragraph_records(&text, &source) {
+            let ordinals: BTreeSet<usize> = paragraph.into_iter().chain(replacements.keys().copied()).collect();
             let records: Vec<&ShowRecord> =
-                replacements.keys().map(|ordinal| text.record(source.scope, *ordinal)).collect::<Result<_>>()?;
+                ordinals.iter().map(|ordinal| text.record(source.scope, *ordinal)).collect::<Result<_>>()?;
             let block = records.iter().find_map(|record| record.block).unwrap_or_else(|| text.next_block());
             for record in records.iter().filter(|record| record.block.is_none()) {
-                if let Some(bytes) = replacements.get_mut(&record.ordinal) {
-                    *bytes = marked_block(block, bytes);
-                }
+                let bytes = match replacements.remove(&record.ordinal) {
+                    Some(bytes) => bytes,
+                    None => text.operation_bytes(source.scope, record.ordinal)?,
+                };
+                replacements.insert(record.ordinal, marked_block(block, &bytes));
             }
         }
         let lines = caret_lines(&source, &items, first, &laid, right, edit.offset);

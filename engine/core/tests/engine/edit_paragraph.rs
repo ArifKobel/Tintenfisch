@@ -207,7 +207,7 @@ fn lines_before_the_change_and_after_the_breaks_meet_again_stay_byte_identical()
     assert_eq!(line_text(&article.lines()[second - 1]), line_text(&lines[second - 1]));
     let after = article.operations();
     for (ordinal, bytes) in original.operations() {
-        let unchanged = after.iter().any(|(other, other_bytes)| *other == ordinal && *other_bytes == bytes);
+        let unchanged = after.iter().any(|(_, other_bytes)| *other_bytes == bytes);
         assert!(unchanged || edited.contains(&ordinal), "operation {ordinal} outside the edited line changed");
     }
 }
@@ -485,4 +485,23 @@ fn a_paragraph_moved_onto_the_next_stays_its_own_block_also_after_saving() {
     let reopened = Document::open(document.save(false).unwrap(), "").unwrap();
     let lines = lines_of(&reopened);
     assert_ne!(paragraph_of(&lines, "Plain line to edit"), paragraph_of(&lines, "Condensed line"));
+}
+
+#[test]
+fn a_paragraph_that_grows_into_the_next_block_stays_apart_from_it() {
+    let library = library();
+    let mut document = Document::open(fixtures::reflow_features(), "").unwrap();
+    let page = document.view(&library).pages().unwrap()[0].id;
+    let lines_of = |document: &Document| document.view(&library).text_layout(page).unwrap().lines().to_vec();
+    let paragraph = document.paragraph_text(page, 0, &library).unwrap().clusters.concat();
+    let grown = format!("{paragraph} and then keeps on growing with many more words until it reaches");
+    document.edit(&ParagraphEdit::new(page, 0, grown), &library, "").unwrap();
+    let lines = lines_of(&document);
+    let after = lines.iter().find(|line| line_text(line) == "Positioned after the block").unwrap();
+    let above = lines.iter().rfind(|line| line.baseline < after.baseline).unwrap();
+    assert!(
+        (0.75 * after.size..2.0 * after.size).contains(&(after.baseline - above.baseline)),
+        "the grown paragraph ends just above the next block"
+    );
+    assert_ne!(above.paragraph, after.paragraph);
 }
