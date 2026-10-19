@@ -77,4 +77,14 @@ describe('FilesStore', () => {
     expect(documents.getSnapshot().phase).toBe('empty')
     expect(files.getSnapshot()).toMatchObject({ files: [], current: null, deleting: null })
   })
+
+  it('keeps a reported problem until the next file opens', async () => {
+    const { files, answerOpening } = setUp('/')
+    files.report('Only PDF files can be opened.')
+    expect(files.getSnapshot().notice).toBe('Only PDF files can be opened.')
+    const opening = files.openNew('report.pdf', new Uint8Array([1]))
+    await answerOpening()
+    await opening
+    expect(files.getSnapshot().notice).toBeNull()
+  })
 })

@@ -50,7 +50,7 @@ export class FilesStore {
     await this.#attempt(async () => {
       const file = await this.#library.add(name, bytes)
       void globalThis.navigator?.storage?.persist?.()
-      this.#update({ ...this.#state, current: file.id, missing: false })
+      this.#update({ ...this.#state, current: file.id, missing: false, notice: null })
       this.#router.go({ kind: 'document', id: file.id })
       await this.#documents.open(name, bytes)
     })
@@ -58,6 +58,10 @@ export class FilesStore {
 
   show(id: string) {
     this.#router.go({ kind: 'document', id })
+  }
+
+  report(notice: string) {
+    this.#update({ ...this.#state, notice })
   }
 
   goHome() {

@@ -1,5 +1,6 @@
 import { useCommentShortcuts } from '@comments/useCommentShortcuts.ts'
 import { useEditingShortcuts } from '@editing/useEditingShortcuts.ts'
+import { FileDropZone } from '@files/FileDropZone.tsx'
 import { useFieldShortcuts } from '@forms/useFieldShortcuts.ts'
 import { useImageShortcuts } from '@images/useImageShortcuts.ts'
 import { LinkDialog } from '@navigation/LinkDialog.tsx'
@@ -52,6 +53,7 @@ export function App() {
       <LinkDialog />
       <ProtectionDialog />
       <PrintSheet />
+      <FileDropZone />
     </main>
   )
 }
