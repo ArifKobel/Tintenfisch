@@ -13,6 +13,8 @@ pnpm install
 pnpm dev
 ```
 
+Link previews point to the address in `VITE_SITE_URL` (`.env`, https://tintenfisch.app by default). Set it in `.env.local` to build for another address.
+
 Engine tests run natively:
 
 ```sh
