@@ -2,6 +2,7 @@ import { useApplication } from '@app/ApplicationContext.ts'
 import type { FieldProperties, FormField } from '@engine/protocol.ts'
 import { useFormsState } from '@forms/useFormsState.ts'
 import { useToolState } from '@tools/useToolState.ts'
+import { SidePanel } from '@ui/SidePanel.tsx'
 
 function propertiesOf(field: FormField): FieldProperties {
   return {
@@ -23,8 +24,7 @@ export function FieldPanel() {
   const change = (properties: Partial<FieldProperties>) => void forms.setProperties(field.id, { ...current, ...properties })
   const choice = field.kind === 'combo' || field.kind === 'list'
   return (
-    <aside className="field-panel" aria-label="Field">
-      <h2 className="comments-title">Field</h2>
+    <SidePanel title="Field properties" side="right" onClose={() => forms.select(null)}>
       <label className="field-panel-row">
         Name
         <input key={field.partialName} defaultValue={field.partialName} onBlur={(event) => event.target.value !== field.partialName && change({ name: event.target.value })} />
@@ -54,9 +54,11 @@ export function FieldPanel() {
           />
         </label>
       )}
-      <button type="button" className="button" onClick={() => void forms.deleteSelected()}>
-        Delete field
-      </button>
-    </aside>
+      <div>
+        <button type="button" className="button" onClick={() => void forms.deleteSelected()}>
+          Delete field
+        </button>
+      </div>
+    </SidePanel>
   )
 }

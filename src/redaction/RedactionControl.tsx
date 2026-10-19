@@ -9,28 +9,28 @@ export function RedactionControl() {
   const marks = comments.filter((comment) => comment.subtype === 'Redact').length
   if (marks === 0 && !notice) return null
   return (
-    <div className="redaction-control" role="group" aria-label="Redaction">
+    <div className="context-group" role="group" aria-label="Redaction">
       {confirming ? (
         <>
-          <span className="redaction-warning">
+          <span className="context-text">
             Remove everything under {marks === 1 ? 'the mark' : `${marks} marks`} for good?
           </span>
-          <button type="button" className="button button-small button-danger" onClick={() => void redaction.apply()}>
+          <button type="button" className="button button-danger" onClick={() => void redaction.apply()}>
             Apply
           </button>
-          <button type="button" className="button button-small" onClick={() => redaction.cancel()}>
+          <button type="button" className="button" onClick={() => redaction.cancel()}>
             Cancel
           </button>
         </>
       ) : (
         marks > 0 && (
-          <button type="button" className="button button-small" disabled={applying} onClick={() => redaction.requestApply()}>
+          <button type="button" className="button" disabled={applying} onClick={() => redaction.requestApply()}>
             {applying ? 'Applying redactions' : `Apply redactions (${marks})`}
           </button>
         )
       )}
       {notice && (
-        <span className="edit-notice" role="status">
+        <span className="notice" role="status">
           {notice}
         </span>
       )}

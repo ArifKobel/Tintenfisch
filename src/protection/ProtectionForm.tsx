@@ -44,10 +44,10 @@ export function ProtectionForm({ current }: { current: ProtectionState }) {
   }
 
   return (
-    <form className="link-dialog protection-dialog" role="dialog" aria-modal="true" aria-label="Protection" onSubmit={submit}>
-      <h2 className="link-title">Protection</h2>
-      <p className="protection-hint">{current.encrypted ? 'This document is protected with a password.' : 'This document is not protected.'} New protection uses AES-256.</p>
-      <label className="link-choice">
+    <form className="dialog protection-dialog" role="dialog" aria-modal="true" aria-label="Protection" onSubmit={submit}>
+      <h2 className="dialog-title">Protection</h2>
+      <p className="dialog-hint">{current.encrypted ? 'This document is protected with a password.' : 'This document is not protected.'} New protection uses AES-256.</p>
+      <label className="dialog-choice">
         <input type="checkbox" checked={openWithPassword} onChange={(event) => setOpenWithPassword(event.target.checked)} />
         Require a password to open the document
       </label>
@@ -57,7 +57,7 @@ export function ProtectionForm({ current }: { current: ProtectionState }) {
           <input type="password" aria-label="Repeat the password to open" placeholder="Repeat" autoComplete="new-password" value={userRepeated} onChange={(event) => setUserRepeated(event.target.value)} />
         </div>
       )}
-      <label className="link-choice">
+      <label className="dialog-choice">
         <input type="checkbox" checked={restrict} onChange={(event) => setRestrict(event.target.checked)} />
         Restrict what others may do
       </label>
@@ -70,7 +70,7 @@ export function ProtectionForm({ current }: { current: ProtectionState }) {
           <fieldset className="protection-permissions">
             <legend>Allow</legend>
             {PERMISSIONS.map(({ key, label }) => (
-              <label key={key} className="link-choice">
+              <label key={key} className="dialog-choice">
                 <input type="checkbox" checked={permissions[key]} onChange={(event) => setPermissions({ ...permissions, [key]: event.target.checked })} />
                 {label}
               </label>
@@ -79,11 +79,11 @@ export function ProtectionForm({ current }: { current: ProtectionState }) {
         </>
       )}
       {(problem || notice) && (
-        <p className="protection-hint" role="status">
+        <p className="dialog-hint" role="status">
           {notice ?? problem}
         </p>
       )}
-      <div className="link-actions">
+      <div className="dialog-actions">
         {current.encrypted && (
           <button type="button" className="button" onClick={() => void protection.unprotect()}>
             Remove protection

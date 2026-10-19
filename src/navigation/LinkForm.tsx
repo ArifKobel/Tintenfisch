@@ -30,10 +30,10 @@ export function LinkForm({ draft }: { draft: LinkDraft }) {
   }
 
   return (
-    <div className="link-backdrop">
-      <form className="link-dialog" role="dialog" aria-modal="true" aria-label={draft.linkId ? 'Edit link' : 'New link'} onSubmit={submit}>
-        <h2 className="link-title">{draft.linkId ? 'Edit link' : 'New link'}</h2>
-        <label className="link-choice">
+    <div className="dialog-backdrop">
+      <form className="dialog link-dialog" role="dialog" aria-modal="true" aria-label={draft.linkId ? 'Edit link' : 'New link'} onSubmit={submit}>
+        <h2 className="dialog-title">{draft.linkId ? 'Edit link' : 'New link'}</h2>
+        <label className="dialog-choice">
           <input type="radio" name="link-kind" checked={kind === 'page'} onChange={() => setKind('page')} />
           Go to page
           <input
@@ -48,12 +48,12 @@ export function LinkForm({ draft }: { draft: LinkDraft }) {
           />
           of {pages.length}
         </label>
-        <label className="link-choice">
+        <label className="dialog-choice">
           <input type="radio" name="link-kind" checked={kind === 'uri'} onChange={() => setKind('uri')} />
           Open web address
         </label>
         <input className="link-address" aria-label="Web address" placeholder="https://" value={uri} onFocus={() => setKind('uri')} onChange={(event) => setUri(event.target.value)} />
-        <div className="link-actions">
+        <div className="dialog-actions">
           {draft.linkId && (
             <button type="button" className="button" onClick={() => void links.removeSelected()}>
               Delete

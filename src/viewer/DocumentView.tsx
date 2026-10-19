@@ -1,26 +1,26 @@
 import { PasswordPrompt } from '@document/PasswordPrompt.tsx'
+import { StartScreen } from '@document/StartScreen.tsx'
 import { useDocumentState } from '@document/useDocumentState.ts'
 import { DocumentScroller } from '@viewer/DocumentScroller.tsx'
 
 export function DocumentView() {
   const state = useDocumentState()
-  if (state.phase === 'locked') {
+  if (state.phase === 'ready') {
     return (
-      <section className="document-view document-view-empty">
-        <PasswordPrompt name={state.name} wrongPassword={state.wrongPassword} />
-      </section>
-    )
-  }
-  if (state.phase !== 'ready') {
-    return (
-      <section className="document-view document-view-empty">
-        <p>{state.phase === 'loading' ? `Opening ${state.name}` : 'Open a PDF to start.'}</p>
+      <section className="document-view">
+        <DocumentScroller key={state.session} document={state} />
       </section>
     )
   }
   return (
-    <section className="document-view">
-      <DocumentScroller key={state.session} document={state} />
+    <section className="document-view document-view-empty">
+      {state.phase === 'locked' ? (
+        <PasswordPrompt name={state.name} wrongPassword={state.wrongPassword} />
+      ) : state.phase === 'loading' ? (
+        <p className="hint">Opening {state.name}</p>
+      ) : (
+        <StartScreen />
+      )}
     </section>
   )
 }

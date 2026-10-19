@@ -4,7 +4,7 @@ export function FormsNotice() {
   const { notice } = useFormsState()
   if (!notice) return null
   return (
-    <span className="edit-notice" role="status">
+    <span className="toast" role="status">
       {notice}
     </span>
   )

@@ -1,0 +1,12 @@
+.text-layer {
+  position: absolute;
+  inset: 0;
+  cursor: text;
+}
+
+.text-selection {
+  position: absolute;
+  background: rgb(20 115 230 / 0.3);
+  pointer-events: none;
+  transform-origin: 0 0;
+}

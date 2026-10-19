@@ -1,0 +1,44 @@
+.signature-layer {
+  position: absolute;
+  inset: 0;
+  cursor: crosshair;
+}
+
+.signature-placement {
+  position: absolute;
+  border: 1px dashed var(--selection);
+  background: color-mix(in srgb, var(--selection) 8%, transparent);
+}
+
+.signature-canvas {
+  border: 1px solid var(--field-border);
+  border-radius: var(--radius);
+  background: #fff;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+.signature-canvas polyline {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.signature-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-strong);
+}
+
+.signature-status-valid .icon {
+  color: var(--positive);
+}
+
+.signature-status-broken .icon {
+  color: var(--negative);
+}
+
+.signature-status-unsupported .icon {
+  color: var(--text-disabled);
+}

@@ -1,0 +1,35 @@
+.image-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.image-layer-placing {
+  pointer-events: auto;
+  cursor: copy;
+}
+
+.image-box {
+  position: absolute;
+  border: 1px dashed var(--edit-outline);
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+
+.image-box-selected {
+  border: 1px solid var(--selection);
+  outline: 2px solid color-mix(in srgb, var(--selection) 30%, transparent);
+  cursor: move;
+  pointer-events: auto;
+}
+
+.image-box-resize {
+  position: absolute;
+  right: -5px;
+  bottom: -5px;
+  width: 9px;
+  height: 9px;
+  border: 1px solid var(--selection);
+  background: var(--surface);
+  cursor: nwse-resize;
+}

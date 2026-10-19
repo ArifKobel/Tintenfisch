@@ -1,0 +1,36 @@
+.start-screen {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 24px;
+}
+
+.start-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-width: 520px;
+  padding: 48px 56px;
+  border: 1px dashed var(--field-border);
+  border-radius: 8px;
+  background: var(--surface);
+  text-align: center;
+}
+
+.start-title {
+  color: var(--text-strong);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 28px;
+}
+
+.start-text {
+  color: var(--text-body);
+  font-size: 15px;
+}
+
+.password-prompt {
+  width: 400px;
+}

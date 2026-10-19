@@ -4,6 +4,7 @@ import { useDocumentState } from '@document/useDocumentState.ts'
 import { OrganizeToolbar } from '@organize/OrganizeToolbar.tsx'
 import { useOrganizeState } from '@organize/useOrganizeState.ts'
 import { Thumbnail, type ThumbnailGesture } from '@thumbnails/Thumbnail.tsx'
+import { SidePanel } from '@ui/SidePanel.tsx'
 import { useViewportState } from '@viewer/useViewportState.ts'
 
 interface Drag {
@@ -11,8 +12,8 @@ interface Drag {
   before: string | null
 }
 
-export function ThumbnailSidebar() {
-  const { organize, viewport } = useApplication()
+export function PagesPanel() {
+  const { organize, panels, viewport } = useApplication()
   const document = useDocumentState()
   const { selection } = useOrganizeState()
   const { currentPageId } = useViewportState()
@@ -52,7 +53,7 @@ export function ThumbnailSidebar() {
   }
 
   return (
-    <nav className="thumbnail-sidebar" aria-label="Pages" onKeyDown={press}>
+    <SidePanel title="Pages" side="right" onClose={() => panels.showRight(null)} onKeyDown={press}>
       <OrganizeToolbar />
       <div className="thumbnail-list" onDragOver={(event) => drag && event.preventDefault()} onDrop={drop} onDragEnd={() => setDrag(null)}>
         {document.pages.map((page, index) => (
@@ -71,6 +72,6 @@ export function ThumbnailSidebar() {
         ))}
         {drag && drag.before === null && <div className="thumbnail-drop-line" />}
       </div>
-    </nav>
+    </SidePanel>
   )
 }

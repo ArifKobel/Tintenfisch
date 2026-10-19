@@ -2,6 +2,7 @@ import type { MouseEvent } from 'react'
 import { useApplication } from '@app/ApplicationContext.ts'
 import { useEditingState } from '@editing/useEditingState.ts'
 import type { BundledFamily, FontChoice, Rgb, TextStyle } from '@engine/protocol.ts'
+import { Icon } from '@ui/Icon.tsx'
 
 const SIZES = [6, 8, 9, 10, 11, 12, 14, 16, 18, 20, 24, 28, 32, 36, 48, 72]
 
@@ -45,7 +46,7 @@ export function FormatBar() {
   const documentFonts = editing.session?.origin ? [] : fonts
   return (
     <div className="format-bar" role="group" aria-label="Text format">
-      <select className="format-font" aria-label="Font" value={valueOf(look.font)} onChange={(event) => format({ font: choiceOf(event.target.value) })}>
+      <select className="field format-font" aria-label="Font" value={valueOf(look.font)} onChange={(event) => format({ font: choiceOf(event.target.value) })}>
         {look.font === null && <option value="">Font of the text</option>}
         {documentFonts.map((font) => (
           <option key={font.name} value={`document:${font.name}`}>
@@ -58,7 +59,7 @@ export function FormatBar() {
           </option>
         ))}
       </select>
-      <select className="format-size" aria-label="Font size" value={size} onChange={(event) => format({ size: Number(event.target.value) })}>
+      <select className="field format-size" aria-label="Font size" value={size} onChange={(event) => format({ size: Number(event.target.value) })}>
         {sizes.map((choice) => (
           <option key={choice} value={choice}>
             {choice}
@@ -67,30 +68,30 @@ export function FormatBar() {
       </select>
       <button
         type="button"
-        className={`button button-small format-bold${look.bold ? ' button-active' : ''}`}
+        className={`icon-button${look.bold ? ' icon-button-toggled' : ''}`}
         aria-label="Bold"
         aria-pressed={look.bold}
         onMouseDown={keepFocus}
         onClick={() => format({ bold: !look.bold })}
       >
-        B
+        <Icon name="text-bold" />
       </button>
       <button
         type="button"
-        className={`button button-small format-italic${look.italic ? ' button-active' : ''}`}
+        className={`icon-button${look.italic ? ' icon-button-toggled' : ''}`}
         aria-label="Italic"
         aria-pressed={look.italic}
         onMouseDown={keepFocus}
         onClick={() => format({ italic: !look.italic })}
       >
-        I
+        <Icon name="text-italic" />
       </button>
-      <div className="format-colors" role="group" aria-label="Text color">
+      <div className="swatches" role="group" aria-label="Text color">
         {COLORS.map(({ color, label }) => (
           <button
             key={label}
             type="button"
-            className={`format-color${sameColor(look.color, color) ? ' format-color-chosen' : ''}`}
+            className={`swatch${sameColor(look.color, color) ? ' swatch-chosen' : ''}`}
             aria-label={label}
             aria-pressed={sameColor(look.color, color)}
             style={{ background: `rgb(${color.map((part) => Math.round(part * 255)).join(' ')})` }}

@@ -1,0 +1,283 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.app-header {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 16px;
+  height: 56px;
+  padding: 0 16px;
+  background: var(--surface);
+  box-shadow: 0 1px 0 var(--divider);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-right: 16px;
+  border-right: 1px solid var(--separator);
+}
+
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--text-strong);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.brand-name {
+  color: var(--text-strong);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.header-tabs {
+  display: flex;
+  align-self: stretch;
+  gap: 24px;
+}
+
+.header-tab {
+  position: relative;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text-strong);
+  cursor: pointer;
+}
+
+.header-tab:hover {
+  color: #000;
+}
+
+.header-tab-active::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--text-strong);
+}
+
+.header-document {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.document-title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
+.document-name {
+  overflow: hidden;
+  color: var(--text-strong);
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.document-kind,
+.document-detail {
+  flex: none;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.document-title-failed .document-detail {
+  color: var(--negative);
+}
+
+.document-pending {
+  align-self: center;
+  display: flex;
+  color: var(--text-muted);
+}
+
+.document-pending .icon {
+  width: 16px;
+  height: 16px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.workspace {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.document-area {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--canvas);
+}
+
+.canvas {
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.message-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 24px;
+  margin: 0;
+  padding: 10px 24px;
+  border-bottom: 1px solid var(--divider);
+  background: var(--surface);
+  list-style: none;
+}
+
+.context-bar {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: calc(100% - 160px);
+  padding: 4px 12px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-float);
+  transform: translateX(-50%);
+}
+
+.context-bar:empty {
+  display: none;
+}
+
+.context-group,
+.tool-options {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+}
+
+.context-group + .context-group,
+.tool-options + .context-group {
+  padding-left: 16px;
+  border-left: 1px solid var(--separator);
+}
+
+.tool-options-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-strong);
+  font-weight: 700;
+}
+
+.context-text {
+  color: var(--text-strong);
+}
+
+.toasts {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.toasts > * {
+  pointer-events: auto;
+}
+
+.right-rail {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  width: 51px;
+  padding: 8px 0;
+  border-left: 1px solid var(--divider);
+  background: var(--surface);
+}
+
+.rail-group,
+.page-navigator,
+.zoom-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.rail-group {
+  padding-top: 0;
+}
+
+.rail-group + .page-navigator {
+  margin-top: auto;
+}
+
+.page-navigator + .zoom-controls {
+  margin-top: auto;
+  border-top: 1px solid var(--divider);
+}
+
+.page-number {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--menu-border);
+  border-radius: var(--radius);
+  background: #fafafa;
+  color: var(--text);
+  text-align: center;
+}
+
+.page-number:focus-visible {
+  outline: 2px solid var(--selection);
+  outline-offset: -1px;
+}
+
+.page-count {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.zoom-level {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  line-height: 14px;
+}

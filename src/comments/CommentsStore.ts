@@ -1,5 +1,6 @@
 import { CancelledError, type EngineClient } from '@engine/EngineClient.ts'
 import type { Comment, MarkupRequest } from '@engine/protocol.ts'
+import type { PanelStore } from '@shell/PanelStore.ts'
 import type { ToolStore } from '@tools/ToolStore.ts'
 import type { PageRevisionStore } from '@viewer/PageRevisionStore.ts'
 
@@ -8,7 +9,6 @@ const STROKE_WIDTH = 2
 export interface CommentsState {
   comments: Comment[]
   selected: string | null
-  open: boolean
   notice: string | null
 }
 
@@ -18,15 +18,17 @@ export class CommentsStore {
   readonly #client: EngineClient
   readonly #tools: ToolStore
   readonly #revisions: PageRevisionStore
+  readonly #panels: PanelStore
   readonly #now: () => Date
   readonly #listeners = new Set<Listener>()
-  #state: CommentsState = { comments: [], selected: null, open: false, notice: null }
+  #state: CommentsState = { comments: [], selected: null, notice: null }
   #sequence = 0
 
-  constructor(client: EngineClient, tools: ToolStore, revisions: PageRevisionStore, now: () => Date = () => new Date()) {
+  constructor(client: EngineClient, tools: ToolStore, revisions: PageRevisionStore, panels: PanelStore, now: () => Date = () => new Date()) {
     this.#client = client
     this.#tools = tools
     this.#revisions = revisions
+    this.#panels = panels
     this.#now = now
   }
 
@@ -58,8 +60,8 @@ export class CommentsStore {
       const added = await this.#client.request({ kind: 'addMarkup', pageId, markup, style })
       this.#revisions.touch(added.dirtyPages)
       await this.reload()
-      const opens = markup.kind === 'note' || markup.kind === 'textBox'
-      this.#update({ ...this.#state, selected: added.id, open: this.#state.open || opens })
+      this.#update({ ...this.#state, selected: added.id })
+      if (markup.kind === 'note' || markup.kind === 'textBox') this.#panels.showRight('comments')
     })
   }
 
@@ -89,10 +91,6 @@ export class CommentsStore {
 
   select(id: string | null) {
     if (id !== this.#state.selected) this.#update({ ...this.#state, selected: id })
-  }
-
-  togglePanel() {
-    this.#update({ ...this.#state, open: !this.#state.open })
   }
 
   reset() {

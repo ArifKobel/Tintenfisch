@@ -1,0 +1,57 @@
+import sprite from '@adobe/spectrum-css-workflow-icons/dist/assets/svg-spriteSheet/icons.svg?url'
+
+export type IconName =
+  | 'add'
+  | 'arrow-head-tool'
+  | 'badge-verified'
+  | 'bookmark'
+  | 'check-box'
+  | 'chevron-down'
+  | 'chevron-right'
+  | 'chevron-up'
+  | 'circle'
+  | 'close'
+  | 'comment'
+  | 'delete'
+  | 'download'
+  | 'draw'
+  | 'edit'
+  | 'export'
+  | 'file-add'
+  | 'folder-open'
+  | 'image-add'
+  | 'import'
+  | 'link'
+  | 'lock'
+  | 'mask'
+  | 'maximize'
+  | 'more'
+  | 'pen-brush'
+  | 'print'
+  | 'rectangle-horiz'
+  | 'rotate-ccw'
+  | 'rotate-cw'
+  | 'search'
+  | 'select'
+  | 'select-rectangle'
+  | 'stamp-clone'
+  | 'sticky-note'
+  | 'target'
+  | 'text'
+  | 'text-add'
+  | 'text-bold'
+  | 'text-highlight'
+  | 'text-italic'
+  | 'text-strike-through'
+  | 'tools'
+  | 'view-grid'
+  | 'zoom-in'
+  | 'zoom-out'
+
+export function Icon({ name }: { name: IconName }) {
+  return (
+    <svg className="icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+      <use href={`${sprite}#icon-${name}`} />
+    </svg>
+  )
+}

@@ -32,11 +32,13 @@
       "@protection/*": ["./src/protection/*"],
       "@redaction/*": ["./src/redaction/*"],
       "@selection/*": ["./src/selection/*"],
+      "@shell/*": ["./src/shell/*"],
       "@signing/*": ["./src/signing/*"],
       "@styles/*": ["./src/styles/*"],
       "@testing/*": ["./src/testing/*"],
       "@thumbnails/*": ["./src/thumbnails/*"],
       "@tools/*": ["./src/tools/*"],
+      "@ui/*": ["./src/ui/*"],
       "@viewer/*": ["./src/viewer/*"],
       "@wasm/*": ["./engine/wasm/pkg/*"]
     }

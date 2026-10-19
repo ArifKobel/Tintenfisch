@@ -14,9 +14,10 @@ import { PrintStore } from '@printing/PrintStore.ts'
 import { ProtectionStore } from '@protection/ProtectionStore.ts'
 import { RedactionStore } from '@redaction/RedactionStore.ts'
 import { TextSelectionStore } from '@selection/TextSelectionStore.ts'
+import { PanelStore } from '@shell/PanelStore.ts'
 import { DigitalSignatureStore } from '@signing/DigitalSignatureStore.ts'
 import { SignatureStore } from '@signing/SignatureStore.ts'
-import { ToolStore } from '@tools/ToolStore.ts'
+import { EDITING_TOOLS, ToolStore } from '@tools/ToolStore.ts'
 import { PageRevisionStore } from '@viewer/PageRevisionStore.ts'
 import { TileCache } from '@viewer/TileCache.ts'
 import { TileLoader } from '@viewer/TileLoader.ts'
@@ -33,6 +34,7 @@ export class Application {
   readonly editing: EditingStore
   readonly organize: OrganizeStore
   readonly tools: ToolStore
+  readonly panels: PanelStore
   readonly comments: CommentsStore
   readonly forms: FormsStore
   readonly images: ImagesStore
@@ -55,7 +57,8 @@ export class Application {
     this.editing = new EditingStore(this.engine, this.revisions)
     this.organize = new OrganizeStore(this.engine, this.documents, this.revisions)
     this.tools = new ToolStore()
-    this.comments = new CommentsStore(this.engine, this.tools, this.revisions)
+    this.panels = new PanelStore()
+    this.comments = new CommentsStore(this.engine, this.tools, this.revisions, this.panels)
     this.forms = new FormsStore(this.engine, this.revisions)
     this.images = new ImagesStore(this.engine, this.revisions)
     this.redaction = new RedactionStore(this.engine, this.revisions)
@@ -73,7 +76,15 @@ export class Application {
       if (tool !== 'edit') this.images.select(null)
       if (tool !== 'link') this.links.select(null)
       if (tool === 'sign' && previousTool !== 'sign' && !this.signing.getSnapshot().mark) this.signing.openPad()
+      if (EDITING_TOOLS.includes(tool)) this.panels.showLeft('edit')
+      else if (this.panels.getSnapshot().left === 'edit') this.panels.showLeft(null)
       previousTool = tool
+    })
+    this.panels.subscribe(() => {
+      const editing = EDITING_TOOLS.includes(this.tools.getSnapshot().tool)
+      const editPanel = this.panels.getSnapshot().left === 'edit'
+      if (editPanel && !editing) this.tools.choose('edit')
+      if (!editPanel && editing) this.tools.choose('select')
     })
     this.documents.onDocumentReplaced(() => {
       this.editing.reset()

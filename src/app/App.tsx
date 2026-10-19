@@ -1,22 +1,24 @@
-import { ToolRow } from '@app/ToolRow.tsx'
-import { Toolbar } from '@app/Toolbar.tsx'
-import { CommentsPanel } from '@comments/CommentsPanel.tsx'
 import { useCommentShortcuts } from '@comments/useCommentShortcuts.ts'
-import { FieldPanel } from '@forms/FieldPanel.tsx'
+import { useEditingShortcuts } from '@editing/useEditingShortcuts.ts'
 import { useFieldShortcuts } from '@forms/useFieldShortcuts.ts'
 import { useImageShortcuts } from '@images/useImageShortcuts.ts'
-import { BookmarksPanel } from '@navigation/BookmarksPanel.tsx'
 import { LinkDialog } from '@navigation/LinkDialog.tsx'
 import { useLinkShortcuts } from '@navigation/useLinkShortcuts.ts'
 import { PrintDialog } from '@printing/PrintDialog.tsx'
 import { PrintSheet } from '@printing/PrintSheet.tsx'
 import { usePrintShortcut } from '@printing/usePrintShortcut.ts'
 import { ProtectionDialog } from '@protection/ProtectionDialog.tsx'
-import { useEditingShortcuts } from '@editing/useEditingShortcuts.ts'
 import { useCopySelection } from '@selection/useCopySelection.ts'
+import { AppHeader } from '@shell/AppHeader.tsx'
+import { ContextBar } from '@shell/ContextBar.tsx'
+import { LeftPanels } from '@shell/LeftPanels.tsx'
+import { RightPanels } from '@shell/RightPanels.tsx'
+import { RightRail } from '@shell/RightRail.tsx'
+import { Toasts } from '@shell/Toasts.tsx'
 import { SignaturePad } from '@signing/SignaturePad.tsx'
+import { SignatureStatusList } from '@signing/SignatureStatusList.tsx'
 import { SigningDialog } from '@signing/SigningDialog.tsx'
-import { ThumbnailSidebar } from '@thumbnails/ThumbnailSidebar.tsx'
+import { QuickToolbar } from '@tools/QuickToolbar.tsx'
 import { DocumentView } from '@viewer/DocumentView.tsx'
 
 export function App() {
@@ -29,14 +31,20 @@ export function App() {
   useLinkShortcuts()
   return (
     <main className="app">
-      <Toolbar />
-      <ToolRow />
+      <AppHeader />
       <div className="workspace">
-        <ThumbnailSidebar />
-        <BookmarksPanel />
-        <DocumentView />
-        <CommentsPanel />
-        <FieldPanel />
+        <LeftPanels />
+        <div className="document-area">
+          <SignatureStatusList />
+          <div className="canvas">
+            <QuickToolbar />
+            <DocumentView />
+            <ContextBar />
+            <Toasts />
+          </div>
+        </div>
+        <RightPanels />
+        <RightRail />
       </div>
       <SignaturePad />
       <SigningDialog />

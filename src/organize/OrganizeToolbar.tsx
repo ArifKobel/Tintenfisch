@@ -1,12 +1,14 @@
-import { useState, type ChangeEvent, type FormEvent } from 'react'
+import { useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { useApplication } from '@app/ApplicationContext.ts'
 import { FileDownload } from '@document/FileDownload.ts'
 import { useOrganizeState } from '@organize/useOrganizeState.ts'
+import { IconButton } from '@ui/IconButton.tsx'
 
 export function OrganizeToolbar() {
   const { organize } = useApplication()
   const { selection, notice, lockedInsert } = useOrganizeState()
   const [password, setPassword] = useState('')
+  const picker = useRef<HTMLInputElement>(null)
   const nothingSelected = selection.size === 0
 
   async function insertFile(event: ChangeEvent<HTMLInputElement>) {
@@ -28,39 +30,28 @@ export function OrganizeToolbar() {
 
   return (
     <div className="organize-toolbar" role="toolbar" aria-label="Organize pages">
-      <button type="button" className="button button-small" disabled={nothingSelected} onClick={() => void organize.rotate(-1)}>
-        Rotate left
-      </button>
-      <button type="button" className="button button-small" disabled={nothingSelected} onClick={() => void organize.rotate(1)}>
-        Rotate right
-      </button>
-      <button type="button" className="button button-small" disabled={nothingSelected} onClick={() => void organize.deleteSelected()}>
-        Delete
-      </button>
-      <button type="button" className="button button-small" disabled={nothingSelected} onClick={() => void extract()}>
-        Extract
-      </button>
-      <button type="button" className="button button-small" onClick={() => void organize.insertBlank()}>
-        Blank page
-      </button>
-      <label className="button button-small">
-        Insert file
-        <input type="file" accept="application/pdf" onChange={insertFile} hidden />
-      </label>
+      <IconButton icon="rotate-ccw" label="Rotate left" disabled={nothingSelected} onClick={() => void organize.rotate(-1)} />
+      <IconButton icon="rotate-cw" label="Rotate right" disabled={nothingSelected} onClick={() => void organize.rotate(1)} />
+      <IconButton icon="delete" label="Delete pages" disabled={nothingSelected} onClick={() => void organize.deleteSelected()} />
+      <IconButton icon="export" label="Extract pages" disabled={nothingSelected} onClick={() => void extract()} />
+      <span className="organize-divider" />
+      <IconButton icon="file-add" label="Insert blank page" onClick={() => void organize.insertBlank()} />
+      <IconButton icon="import" label="Insert from file" onClick={() => picker.current?.click()} />
+      <input ref={picker} type="file" accept="application/pdf" onChange={insertFile} hidden />
       {lockedInsert && (
         <form className="organize-password" onSubmit={unlock}>
           <span>{lockedInsert.wrongPassword ? 'Wrong password' : `${lockedInsert.name} is protected`}</span>
-          <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} aria-label="Password" autoFocus />
-          <button type="submit" className="button button-small">
-            Insert
-          </button>
-          <button type="button" className="button button-small" onClick={() => organize.cancelInsert()}>
+          <input type="password" className="field" value={password} onChange={(event) => setPassword(event.target.value)} aria-label="Password" autoFocus />
+          <button type="button" className="button" onClick={() => organize.cancelInsert()}>
             Cancel
+          </button>
+          <button type="submit" className="button button-primary">
+            Insert
           </button>
         </form>
       )}
       {notice && (
-        <p className="organize-notice" role="status">
+        <p className="notice organize-notice" role="status">
           {notice}
         </p>
       )}

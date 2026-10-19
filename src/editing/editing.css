@@ -1,0 +1,76 @@
+.text-layer-editing {
+  cursor: text;
+}
+
+.edit-caret {
+  position: absolute;
+  border-left: 1.5px solid var(--caret);
+  pointer-events: none;
+  transform-origin: 0 0;
+  animation: caret-blink 1s steps(1) infinite;
+}
+
+@keyframes caret-blink {
+  50% {
+    border-color: transparent;
+  }
+}
+
+.edit-frame {
+  position: absolute;
+  outline: 1px dashed var(--edit-outline);
+  outline-offset: 2px;
+  pointer-events: none;
+  transform-origin: 0 0;
+}
+
+.edit-frame-move,
+.edit-frame-resize {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border: 1px solid var(--selection);
+  border-radius: 2px;
+  background: var(--surface);
+  pointer-events: auto;
+}
+
+.edit-frame-move {
+  top: -14px;
+  left: -14px;
+  cursor: move;
+}
+
+.edit-frame-resize {
+  top: calc(50% - 5px);
+  right: -9px;
+  cursor: ew-resize;
+}
+
+.edit-input {
+  position: absolute;
+  width: 1px;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  resize: none;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.format-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.format-font,
+.format-bar .swatches {
+  width: 100%;
+}
+
+.format-size {
+  width: 88px;
+  margin-right: auto;
+}

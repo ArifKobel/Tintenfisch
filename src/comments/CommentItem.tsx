@@ -1,6 +1,7 @@
 import type { MouseEvent } from 'react'
 import { useApplication } from '@app/ApplicationContext.ts'
 import type { Comment } from '@engine/protocol.ts'
+import { IconButton } from '@ui/IconButton.tsx'
 
 const KINDS: Record<string, string> = {
   Highlight: 'Highlight',
@@ -39,9 +40,7 @@ export function CommentItem({ comment, pageNumber, selected }: { comment: Commen
       <header className="comment-item-header">
         <span className="comment-kind">{KINDS[comment.subtype] ?? comment.subtype}</span>
         <span className="comment-page">Page {pageNumber}</span>
-        <button type="button" className="button button-small" onClick={remove}>
-          Delete
-        </button>
+        <IconButton icon="delete" label="Delete comment" tooltip="left" onClick={remove} />
       </header>
       <textarea
         key={comment.contents}

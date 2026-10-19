@@ -1,0 +1,18 @@
+.protection-dialog {
+  max-width: 440px;
+}
+
+.protection-passwords {
+  display: grid;
+  gap: 8px;
+  margin-left: 22px;
+}
+
+.protection-permissions {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 0 22px;
+  padding: 10px 12px;
+  border: 1px solid var(--separator);
+  border-radius: var(--radius);
+}

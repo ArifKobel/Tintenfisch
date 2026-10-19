@@ -22,12 +22,12 @@ export function PrintDialog() {
   }
 
   return (
-    <div className="print-backdrop">
-      <form className="print-dialog" role="dialog" aria-modal="true" aria-label="Print" onSubmit={submit}>
-        <h2 className="print-title">Print</h2>
-        <fieldset className="print-choices">
+    <div className="dialog-backdrop">
+      <form className="dialog print-dialog" role="dialog" aria-modal="true" aria-label="Print" onSubmit={submit}>
+        <h2 className="dialog-title">Print</h2>
+        <fieldset className="dialog-choices">
           {CHOICES.map(({ choice, label }) => (
-            <label key={choice} className="print-choice">
+            <label key={choice} className="dialog-choice">
               <input type="radio" name="print-choice" checked={settings.choice === choice} onChange={() => printing.change({ choice })} />
               {label}
             </label>
@@ -59,16 +59,16 @@ export function PrintDialog() {
           </select>
         </label>
         {progress && (
-          <p className="print-progress" role="status">
+          <p className="hint" role="status">
             Preparing page {Math.min(progress.done + 1, progress.total)} of {progress.total}
           </p>
         )}
         {notice && (
-          <p className="edit-notice" role="alert">
+          <p className="notice" role="alert">
             {notice}
           </p>
         )}
-        <div className="print-actions">
+        <div className="dialog-actions">
           <button type="button" className="button" disabled={progress !== null} onClick={() => printing.closeDialog()}>
             Cancel
           </button>

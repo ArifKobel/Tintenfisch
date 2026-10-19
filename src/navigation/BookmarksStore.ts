@@ -3,7 +3,6 @@ import type { Bookmark, Command } from '@engine/protocol.ts'
 import type { TargetFollower } from '@navigation/TargetFollower.ts'
 
 export interface BookmarksState {
-  open: boolean
   items: Bookmark[]
   selected: string | null
   renaming: string | null
@@ -24,7 +23,7 @@ export class BookmarksStore {
   readonly #client: EngineClient
   readonly #follower: TargetFollower
   readonly #listeners = new Set<Listener>()
-  #state: BookmarksState = { open: false, items: [], selected: null, renaming: null, collapsed: {}, notice: null }
+  #state: BookmarksState = { items: [], selected: null, renaming: null, collapsed: {}, notice: null }
 
   constructor(client: EngineClient, follower: TargetFollower) {
     this.#client = client
@@ -37,10 +36,6 @@ export class BookmarksStore {
   }
 
   readonly getSnapshot = (): BookmarksState => this.#state
-
-  togglePanel() {
-    this.#update({ ...this.#state, open: !this.#state.open })
-  }
 
   async reload() {
     await this.#attempt(async () => {

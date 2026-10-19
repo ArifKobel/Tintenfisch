@@ -2,6 +2,8 @@ import type { NewFieldKind, Rgb } from '@engine/protocol.ts'
 
 export type Tool = 'select' | 'edit' | 'addText' | 'addImage' | 'highlight' | 'note' | 'textBox' | 'ink' | 'rectangle' | 'ellipse' | 'arrow' | 'stamp' | 'redactText' | 'redactArea' | 'form' | 'link' | 'sign'
 
+export const EDITING_TOOLS: readonly Tool[] = ['edit', 'addText', 'addImage', 'link']
+
 export const DRAWING_TOOLS: readonly Tool[] = ['note', 'textBox', 'ink', 'rectangle', 'ellipse', 'arrow', 'stamp', 'redactArea']
 
 export const MARKUP_COLORS: readonly Rgb[] = [

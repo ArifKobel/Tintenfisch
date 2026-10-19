@@ -53,10 +53,10 @@ export function SignaturePad() {
 
   const ink = `rgb(${INK.map((part) => part * 255).join(' ')})`
   return (
-    <div className="signature-backdrop">
-      <div className="signature-pad" role="dialog" aria-modal="true" aria-label="Create signature">
-        <h2 className="signature-title">Create signature</h2>
-        <p className="signature-hint">Draw with the mouse, pen or finger, or use a picture of your signature.</p>
+    <div className="dialog-backdrop">
+      <div className="dialog signature-pad" role="dialog" aria-modal="true" aria-label="Create signature">
+        <h2 className="dialog-title">Create signature</h2>
+        <p className="dialog-hint">Draw with the mouse, pen or finger, or use a picture of your signature.</p>
         <svg
           className="signature-canvas"
           width={PAD_WIDTH}
@@ -71,23 +71,23 @@ export function SignaturePad() {
           ))}
         </svg>
         {notice && (
-          <p className="edit-notice" role="status">
+          <p className="notice" role="status">
             {notice}
           </p>
         )}
-        <div className="signature-actions">
-          <button type="button" className="button button-small" onClick={() => setStrokes([])} disabled={strokes.length === 0}>
+        <div className="dialog-actions">
+          <button type="button" className="button" onClick={() => setStrokes([])} disabled={strokes.length === 0}>
             Clear
           </button>
-          <label className="button button-small">
+          <label className="button">
             Use a picture
             <input type="file" accept="image/*" hidden onChange={(event) => void choosePicture(event)} />
           </label>
-          <span className="signature-spacer" />
-          <button type="button" className="button button-small" onClick={() => signing.closePad()}>
+          <span className="dialog-spacer" />
+          <button type="button" className="button" onClick={() => signing.closePad()}>
             Cancel
           </button>
-          <button type="button" className="button button-small button-primary" onClick={adopt} disabled={strokes.length === 0}>
+          <button type="button" className="button button-primary" onClick={adopt} disabled={strokes.length === 0}>
             Use signature
           </button>
         </div>

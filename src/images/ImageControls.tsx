@@ -16,23 +16,23 @@ export function ImageControls() {
     if (file) await images.replaceSelected(new Uint8Array(await file.arrayBuffer()))
   }
 
-  if (tool === 'addImage') return <span className="image-hint">Click where the image goes</span>
+  if (tool === 'addImage') return <span className="hint">Click where the image goes</span>
   if (!selected && !notice) return null
   return (
-    <div className="image-controls" role="group" aria-label="Image">
+    <div className="context-group" role="group" aria-label="Image">
       {selected && (
         <>
-          <button type="button" className="button button-small" onClick={() => picker.current?.click()}>
+          <button type="button" className="button" onClick={() => picker.current?.click()}>
             Replace image
           </button>
-          <button type="button" className="button button-small" onClick={() => void images.removeSelected()}>
+          <button type="button" className="button" onClick={() => void images.removeSelected()}>
             Delete image
           </button>
           <input ref={picker} type="file" accept={PICTURE_TYPES} hidden onChange={(event) => void picked(event)} />
         </>
       )}
       {notice && (
-        <span className="edit-notice" role="status">
+        <span className="notice" role="status">
           {notice}
         </span>
       )}

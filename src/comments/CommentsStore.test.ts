@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { CommentsStore } from '@comments/CommentsStore.ts'
 import { EngineClient } from '@engine/EngineClient.ts'
 import type { Request } from '@engine/protocol.ts'
+import { PanelStore } from '@shell/PanelStore.ts'
 import { FakeEnginePort } from '@testing/FakeEnginePort.ts'
 import { ToolStore } from '@tools/ToolStore.ts'
 import { PageRevisionStore } from '@viewer/PageRevisionStore.ts'
@@ -21,8 +22,9 @@ function createStore() {
   const port = new FakeEnginePort()
   const tools = new ToolStore()
   const revisions = new PageRevisionStore()
-  const store = new CommentsStore(new EngineClient(port), tools, revisions, () => new Date(Date.UTC(2026, 9, 18, 12, 30, 5)))
-  return { port, tools, revisions, store }
+  const panels = new PanelStore()
+  const store = new CommentsStore(new EngineClient(port), tools, revisions, panels, () => new Date(Date.UTC(2026, 9, 18, 12, 30, 5)))
+  return { port, tools, revisions, panels, store }
 }
 
 const last = (port: FakeEnginePort): Request => port.requests[port.requests.length - 1]
@@ -33,7 +35,7 @@ describe('CommentsStore', () => {
   })
 
   it('adds a note in the chosen color, redraws its page, selects it and opens the panel', async () => {
-    const { port, tools, revisions, store } = createStore()
+    const { port, tools, revisions, panels, store } = createStore()
     tools.choose('note')
     const adding = store.add('3-0', { kind: 'note', at: [10, 20], text: '' })
     expect(last(port)).toMatchObject({
@@ -46,7 +48,8 @@ describe('CommentsStore', () => {
     await port.answerNext([comment('20-0')])
     await adding
     expect(revisions.revisionOf('3-0')).toBe(1)
-    expect(store.getSnapshot()).toMatchObject({ selected: '20-0', open: true })
+    expect(store.getSnapshot()).toMatchObject({ selected: '20-0' })
+    expect(panels.getSnapshot().right).toBe('comments')
   })
 
   it('changes and deletes comments, dropping a selection that is gone', async () => {
