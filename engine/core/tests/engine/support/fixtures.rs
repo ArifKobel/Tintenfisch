@@ -504,6 +504,23 @@ pub fn reflow_features() -> Vec<u8> {
     pdf.startxref(start).finish()
 }
 
+pub fn embedded_font_names() -> Vec<u8> {
+    let program = include_bytes!("../../../../../public/fonts/LiberationSans-Bold.ttf");
+    let mut pdf = SyntheticPdf::new("1.6");
+    pdf.object(1, 0, "<< /Type /Catalog /Pages 2 0 R >>")
+        .object(2, 0, "<< /Type /Pages /Kids [3 0 R] /Count 1 /MediaBox [0 0 400 400] >>")
+        .object(3, 0, "<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 4 0 R /F2 5 0 R >> >> /Contents 6 0 R >>")
+        .object(4, 0, "<< /Type /Font /Subtype /TrueType /BaseFont /AAAAAA+false /FirstChar 32 /LastChar 126 /FontDescriptor 7 0 R /Encoding /WinAnsiEncoding >>")
+        .object(5, 0, "<< /Type /Font /Subtype /Type1 /BaseFont /BAAAAA+Helvetica /Encoding /WinAnsiEncoding >>")
+        .stream(6, "", b"BT /F1 12 Tf 20 300 Td (Bold) Tj /F2 12 Tf 0 -20 Td (Plain) Tj ET")
+        .object(7, 0, "<< /Type /FontDescriptor /FontName /AAAAAA+false /Flags 32 /FontBBox [0 -200 1000 900] /ItalicAngle 0 /Ascent 900 /Descent -200 /CapHeight 700 /StemV 80 /FontFile2 8 0 R >>")
+        .stream(8, "/Filter /FlateDecode", &deflate(program));
+    let rows: Vec<(u32, Row)> =
+        std::iter::once((0, Row::Free(65535))).chain((1..=8).map(|num| (num, Row::InUse(num)))).collect();
+    let start = pdf.xref_table(&rows, "/Size 9 /Root 1 0 R");
+    pdf.startxref(start).finish()
+}
+
 const FORM_FONT: &str = "/Resources << /Font << /F1 5 0 R >> >>";
 
 pub fn form_features() -> Vec<u8> {

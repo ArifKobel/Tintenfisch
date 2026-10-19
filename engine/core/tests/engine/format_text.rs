@@ -187,6 +187,15 @@ fn write_formatted_preview() {
 }
 
 #[test]
+fn fonts_are_named_after_their_embedded_program_and_otherwise_after_the_pdf() {
+    let desk = Desk::open(fixtures::embedded_font_names());
+    let mut fonts = desk.document.view(&desk.library).fonts(desk.page).unwrap();
+    fonts.sort();
+    let names: Vec<&str> = fonts.iter().map(|(_, font)| font.as_str()).collect();
+    assert_eq!(names, ["Liberation Sans Bold", "Helvetica"]);
+}
+
+#[test]
 fn the_host_learns_the_style_of_every_cluster_the_fonts_of_the_page_and_where_a_selection_is() {
     let mut desk = Desk::open(fixtures::reflow_features());
     let mut fonts = desk.document.view(&desk.library).fonts(desk.page).unwrap();

@@ -14,6 +14,7 @@ enum CidToGid {
 
 pub struct CidFont {
     program: Option<FontProgram>,
+    embedded: bool,
     cmap: CidCmap,
     cid_to_gid: CidToGid,
     default_width: f64,
@@ -36,6 +37,7 @@ impl CidFont {
             _ => CidCmap::identity(false),
         };
         let descriptor = FontDescriptor::read(&descendant, store)?;
+        let embedded = descriptor.program.is_some();
         let program = match descriptor.program {
             Some(program) => Some(program),
             None => {
@@ -55,7 +57,7 @@ impl CidFont {
         };
         let default_width = descendant.get("DW").and_then(Object::as_number).unwrap_or(1000.0) / 1000.0;
         let widths = read_widths(&descendant, store)?;
-        Ok(CidFont { program, cmap, cid_to_gid, default_width, widths })
+        Ok(CidFont { program, embedded, cmap, cid_to_gid, default_width, widths })
     }
 
     pub fn next_code(&self, bytes: &[u8]) -> (u32, usize) {
@@ -95,6 +97,10 @@ impl CidFont {
 
     pub fn outline(&self, glyph: u16) -> Option<Rc<Path>> {
         self.program.as_ref()?.outline(glyph)
+    }
+
+    pub fn embedded_family(&self) -> Option<String> {
+        self.program.as_ref().filter(|_| self.embedded)?.family_name()
     }
 }
 

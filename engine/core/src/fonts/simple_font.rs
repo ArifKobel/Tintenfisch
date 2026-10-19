@@ -71,6 +71,10 @@ impl SimpleFont {
         &self.encoding
     }
 
+    pub fn embedded_family(&self) -> Option<String> {
+        self.program.as_ref().filter(|_| !self.substituted)?.family_name()
+    }
+
     pub fn is_substituted(&self) -> bool {
         self.substituted
     }

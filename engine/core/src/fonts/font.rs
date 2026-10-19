@@ -36,6 +36,7 @@ pub enum FontKind {
 pub struct Font {
     kind: FontKind,
     base_font: String,
+    family: String,
     flags: u32,
     to_unicode: Option<ToUnicode>,
     ascent: f64,
@@ -56,7 +57,19 @@ impl Font {
         let (ascent, descent, flags) = descriptor_metrics(font, store)?;
         let base_font =
             font.name("BaseFont").map(|name| String::from_utf8_lossy(name.as_bytes()).into_owned()).unwrap_or_default();
-        Ok(Font { kind, base_font, flags, to_unicode, ascent, descent })
+        let embedded_family = match &kind {
+            FontKind::Simple(font) => font.embedded_family(),
+            FontKind::Cid(font) => font.embedded_family(),
+            FontKind::Type3(_) => None,
+        };
+        let family = embedded_family.unwrap_or_else(|| {
+            base_font
+                .split_once('+')
+                .filter(|(prefix, _)| prefix.len() == 6)
+                .map_or(&*base_font, |(_, name)| name)
+                .to_string()
+        });
+        Ok(Font { kind, base_font, family, flags, to_unicode, ascent, descent })
     }
 
     pub fn kind(&self) -> &FontKind {
@@ -158,7 +171,7 @@ impl Font {
     }
 
     pub fn family_name(&self) -> &str {
-        self.base_font.split_once('+').filter(|(prefix, _)| prefix.len() == 6).map_or(&self.base_font, |(_, name)| name)
+        &self.family
     }
 
     pub fn fallback_face(&self) -> FallbackFace {

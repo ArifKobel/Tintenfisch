@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use tiny_skia::{Path, PathBuilder};
-use ttf_parser::{Face, GlyphId, OutlineBuilder, PlatformId, cff};
+use ttf_parser::{Face, GlyphId, OutlineBuilder, PlatformId, cff, name_id};
 
 use crate::fonts::type1_charstring::CharstringInterpreter;
 use crate::fonts::type1_program::Type1Program;
@@ -52,6 +52,23 @@ impl FontProgram {
 
     fn cff(&self) -> Option<cff::Table<'_>> {
         cff::Table::parse(&self.data)
+    }
+
+    pub fn family_name(&self) -> Option<String> {
+        let face = self.face()?;
+        let read = |id: u16| {
+            face.names()
+                .into_iter()
+                .filter(|name| name.name_id == id)
+                .find_map(|name| name.to_string())
+                .filter(|text| !text.trim().is_empty())
+        };
+        let family = read(name_id::TYPOGRAPHIC_FAMILY).or_else(|| read(name_id::FAMILY))?;
+        let style = read(name_id::TYPOGRAPHIC_SUBFAMILY).or_else(|| read(name_id::SUBFAMILY));
+        Some(match style.filter(|style| !matches!(style.as_str(), "Regular" | "Normal" | "Book" | "Roman")) {
+            Some(style) => format!("{family} {style}"),
+            None => family,
+        })
     }
 
     pub fn is_bare_cff(&self) -> bool {
