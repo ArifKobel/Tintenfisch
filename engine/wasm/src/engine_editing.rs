@@ -28,6 +28,7 @@ struct DraftRequest {
 enum FontRequest {
     Document { name: String },
     Bundled { family: String },
+    Catalog { key: String },
 }
 
 #[derive(Deserialize)]
@@ -46,6 +47,7 @@ impl From<StyleRequest> for StyleChange {
         let font = request.font.map(|font| match font {
             FontRequest::Document { name } => FontPick::Document(Name::from(name.as_str())),
             FontRequest::Bundled { family } => FontPick::Bundled(family_of(&family)),
+            FontRequest::Catalog { key } => FontPick::Catalog(key),
         });
         let style =
             TextStyle { font, bold: request.bold, italic: request.italic, size: request.size, color: request.color };

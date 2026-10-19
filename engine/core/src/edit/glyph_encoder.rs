@@ -4,7 +4,7 @@ use crate::edit::fallback_font::FallbackGlyphs;
 use crate::edit::show_writer::{FontChoice, PlacedGlyph};
 use crate::edit::text_style::{FormatFont, GlyphFormat};
 use crate::error::{Error, Result};
-use crate::fonts::{FallbackFace, Font, FontLibrary};
+use crate::fonts::{FallbackFace, FallbackFamily, Font, FontLibrary};
 use crate::syntax::Name;
 use crate::text::{RecordedGlyph, ShowRecord, TextState};
 
@@ -43,6 +43,7 @@ impl<'a> GlyphEncoder<'a> {
         let color = format.and_then(|format| format.color);
         let (own, own_name) = match format.map(|format| &format.font) {
             Some(FormatFont::Bundled(face)) => return self.bundled(*face, target, character, size, color),
+            Some(FormatFont::Catalog(key)) => return self.catalog(key, target, character, size, color),
             Some(FormatFont::Document { name, font }) => (font.as_ref(), Some(name.clone())),
             Some(FormatFont::Kept) | None => (font.as_ref(), style.font_name.clone()),
         };
@@ -57,14 +58,44 @@ impl<'a> GlyphEncoder<'a> {
                 color,
             });
         }
-        for index in 0..self.library.replacements(own.base_font()).len() {
-            let source = GlyphSource::Replacement(own.base_font().to_string(), index);
-            let (name, glyphs) = self.source(source)?;
-            if glyphs.has(character) {
-                return Self::place(name, glyphs, target, character, size, color);
+        match self.registered(own.base_font(), target, character, size, color)? {
+            Some(placed) => Ok(placed),
+            None => self.bundled(own.fallback_face(), target, character, size, color),
+        }
+    }
+
+    fn catalog(
+        &mut self,
+        key: &str,
+        target: &ShowRecord,
+        character: char,
+        size: f64,
+        color: Option<[f64; 3]>,
+    ) -> Result<PlacedGlyph> {
+        match self.registered(key, target, character, size, color)? {
+            Some(placed) => Ok(placed),
+            None => {
+                let face = FallbackFace { family: FallbackFamily::Sans, bold: false, italic: false };
+                self.bundled(face, target, character, size, color)
             }
         }
-        self.bundled(own.fallback_face(), target, character, size, color)
+    }
+
+    fn registered(
+        &mut self,
+        key: &str,
+        target: &ShowRecord,
+        character: char,
+        size: f64,
+        color: Option<[f64; 3]>,
+    ) -> Result<Option<PlacedGlyph>> {
+        for index in 0..self.library.replacements(key).len() {
+            let (name, glyphs) = self.source(GlyphSource::Replacement(key.to_string(), index))?;
+            if glyphs.has(character) {
+                return Self::place(name, glyphs, target, character, size, color).map(Some);
+            }
+        }
+        Ok(None)
     }
 
     fn bundled(

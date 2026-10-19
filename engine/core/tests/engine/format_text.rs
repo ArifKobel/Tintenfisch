@@ -129,6 +129,28 @@ fn a_word_turns_bold_red_and_larger_while_the_rest_keeps_its_font() {
 }
 
 #[test]
+fn text_takes_a_registered_catalog_font_and_the_page_embeds_it() {
+    let mut desk = Desk::open(fixtures::editing_features());
+    let serif_bold = std::fs::read(
+        std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../public/fonts/LiberationSerif-Bold.ttf"),
+    )
+    .unwrap();
+    desk.library.register_replacement("fontsource:liberation-serif:700:normal", serif_bold);
+    let catalog = TextStyle {
+        font: Some(FontPick::Catalog("fontsource:liberation-serif:700:normal".to_string())),
+        ..TextStyle::default()
+    };
+    desk.restyle("Plain line to edit", ("", ""), vec![change(0, 5, catalog)]);
+    let fonts = desk.fonts_of("Plain line to edit");
+    let chosen = &fonts[0].1;
+    assert!(fonts[..5].iter().all(|(_, font, _)| font == chosen) && chosen.starts_with("TfFallback"), "{fonts:?}");
+    let described = desk.document.view(&desk.library).fonts(desk.page).unwrap();
+    let embedded = described.iter().find(|font| font.name.as_bytes() == chosen.as_bytes()).unwrap();
+    assert!(embedded.base_font.ends_with("+LiberationSerifBold"), "{}", embedded.base_font);
+    assert_eq!(embedded.family.as_deref(), Some("Liberation Serif Bold"));
+}
+
+#[test]
 fn text_takes_a_font_of_the_page_or_a_bundled_family_and_typing_inside_keeps_the_style() {
     let mut desk = Desk::open(fixtures::reflow_features());
     let flow = desk.fonts_of("widest of them and flow on when");

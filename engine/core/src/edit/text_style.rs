@@ -8,6 +8,7 @@ use crate::text::ShowRecord;
 pub enum FontPick {
     Document(Name),
     Bundled(FallbackFamily),
+    Catalog(String),
 }
 
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -55,6 +56,7 @@ pub enum FormatFont {
     Kept,
     Document { name: Name, font: Rc<Font> },
     Bundled(FallbackFace),
+    Catalog(String),
 }
 
 impl std::fmt::Debug for FormatFont {
@@ -63,6 +65,7 @@ impl std::fmt::Debug for FormatFont {
             FormatFont::Kept => formatter.write_str("Kept"),
             FormatFont::Document { name, .. } => write!(formatter, "Document({name:?})"),
             FormatFont::Bundled(face) => write!(formatter, "Bundled({face:?})"),
+            FormatFont::Catalog(key) => write!(formatter, "Catalog({key:?})"),
         }
     }
 }
@@ -73,6 +76,7 @@ impl PartialEq for FormatFont {
             (FormatFont::Kept, FormatFont::Kept) => true,
             (FormatFont::Document { name, .. }, FormatFont::Document { name: other, .. }) => name == other,
             (FormatFont::Bundled(face), FormatFont::Bundled(other)) => face == other,
+            (FormatFont::Catalog(key), FormatFont::Catalog(other)) => key == other,
             _ => false,
         }
     }
@@ -107,6 +111,7 @@ impl GlyphFormat {
                 None => FormatFont::Bundled(restyled(current_face.family)),
             },
             Some(FontPick::Bundled(family)) => FormatFont::Bundled(restyled(*family)),
+            Some(FontPick::Catalog(key)) => FormatFont::Catalog(key.clone()),
             None if style.bold.is_some_and(|bold| bold != current_face.bold)
                 || style.italic.is_some_and(|italic| italic != current_face.italic) =>
             {
