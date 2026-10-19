@@ -21,6 +21,15 @@ Engine tests run natively:
 cd engine && cargo test
 ```
 
+## Docker
+
+```sh
+docker build -t tintenfisch .
+docker run -p 8080:80 -e VITE_SITE_URL=https://pdf.example.com tintenfisch
+```
+
+The image serves the app with nginx. `VITE_SITE_URL` is applied when the container starts and defaults to https://tintenfisch.app.
+
 ## License
 
 MIT. The bundled Liberation and Source Sans 3 fonts are under the SIL Open Font License (`public/fonts/LICENSE`). The interface icons come from Spectrum CSS Workflow Icons under the Apache License 2.0 (`public/licenses/spectrum-css-workflow-icons.txt`).
