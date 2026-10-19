@@ -1,6 +1,6 @@
 import type { MouseEvent } from 'react'
 import { useApplication } from '@app/ApplicationContext.ts'
-import { FontLabels } from '@editing/FontLabels.ts'
+import { FontOptions } from '@editing/FontOptions.ts'
 import { useEditingState } from '@editing/useEditingState.ts'
 import type { BundledFamily, FontChoice, Rgb, TextStyle } from '@engine/protocol.ts'
 import { Icon } from '@ui/Icon.tsx'
@@ -45,14 +45,15 @@ export function FormatBar() {
   const size = Math.round(look.size * 10) / 10
   const sizes = SIZES.includes(size) ? SIZES : [...SIZES, size].sort((left, right) => left - right)
   const documentFonts = editing.session?.origin ? [] : fonts
-  const labels = FontLabels.of(documentFonts)
+  const fontOptions = new FontOptions(documentFonts)
+  const shownFont: FontChoice | null = look.font?.kind === 'document' ? { kind: 'document', name: fontOptions.shownAs(look.font.name) } : look.font
   return (
     <div className="format-bar" role="group" aria-label="Text format">
-      <select className="field format-font" aria-label="Font" value={valueOf(look.font)} onChange={(event) => format({ font: choiceOf(event.target.value) })}>
+      <select className="field format-font" aria-label="Font" value={valueOf(shownFont)} onChange={(event) => format({ font: choiceOf(event.target.value) })}>
         {look.font === null && <option value="">Font of the text</option>}
-        {documentFonts.map((font) => (
-          <option key={font.name} value={`document:${font.name}`}>
-            {labels.get(font.name)}
+        {fontOptions.options.map((option) => (
+          <option key={option.name} value={`document:${option.name}`}>
+            {option.label}
           </option>
         ))}
         {FAMILIES.map(({ family, label }) => (
