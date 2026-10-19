@@ -15,6 +15,7 @@ export class ViewportStore {
   #state: ViewportState = { zoom: 1, currentPageId: null, focusRequest: null }
   #sequence = 0
   #availableWidth = 0
+  #fittedPageWidth: number | null = null
   #viewTop: { pageId: string; y: number } | null = null
 
   readonly subscribe = (listener: Listener): (() => void) => {
@@ -25,8 +26,8 @@ export class ViewportStore {
   readonly getSnapshot = (): ViewportState => this.#state
 
   setZoom(zoom: number) {
-    const clamped = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, zoom))
-    if (clamped !== this.#state.zoom) this.#update({ ...this.#state, zoom: clamped })
+    this.#fittedPageWidth = null
+    this.#apply(zoom)
   }
 
   zoomIn() {
@@ -39,10 +40,13 @@ export class ViewportStore {
 
   reportAvailableWidth(width: number) {
     this.#availableWidth = width
+    this.#fit()
   }
 
   fitWidth(pageWidthAtZoomOne: number) {
-    if (pageWidthAtZoomOne > 0 && this.#availableWidth > 0) this.setZoom(this.#availableWidth / pageWidthAtZoomOne)
+    if (pageWidthAtZoomOne <= 0) return
+    this.#fittedPageWidth = pageWidthAtZoomOne
+    this.#fit()
   }
 
   setCurrentPage(pageId: string) {
@@ -63,6 +67,15 @@ export class ViewportStore {
 
   showAtTop(pageId: string, y = 0) {
     this.#update({ ...this.#state, focusRequest: { pageId, y, atTop: true, sequence: ++this.#sequence } })
+  }
+
+  #fit() {
+    if (this.#fittedPageWidth !== null && this.#availableWidth > 0) this.#apply(this.#availableWidth / this.#fittedPageWidth)
+  }
+
+  #apply(zoom: number) {
+    const clamped = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, zoom))
+    if (clamped !== this.#state.zoom) this.#update({ ...this.#state, zoom: clamped })
   }
 
   #update(state: ViewportState) {
