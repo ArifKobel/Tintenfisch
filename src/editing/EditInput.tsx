@@ -61,7 +61,7 @@ export function EditInput({ caret, cssScale }: { caret: Highlight | null; cssSca
       }
     }
     const left = (event: FocusEvent) => {
-      if (event.relatedTarget instanceof Element && event.relatedTarget.closest('.format-bar')) return
+      if (event.relatedTarget instanceof Element && event.relatedTarget.closest('.format-bar, .font-consent')) return
       void editing.commit()
     }
     field.addEventListener('beforeinput', typed)

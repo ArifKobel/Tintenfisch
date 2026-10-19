@@ -25,6 +25,7 @@
       "@engine/*": ["./src/engine/*"],
       "@files/*": ["./src/files/*"],
       "@find/*": ["./src/find/*"],
+      "@fonts/*": ["./src/fonts/*"],
       "@forms/*": ["./src/forms/*"],
       "@images/*": ["./src/images/*"],
       "@printing/*": ["./src/printing/*"],

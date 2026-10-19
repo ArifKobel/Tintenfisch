@@ -67,3 +67,7 @@
 .dialog-spacer {
   flex: 1;
 }
+
+.font-consent {
+  max-width: 480px;
+}

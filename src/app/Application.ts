@@ -7,6 +7,9 @@ import { DocumentLibrary } from '@files/DocumentLibrary.ts'
 import { FilesStore } from '@files/FilesStore.ts'
 import { Router, type BrowserWindow } from '@files/Router.ts'
 import { FindStore } from '@find/FindStore.ts'
+import { FontCatalog, type CatalogSnapshot } from '@fonts/FontCatalog.ts'
+import { FontConsent, type ConsentStorage } from '@fonts/FontConsent.ts'
+import { FontReplacements } from '@fonts/FontReplacements.ts'
 import { FormsStore } from '@forms/FormsStore.ts'
 import { ImagesStore } from '@images/ImagesStore.ts'
 import { BookmarksStore } from '@navigation/BookmarksStore.ts'
@@ -30,6 +33,8 @@ import { ViewportStore } from '@viewer/ViewportStore.ts'
 export interface Browser {
   indexedDB: IDBFactory
   window: BrowserWindow
+  storage: ConsentStorage | null
+  fetch: typeof fetch
 }
 
 export class Application {
@@ -56,6 +61,8 @@ export class Application {
   readonly digitalSignatures: DigitalSignatureStore
   readonly autoSave: AutoSave
   readonly files: FilesStore
+  readonly fontConsent: FontConsent
+  readonly fontReplacements: FontReplacements
 
   constructor(port: EnginePort, browser: Browser) {
     this.engine = new EngineClient(port)
@@ -83,6 +90,14 @@ export class Application {
     const library = new DocumentLibrary(browser.indexedDB)
     this.autoSave = new AutoSave(this.engine, this.documents, library)
     this.files = new FilesStore(library, this.documents, new Router(browser.window), this.autoSave)
+    this.fontConsent = new FontConsent(browser.storage)
+    const received = async (url: string) => {
+      const response = await browser.fetch(url)
+      if (!response.ok) throw new Error(`${url} answered ${response.status}`)
+      return response
+    }
+    const catalog = new FontCatalog(async () => (await (await received('/fonts/catalog.json')).json()) as CatalogSnapshot)
+    this.fontReplacements = new FontReplacements(this.engine, this.editing, this.fontConsent, catalog, async (url) => new Uint8Array(await (await received(url)).arrayBuffer()))
     let previousTool = this.tools.getSnapshot().tool
     this.tools.subscribe(() => {
       const { tool } = this.tools.getSnapshot()

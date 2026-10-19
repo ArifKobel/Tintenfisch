@@ -90,6 +90,13 @@ export class EditingStore {
     void this.#preview(next)
   }
 
+  async refresh() {
+    const session = this.#session
+    if (!session) return
+    this.#drawn = ''
+    await this.#preview(session)
+  }
+
   async commit() {
     const session = this.#session
     if (!session) return

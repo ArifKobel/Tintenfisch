@@ -25,7 +25,15 @@ import '@protection/protection.css'
 import '@printing/printing.css'
 import '@thumbnails/thumbnails.css'
 
-const application = new Application(new EngineWorker(), { indexedDB, window })
+function localStore(): Storage | null {
+  try {
+    return window.localStorage
+  } catch {
+    return null
+  }
+}
+
+const application = new Application(new EngineWorker(), { indexedDB, window, storage: localStore(), fetch: window.fetch.bind(window) })
 void application.files.start()
 window.addEventListener('pagehide', () => void application.autoSave.flush())
 
