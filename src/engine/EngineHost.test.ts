@@ -10,7 +10,7 @@ function backend(overrides: Partial<EngineBackend> = {}): EngineBackend {
       ({ width: 2, height: 1, takePixels: () => new Uint8Array(8), free: () => {} }) as unknown as ReturnType<EngineBackend['renderTile']>,
     save: () => new Uint8Array([37, 80, 68, 70]),
     hitText: () => ({ line: 0, offset: 2 }),
-    textLines: () => [],
+    textBlocks: () => [],
     selectText: () => ({ anchor: { line: 0, offset: 0 }, focus: { line: 0, offset: 2 }, rects: [], text: 'ab' }),
     find: () => [],
     paragraphText: () => ({ line: 0, clusters: ['a', 'b'], start: 0, styles: [] }),

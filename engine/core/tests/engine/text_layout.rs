@@ -299,11 +299,13 @@ fn lines_close_enough_to_overlap_are_separate_blocks_not_one_paragraph() {
 }
 
 #[test]
-fn every_line_has_a_box_around_its_text() {
-    let layout =
-        TextLayout::new(&[line_glyph("First line", 54.0, 100.0, 12.0, 0), line_glyph("Second", 54.0, 116.0, 12.0, 1)]);
-    let boxes = layout.line_boxes();
-    assert_eq!(boxes.len(), 2);
-    assert_eq!((boxes[0].rect.x0, boxes[0].rect.y0, boxes[0].rect.x1, boxes[0].rect.y1), (54.0, 90.4, 114.0, 102.4));
-    assert!(boxes[1].rect.y0 > boxes[0].rect.y0 && boxes[1].rect.width() < boxes[0].rect.width());
+fn every_paragraph_has_one_box_around_all_its_lines() {
+    let layout = TextLayout::new(&[
+        line_glyph("First line", 54.0, 100.0, 12.0, 0),
+        line_glyph("Second", 54.0, 114.0, 12.0, 1),
+        line_glyph("Apart", 54.0, 160.0, 12.0, 2),
+    ]);
+    let boxes: Vec<(f64, f64, f64, f64)> =
+        layout.block_boxes().iter().map(|block| (block.rect.x0, block.rect.y0, block.rect.x1, block.rect.y1)).collect();
+    assert_eq!(boxes, [(54.0, 90.4, 114.0, 116.4), (54.0, 150.4, 84.0, 162.4)]);
 }

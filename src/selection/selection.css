@@ -8,7 +8,7 @@
   cursor: text;
 }
 
-.text-line-region {
+.text-block-region {
   position: absolute;
   cursor: text;
   transform-origin: 0 0;

@@ -42,9 +42,9 @@ impl Engine {
         })
     }
 
-    #[wasm_bindgen(js_name = textLines)]
-    pub fn text_lines(&self, page: &str) -> Result<JsValue, JsError> {
-        reply(&self.layout(page)?.line_boxes().iter().map(rect_reply).collect::<Vec<_>>())
+    #[wasm_bindgen(js_name = textBlocks)]
+    pub fn text_blocks(&self, page: &str) -> Result<JsValue, JsError> {
+        reply(&self.layout(page)?.block_boxes().iter().map(rect_reply).collect::<Vec<_>>())
     }
 
     pub fn find(&self, query: &str) -> Result<JsValue, JsError> {

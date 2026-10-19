@@ -108,14 +108,23 @@ impl TextLayout {
             .collect()
     }
 
-    pub fn line_boxes(&self) -> Vec<TextBox> {
-        self.lines
-            .iter()
-            .map(|line| TextBox {
-                rect: Rect::new(line.left(), line.top, line.right(), line.bottom),
-                angle: line.angle,
-            })
-            .collect()
+    pub fn block_boxes(&self) -> Vec<TextBox> {
+        let mut blocks: Vec<(usize, TextBox)> = Vec::new();
+        for line in &self.lines {
+            let rect = Rect::new(line.left(), line.top, line.right(), line.bottom);
+            match blocks.last_mut() {
+                Some((paragraph, block)) if *paragraph == line.paragraph => {
+                    block.rect = Rect::new(
+                        block.rect.x0.min(rect.x0),
+                        block.rect.y0.min(rect.y0),
+                        block.rect.x1.max(rect.x1),
+                        block.rect.y1.max(rect.y1),
+                    );
+                }
+                _ => blocks.push((line.paragraph, TextBox { rect, angle: line.angle })),
+            }
+        }
+        blocks.into_iter().map(|(_, block)| block).collect()
     }
 
     pub fn selected_text(&self, anchor: TextPosition, focus: TextPosition) -> String {

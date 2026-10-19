@@ -7,7 +7,8 @@ import { useEditingState } from '@editing/useEditingState.ts'
 import type { SelectionUnit } from '@engine/protocol.ts'
 import { useFindState } from '@find/useFindState.ts'
 import { HighlightBoxes } from '@selection/HighlightBoxes.tsx'
-import { usePageTextLines } from '@selection/usePageTextLines.ts'
+import { TextBlocks } from '@selection/TextBlocks.ts'
+import { usePageTextBlocks } from '@selection/usePageTextBlocks.ts'
 import { useSelectionState } from '@selection/useSelectionState.ts'
 
 const UNITS: SelectionUnit[] = ['character', 'word', 'paragraph']
@@ -20,7 +21,7 @@ export function TextLayer({ pageId, cssScale }: { pageId: string; cssScale: numb
   const edited = useEditingState()
   const active = edited.active?.pageId === pageId ? edited.active : null
   const caret = active ? active.caret : undefined
-  const lines = usePageTextLines(pageId)
+  const blocks = usePageTextBlocks(pageId)
 
   function pointInPoints(event: MouseEvent<HTMLDivElement>) {
     const bounds = event.currentTarget.getBoundingClientRect()
@@ -46,6 +47,11 @@ export function TextLayer({ pageId, cssScale }: { pageId: string; cssScale: numb
       if (foreground !== null) {
         void editing.commit()
         images.select({ pageId, index: foreground })
+        return
+      }
+      if (!TextBlocks.contain(active ? [...blocks, active.frame] : blocks, x, y)) {
+        void editing.commit()
+        images.selectAt(pageId, x, y)
         return
       }
       void editing.begin(pageId, x, y).then((opened) => (opened ? images.select(null) : images.selectAt(pageId, x, y)))
@@ -78,7 +84,7 @@ export function TextLayer({ pageId, cssScale }: { pageId: string; cssScale: numb
   const pageMatches = found.matches.filter((match) => match.pageId === pageId && match !== current)
   return (
     <div className={`text-layer${tool === 'addText' ? ' text-layer-adding' : ''}`} onPointerDown={capture} onMouseDown={begin} onPointerMove={extend} onMouseUp={(event) => void finish(event)}>
-      <HighlightBoxes boxes={lines} cssScale={cssScale} className="text-line-region" />
+      <HighlightBoxes boxes={blocks} cssScale={cssScale} className="text-block-region" />
       <HighlightBoxes boxes={pageMatches.flatMap((match) => match.rects)} cssScale={cssScale} className="find-match" />
       {current?.pageId === pageId && <HighlightBoxes boxes={current.rects} cssScale={cssScale} className="find-match find-match-current" />}
       {selected?.pageId === pageId && <HighlightBoxes boxes={selected.rects} cssScale={cssScale} className="text-selection" />}
