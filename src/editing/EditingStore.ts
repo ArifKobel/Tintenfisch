@@ -199,9 +199,10 @@ export class EditingStore {
     if (!origin) return { kind: 'previewEdit', pageId, line, draft } as const
     const { text, caret, selection, dx, dy } = draft
     const family = newLook.font?.kind === 'bundled' ? newLook.font.family : 'sans'
+    const catalog = newLook.font?.kind === 'catalog' ? newLook.font.key : null
     const { bold, italic, size } = newLook
     const color = newLook.color ?? [0, 0, 0]
-    return { kind: 'previewNewText', pageId, draft: { x: origin[0] + dx, y: origin[1] + dy, text, caret, selection, family, bold, italic, size, color } } as const
+    return { kind: 'previewNewText', pageId, draft: { x: origin[0] + dx, y: origin[1] + dy, text, caret, selection, family, catalog, bold, italic, size, color } } as const
   }
 
   static #drawingOf(session: EditSession): string {

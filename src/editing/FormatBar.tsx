@@ -1,17 +1,11 @@
 import type { MouseEvent } from 'react'
 import { useApplication } from '@app/ApplicationContext.ts'
-import { FontOptions } from '@editing/FontOptions.ts'
+import { FontPicker } from '@editing/FontPicker.tsx'
 import { useEditingState } from '@editing/useEditingState.ts'
-import type { BundledFamily, FontChoice, Rgb, TextStyle } from '@engine/protocol.ts'
+import type { Rgb, TextStyle } from '@engine/protocol.ts'
 import { Icon } from '@ui/Icon.tsx'
 
 const SIZES = [6, 8, 9, 10, 11, 12, 14, 16, 18, 20, 24, 28, 32, 36, 48, 72]
-
-const FAMILIES: { family: BundledFamily; label: string }[] = [
-  { family: 'sans', label: 'Sans' },
-  { family: 'serif', label: 'Serif' },
-  { family: 'mono', label: 'Mono' },
-]
 
 const COLORS: { color: Rgb; label: string }[] = [
   { color: [0, 0, 0], label: 'Black' },
@@ -23,13 +17,6 @@ const COLORS: { color: Rgb; label: string }[] = [
   { color: [0.5, 0.2, 0.7], label: 'Purple' },
 ]
 
-const valueOf = (font: FontChoice | null): string => (font === null ? '' : font.kind === 'document' ? `document:${font.name}` : `bundled:${font.family}`)
-
-function choiceOf(value: string): FontChoice {
-  const [kind, name] = value.split(/:(.*)/)
-  return kind === 'document' ? { kind: 'document', name } : { kind: 'bundled', family: name as BundledFamily }
-}
-
 const sameColor = (left: Rgb | null, right: Rgb) => left !== null && left.every((part, index) => Math.abs(part - right[index]) < 0.01)
 
 function keepFocus(event: MouseEvent) {
@@ -37,7 +24,7 @@ function keepFocus(event: MouseEvent) {
 }
 
 export function FormatBar() {
-  const { editing } = useApplication()
+  const { editing, fontCatalog, fontReplacements } = useApplication()
   const { active, fonts } = useEditingState()
   if (!active) return null
   const { look } = active
@@ -45,23 +32,17 @@ export function FormatBar() {
   const size = Math.round(look.size * 10) / 10
   const sizes = SIZES.includes(size) ? SIZES : [...SIZES, size].sort((left, right) => left - right)
   const documentFonts = editing.session?.origin ? [] : fonts
-  const fontOptions = new FontOptions(documentFonts)
-  const shownFont: FontChoice | null = look.font?.kind === 'document' ? { kind: 'document', name: fontOptions.shownAs(look.font.name) } : look.font
+
+  async function restyle(style: { bold?: boolean; italic?: boolean }) {
+    const font = look.font
+    if (font?.kind !== 'catalog') return format(style)
+    const family = (await fontCatalog.families()).find((candidate) => candidate.source === font.source && candidate.id === font.id)
+    const choice = family && (await fontReplacements.catalogFont(family, (style.bold ?? look.bold) ? 700 : 400, style.italic ?? look.italic))
+    if (choice) format({ ...style, font: choice })
+  }
   return (
     <div className="format-bar" role="group" aria-label="Text format">
-      <select className="field format-font" aria-label="Font" value={valueOf(shownFont)} onChange={(event) => format({ font: choiceOf(event.target.value) })}>
-        {look.font === null && <option value="">Font of the text</option>}
-        {fontOptions.options.map((option) => (
-          <option key={option.name} value={`document:${option.name}`}>
-            {option.label}
-          </option>
-        ))}
-        {FAMILIES.map(({ family, label }) => (
-          <option key={family} value={`bundled:${family}`}>
-            {label}
-          </option>
-        ))}
-      </select>
+      <FontPicker look={look} fonts={documentFonts} onChoose={(font) => format({ font })} />
       <select className="field format-size" aria-label="Font size" value={size} onChange={(event) => format({ size: Number(event.target.value) })}>
         {sizes.map((choice) => (
           <option key={choice} value={choice}>
@@ -75,7 +56,7 @@ export function FormatBar() {
         aria-label="Bold"
         aria-pressed={look.bold}
         onMouseDown={keepFocus}
-        onClick={() => format({ bold: !look.bold })}
+        onClick={() => void restyle({ bold: !look.bold })}
       >
         <Icon name="text-bold" />
       </button>
@@ -85,7 +66,7 @@ export function FormatBar() {
         aria-label="Italic"
         aria-pressed={look.italic}
         onMouseDown={keepFocus}
-        onClick={() => format({ italic: !look.italic })}
+        onClick={() => void restyle({ italic: !look.italic })}
       >
         <Icon name="text-italic" />
       </button>

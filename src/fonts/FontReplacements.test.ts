@@ -55,7 +55,7 @@ describe('FontReplacements', () => {
     consent.answer(true)
     await vi.waitFor(() => expect(port.requests).toHaveLength(1))
     expect(download).toHaveBeenCalledWith('https://cdn.fontshare.com/wf/bold.ttf')
-    expect(port.requests[0]).toMatchObject({ kind: 'registerFontReplacement', baseFont: 'AAAAAA+false' })
+    expect(port.requests[0]).toMatchObject({ kind: 'registerFontReplacement', key: 'AAAAAA+false' })
     await port.answerNext(undefined)
     await vi.waitFor(() => expect(refresh).toHaveBeenCalledOnce())
     expect(memory.get('tintenfisch.fontDownloads')).toBe('allowed')
@@ -70,5 +70,19 @@ describe('FontReplacements', () => {
     await Promise.resolve()
     expect(consent.getSnapshot().asking).toBe(false)
     expect(download).not.toHaveBeenCalled()
+  })
+
+  it('loads a chosen catalog font once in the weight closest to the text', async () => {
+    const { port, consent, download } = setUp('allowed')
+    const replacements = new FontReplacements(new EngineClient(port), { getSnapshot: () => ({ fonts: [] }), subscribe: () => {} } as unknown as EditingStore, consent, new FontCatalog(async () => ({ fontsource: [], fontshare: [] })), download)
+    const [family] = FontCatalog.parse({ fontsource: [['inter', 'Inter', 'sans-serif', [400, 700], false, false]], fontshare: [] })
+    const choosing = replacements.catalogFont(family, 700, false)
+    await vi.waitFor(() => expect(port.requests.at(-1)).toMatchObject({ kind: 'registerFontReplacement', key: 'fontsource:inter:700:normal' }))
+    await port.answerNext(undefined)
+    expect(await choosing).toEqual({ kind: 'catalog', key: 'fontsource:inter:700:normal', source: 'fontsource', id: 'inter', family: 'Inter', weight: 700, italic: false })
+    expect(download).toHaveBeenCalledWith('https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-700-normal.ttf')
+    const requests = port.requests.length
+    await replacements.catalogFont(family, 700, false)
+    expect(port.requests).toHaveLength(requests)
   })
 })

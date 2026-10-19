@@ -113,7 +113,7 @@ export class EngineHost {
       case 'pageFonts':
         return this.#engine.pageFonts(command.pageId)
       case 'registerFontReplacement':
-        return this.#engine.registerFontReplacement(command.baseFont, command.bytes)
+        return this.#engine.registerFontReplacement(command.key, command.bytes)
       case 'images':
         return this.#engine.images(command.pageId)
       case 'insertImage':

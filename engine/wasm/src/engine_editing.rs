@@ -137,8 +137,8 @@ impl Engine {
     }
 
     #[wasm_bindgen(js_name = registerFontReplacement)]
-    pub fn register_font_replacement(&mut self, base_font: &str, bytes: Vec<u8>) {
-        self.library.register_replacement(base_font, bytes);
+    pub fn register_font_replacement(&mut self, key: &str, bytes: Vec<u8>) {
+        self.library.register_replacement(key, bytes);
     }
 
     #[wasm_bindgen(js_name = previewEdit)]

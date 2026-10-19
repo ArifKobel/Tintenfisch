@@ -59,10 +59,14 @@ export class FontMatcher {
     return font.italic || styleWords.some((word) => /^(italic|oblique)$/i.test(word))
   }
 
-  static #pick(family: CatalogFamily, weight: number, italic: boolean, exact: boolean): FontMatch | null {
+  static styleOf(family: CatalogFamily, weight: number, italic: boolean): CatalogStyle | null {
     const slanted = family.styles.filter((style) => style.italic === italic)
     const candidates = slanted.length > 0 ? slanted : family.styles
-    const style = candidates.reduce<CatalogStyle | null>((best, candidate) => (!best || Math.abs(candidate.weight - weight) < Math.abs(best.weight - weight) ? candidate : best), null)
+    return candidates.reduce<CatalogStyle | null>((best, candidate) => (!best || Math.abs(candidate.weight - weight) < Math.abs(best.weight - weight) ? candidate : best), null)
+  }
+
+  static #pick(family: CatalogFamily, weight: number, italic: boolean, exact: boolean): FontMatch | null {
+    const style = FontMatcher.styleOf(family, weight, italic)
     return style ? { family, style, exact } : null
   }
 }

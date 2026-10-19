@@ -1,7 +1,7 @@
 import type { EditingStore } from '@editing/EditingStore.ts'
 import type { EngineClient } from '@engine/EngineClient.ts'
-import type { PageFont } from '@engine/protocol.ts'
-import type { FontCatalog } from '@fonts/FontCatalog.ts'
+import type { FontChoice, PageFont } from '@engine/protocol.ts'
+import type { CatalogFamily, CatalogStyle, FontCatalog } from '@fonts/FontCatalog.ts'
 import type { FontConsent } from '@fonts/FontConsent.ts'
 import { FontMatcher } from '@fonts/FontMatcher.ts'
 
@@ -14,6 +14,7 @@ export class FontReplacements {
   readonly #catalog: FontCatalog
   readonly #download: Download
   readonly #tried = new Set<string>()
+  readonly #loaded = new Set<string>()
   #matcher: Promise<FontMatcher> | null = null
 
   constructor(client: EngineClient, editing: EditingStore, consent: FontConsent, catalog: FontCatalog, download: Download) {
@@ -44,16 +45,31 @@ export class FontReplacements {
     if (supplied.some(Boolean)) await this.#editing.refresh()
   }
 
+  async catalogFont(family: CatalogFamily, weight: number, italic: boolean): Promise<FontChoice | null> {
+    const style = FontMatcher.styleOf(family, weight, italic)
+    if (!style || !(await this.#consent.request())) return null
+    const key = `${family.source}:${family.id}:${style.weight}:${style.italic ? 'italic' : 'normal'}`
+    if (!this.#loaded.has(key)) {
+      await this.#register(key, style)
+      this.#loaded.add(key)
+    }
+    return { kind: 'catalog', key, source: family.source, id: family.id, family: family.family, weight: style.weight, italic: style.italic }
+  }
+
   async #supplyOne(matcher: FontMatcher, font: PageFont): Promise<boolean> {
     const match = matcher.match(font)
     if (!match) return false
     try {
-      for (const bytes of await Promise.all(match.style.urls.map((url) => this.#download(url)))) {
-        await this.#client.request({ kind: 'registerFontReplacement', baseFont: font.baseFont, bytes })
-      }
+      await this.#register(font.baseFont, match.style)
       return true
     } catch {
       return false
+    }
+  }
+
+  async #register(key: string, style: CatalogStyle) {
+    for (const bytes of await Promise.all(style.urls.map((url) => this.#download(url)))) {
+      await this.#client.request({ kind: 'registerFontReplacement', key, bytes })
     }
   }
 }

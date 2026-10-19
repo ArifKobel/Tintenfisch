@@ -63,6 +63,7 @@ export class Application {
   readonly files: FilesStore
   readonly fontConsent: FontConsent
   readonly fontReplacements: FontReplacements
+  readonly fontCatalog: FontCatalog
 
   constructor(port: EnginePort, browser: Browser) {
     this.engine = new EngineClient(port)
@@ -96,8 +97,8 @@ export class Application {
       if (!response.ok) throw new Error(`${url} answered ${response.status}`)
       return response
     }
-    const catalog = new FontCatalog(async () => (await (await received('/fonts/catalog.json')).json()) as CatalogSnapshot)
-    this.fontReplacements = new FontReplacements(this.engine, this.editing, this.fontConsent, catalog, async (url) => new Uint8Array(await (await received(url)).arrayBuffer()))
+    this.fontCatalog = new FontCatalog(async () => (await (await received('/fonts/catalog.json')).json()) as CatalogSnapshot)
+    this.fontReplacements = new FontReplacements(this.engine, this.editing, this.fontConsent, this.fontCatalog, async (url) => new Uint8Array(await (await received(url)).arrayBuffer()))
     let previousTool = this.tools.getSnapshot().tool
     this.tools.subscribe(() => {
       const { tool } = this.tools.getSnapshot()

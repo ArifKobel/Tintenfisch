@@ -46,7 +46,10 @@ export interface FindMatch {
 
 export type BundledFamily = 'sans' | 'serif' | 'mono'
 
-export type FontChoice = { kind: 'document'; name: string } | { kind: 'bundled'; family: BundledFamily }
+export type FontChoice =
+  | { kind: 'document'; name: string }
+  | { kind: 'bundled'; family: BundledFamily }
+  | { kind: 'catalog'; key: string; source: 'fontsource' | 'fontshare'; id: string; family: string; weight: number; italic: boolean }
 
 export interface TextStyle {
   font?: FontChoice
@@ -107,6 +110,7 @@ export interface NewTextDraft {
   caret: number
   selection: ClusterRange | null
   family: BundledFamily
+  catalog: string | null
   bold: boolean
   italic: boolean
   size: number
@@ -325,7 +329,7 @@ export type Command =
   | { kind: 'previewEdit'; pageId: string; line: number; draft: EditDraft }
   | { kind: 'previewNewText'; pageId: string; draft: NewTextDraft }
   | { kind: 'pageFonts'; pageId: string }
-  | { kind: 'registerFontReplacement'; baseFont: string; bytes: Uint8Array }
+  | { kind: 'registerFontReplacement'; key: string; bytes: Uint8Array }
   | { kind: 'images'; pageId: string }
   | { kind: 'insertImage'; pageId: string; bytes: Uint8Array; x: number; y: number }
   | { kind: 'moveImage'; pageId: string; index: number; frame: Highlight }

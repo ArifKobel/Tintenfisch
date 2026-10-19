@@ -28,6 +28,18 @@ export class FontConsent {
 
   readonly getSnapshot = (): FontConsentState => this.#state
 
+  request(): Promise<boolean> {
+    if (this.#state.downloads === 'allowed') return Promise.resolve(true)
+    this.review()
+    return new Promise((resolve) => {
+      const stop = this.subscribe(() => {
+        if (this.#state.asking) return
+        stop()
+        resolve(this.#state.downloads === 'allowed')
+      })
+    })
+  }
+
   askOnce() {
     if (this.#state.downloads === 'unknown') this.review()
   }
