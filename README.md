@@ -1,3 +1,5 @@
+![Tintenfisch](public/brand/banner.jpg)
+
 # Tintenfisch
 
 A PDF editor that runs entirely in the browser. Edit text in place, manage pages, annotate, fill and build forms, redact, sign and protect documents.

@@ -28,9 +28,7 @@ export function AppHeader() {
           files.goHome()
         }}
       >
-        <span className="brand-mark" aria-hidden="true">
-          T
-        </span>
+        <img className="brand-mark" src="/brand/mark.png" alt="" width={28} height={28} />
         <span className="brand-name">Tintenfisch</span>
       </a>
       {document.phase === 'ready' && (
