@@ -24,11 +24,10 @@ cd engine && cargo test
 ## Docker
 
 ```sh
-docker build -t tintenfisch .
-docker run -p 8080:80 -e VITE_SITE_URL=https://pdf.example.com tintenfisch
+docker compose up -d --build
 ```
 
-The image serves the app with nginx. `VITE_SITE_URL` is applied when the container starts and defaults to https://tintenfisch.app.
+The app is served with nginx on port 8080 (`PORT` changes it). `VITE_SITE_URL` from the shell or `.env` is applied when the container starts, so changing it needs no rebuild.
 
 ## License
 
