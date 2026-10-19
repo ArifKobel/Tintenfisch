@@ -23,4 +23,4 @@ cd engine && cargo test
 
 ## License
 
-MIT. The bundled Liberation fonts are under the SIL Open Font License (`public/fonts/LICENSE`).
+MIT. The bundled Liberation and Source Sans 3 fonts are under the SIL Open Font License (`public/fonts/LICENSE`). The interface icons come from Spectrum CSS Workflow Icons under the Apache License 2.0 (`public/licenses/spectrum-css-workflow-icons.txt`).
