@@ -1,7 +1,3 @@
-.text-layer-editing {
-  cursor: text;
-}
-
 .edit-caret {
   position: absolute;
   border-left: 1.5px solid var(--caret);

@@ -1,7 +1,17 @@
 .text-layer {
   position: absolute;
   inset: 0;
+  cursor: default;
+}
+
+.text-layer-adding {
   cursor: text;
+}
+
+.text-line-region {
+  position: absolute;
+  cursor: text;
+  transform-origin: 0 0;
 }
 
 .text-selection {

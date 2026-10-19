@@ -9,6 +9,7 @@ export type EngineBackend = Pick<
   | 'renderTile'
   | 'save'
   | 'hitText'
+  | 'textLines'
   | 'selectText'
   | 'find'
   | 'paragraphText'
@@ -98,6 +99,8 @@ export class EngineHost {
         return this.#engine.save(command.optimize)
       case 'hitText':
         return this.#engine.hitText(command.pageId, command.x, command.y)
+      case 'textLines':
+        return this.#engine.textLines(command.pageId)
       case 'selectText': {
         const { anchor, focus } = command
         return this.#engine.selectText(command.pageId, new Uint32Array([anchor.line, anchor.offset]), new Uint32Array([focus.line, focus.offset]), command.unit)

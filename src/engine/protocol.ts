@@ -323,6 +323,7 @@ export type Command =
   | ({ kind: 'renderTile' } & TileRequest)
   | { kind: 'save'; optimize: boolean }
   | { kind: 'hitText'; pageId: string; x: number; y: number }
+  | { kind: 'textLines'; pageId: string }
   | { kind: 'selectText'; pageId: string; anchor: TextPoint; focus: TextPoint; unit: SelectionUnit }
   | { kind: 'find'; query: string }
   | { kind: 'paragraphText'; pageId: string; line: number }
@@ -380,6 +381,7 @@ export interface Results {
   renderTile: RenderedTile
   save: Uint8Array
   hitText: TextPoint | null
+  textLines: Highlight[]
   selectText: TextSelection
   find: FindMatch[]
   paragraphText: ParagraphText
