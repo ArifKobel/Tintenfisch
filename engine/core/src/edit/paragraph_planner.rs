@@ -20,7 +20,7 @@ use crate::geometry::Rect;
 use crate::pages::{Page, PageId, drawn_forms};
 use crate::store::ObjectStore;
 use crate::syntax::{Dict, Name, Object};
-use crate::text::{GlyphOrigin, ShowRecord, split_graphemes, to_display_space, to_line_space};
+use crate::text::{BLOCK_TAG, GlyphOrigin, ShowRecord, split_graphemes, to_display_space, to_line_space};
 
 const MIN_WIDTH: f64 = 4.0;
 
@@ -174,6 +174,16 @@ impl<'a> ParagraphPlanner<'a> {
             bytes.extend(append_lines(&mut placer, &source, last, &items, &appended, edit.offset)?);
             replacements.insert(last.ordinal, bytes);
         }
+        if edit.moves() {
+            let records: Vec<&ShowRecord> =
+                replacements.keys().map(|ordinal| text.record(source.scope, *ordinal)).collect::<Result<_>>()?;
+            let block = records.iter().find_map(|record| record.block).unwrap_or_else(|| text.next_block());
+            for record in records.iter().filter(|record| record.block.is_none()) {
+                if let Some(bytes) = replacements.get_mut(&record.ordinal) {
+                    *bytes = marked_block(block, bytes);
+                }
+            }
+        }
         let lines = caret_lines(&source, &items, first, &laid, right, edit.offset);
         let fallback = encoder.into_fallbacks();
         if source.scope.is_some_and(|form| text.draws_repeatedly(form)) {
@@ -188,6 +198,13 @@ impl<'a> ParagraphPlanner<'a> {
         };
         Ok(EditPlan::new(patch, fallback, lines))
     }
+}
+
+fn marked_block(block: i64, bytes: &[u8]) -> Vec<u8> {
+    let mut marked = format!("/{BLOCK_TAG} <</Id {block}>> BDC\n").into_bytes();
+    marked.extend_from_slice(bytes);
+    marked.extend_from_slice(b"\nEMC");
+    marked
 }
 
 fn style_record<'t>(text: &'t PageText, source: &ParagraphSource, prefix: usize) -> Result<&'t ShowRecord> {

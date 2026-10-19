@@ -9,7 +9,9 @@ use crate::render::DisplaySpace;
 use crate::store::ObjectStore;
 use crate::syntax::{Dict, Name, ObjId, Object};
 use crate::text::text_glyph::to_line_space;
-use crate::text::{FillColor, GlyphOrigin, RecordedGlyph, ShowItem, ShowRecord, TextGlyph, TextMachine, TextState};
+use crate::text::{
+    BLOCK_TAG, FillColor, GlyphOrigin, RecordedGlyph, ShowItem, ShowRecord, TextGlyph, TextMachine, TextState,
+};
 
 const MAX_NESTING: usize = 12;
 const UNMAPPED: &str = "\u{FFFD}";
@@ -36,6 +38,13 @@ struct Walk {
     forms: Vec<ObjId>,
     glyphs: Vec<TextGlyph>,
     records: Vec<ShowRecord>,
+    marks: Vec<Option<i64>>,
+}
+
+impl Walk {
+    fn block(&self) -> Option<i64> {
+        self.marks.iter().rev().find_map(|block| *block)
+    }
 }
 
 impl<'a> TextExtractor<'a> {
@@ -63,6 +72,7 @@ impl<'a> TextExtractor<'a> {
             forms: Vec::new(),
             glyphs: Vec::new(),
             records: Vec::new(),
+            marks: Vec::new(),
         };
         self.run(&mut walk, &content.operations, &page.resources, None);
         Ok((walk.glyphs, walk.records))
@@ -96,6 +106,17 @@ impl<'a> TextExtractor<'a> {
                     walk.state.fill.apply(&operation.operator, &operation.operands)
                 }
                 "Do" => self.form(walk, operation, resources),
+                "BDC" | "BMC" => {
+                    let tagged =
+                        operation.operands.first().and_then(Object::as_name).is_some_and(|tag| tag.is(BLOCK_TAG));
+                    let id =
+                        operation.operands.get(1).and_then(Object::as_dict).and_then(|properties| properties.int("Id"));
+                    let block = if tagged { id } else { walk.block() };
+                    walk.marks.push(block.or(walk.block()));
+                }
+                "EMC" => {
+                    walk.marks.pop();
+                }
                 _ => {}
             }
             let mut index = 0;
@@ -117,6 +138,7 @@ impl<'a> TextExtractor<'a> {
                 to_display: start.then(&walk.state.ctm).then(&walk.display),
                 glyphs: Vec::new(),
                 end: 0.0,
+                block: walk.block(),
             };
             for item in items {
                 match item {
@@ -157,6 +179,7 @@ impl<'a> TextExtractor<'a> {
                 end,
                 size: (baseline - top).abs(),
                 hidden: matches!(walk.state.text.render_mode, 3 | 7),
+                block: record.block,
             });
             *index += 1;
             let before = pen_offset(&record.text_matrix, &walk.machine.text_matrix());

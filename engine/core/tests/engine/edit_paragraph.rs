@@ -462,3 +462,27 @@ fn moves_and_resizes_preview_exactly_and_undo_completely() {
     }
     assert!(block.document.save(false).unwrap() == original);
 }
+
+#[test]
+fn a_paragraph_moved_onto_the_next_stays_its_own_block_also_after_saving() {
+    let library = library();
+    let mut document = Document::open(fixtures::editing_features(), "").unwrap();
+    let page = document.view(&library).pages().unwrap()[0].id;
+    let lines_of = |document: &Document| document.view(&library).text_layout(page).unwrap().lines().to_vec();
+    let paragraph_of = |lines: &[LayoutLine], text: &str| {
+        lines.iter().find(|line| line_text(line) == text).map(|line| line.paragraph).unwrap()
+    };
+    let lines = lines_of(&document);
+    let (moved, below) = (
+        lines.iter().position(|line| line_text(line) == "Plain line to edit").unwrap(),
+        lines.iter().position(|line| line_text(line) == "Condensed line").unwrap(),
+    );
+    let mut edit = ParagraphEdit::new(page, moved, "Plain line to edit");
+    edit.offset = (0.0, lines[below].baseline - 1.2 * lines[below].size - lines[moved].baseline);
+    document.edit(&edit, &library, "").unwrap();
+    let lines = lines_of(&document);
+    assert_ne!(paragraph_of(&lines, "Plain line to edit"), paragraph_of(&lines, "Condensed line"));
+    let reopened = Document::open(document.save(false).unwrap(), "").unwrap();
+    let lines = lines_of(&reopened);
+    assert_ne!(paragraph_of(&lines, "Plain line to edit"), paragraph_of(&lines, "Condensed line"));
+}

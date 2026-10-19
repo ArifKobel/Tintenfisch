@@ -42,6 +42,10 @@ impl PageText {
         Ok(Self { page, layout: TextLayout::new(&glyphs), records, by_key, contents, repeated })
     }
 
+    pub fn next_block(&self) -> i64 {
+        self.records.iter().filter_map(|record| record.block).max().map_or(1, |block| block + 1)
+    }
+
     pub fn line(&self, index: usize) -> Result<&LayoutLine> {
         self.layout.lines().get(index).ok_or_else(|| Error::new("no such line"))
     }

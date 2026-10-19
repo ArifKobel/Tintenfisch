@@ -15,7 +15,7 @@ pub use glyph_origin::GlyphOrigin;
 pub use grapheme::split_graphemes;
 pub use layout_line::{Cluster, LayoutLine};
 pub use line_grouping::group_lines;
-pub use show_record::{RecordedGlyph, ShowRecord};
+pub use show_record::{BLOCK_TAG, RecordedGlyph, ShowRecord};
 pub use text_extractor::TextExtractor;
 pub use text_glyph::{TextGlyph, to_display_space, to_line_space};
 pub use text_layout::{Caret, Motion, TextBox, TextLayout, TextPosition};

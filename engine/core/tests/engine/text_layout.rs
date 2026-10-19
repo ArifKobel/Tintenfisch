@@ -255,6 +255,7 @@ fn glyph(text: &str, start: f64, end: f64, ordinal: usize) -> TextGlyph {
         end,
         size: 12.0,
         hidden: false,
+        block: None,
     }
 }
 
@@ -308,4 +309,12 @@ fn every_paragraph_has_one_box_around_all_its_lines() {
     let boxes: Vec<(f64, f64, f64, f64)> =
         layout.block_boxes().iter().map(|block| (block.rect.x0, block.rect.y0, block.rect.x1, block.rect.y1)).collect();
     assert_eq!(boxes, [(54.0, 90.4, 114.0, 116.4), (54.0, 150.4, 84.0, 162.4)]);
+}
+
+#[test]
+fn lines_of_different_blocks_never_form_one_paragraph() {
+    let moved = TextGlyph { block: Some(1), ..line_glyph("Moved block", 54.0, 100.0, 12.0, 0) };
+    let layout = TextLayout::new(&[moved, line_glyph("Original block", 54.0, 114.0, 12.0, 1)]);
+    let paragraphs: Vec<usize> = layout.lines().iter().map(|line| line.paragraph).collect();
+    assert_eq!(paragraphs, [0, 1]);
 }

@@ -12,6 +12,7 @@ pub struct TextGlyph {
     pub end: f64,
     pub size: f64,
     pub hidden: bool,
+    pub block: Option<i64>,
 }
 
 pub fn to_line_space(angle: f64, (x, y): (f64, f64)) -> (f64, f64) {

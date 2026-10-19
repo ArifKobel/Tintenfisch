@@ -3,15 +3,16 @@ use crate::edit::caret_lines::{CaretLines, PlannedLine};
 use crate::edit::content_patch::{ContentPatch, EditTarget};
 use crate::edit::edit_plan::EditPlan;
 use crate::edit::glyph_encoder::GlyphEncoder;
+use crate::edit::page_text::PageText;
 use crate::edit::paragraph_planner::font_names_in_use;
 use crate::error::{Error, Result};
-use crate::fonts::{FallbackFace, FontLibrary};
+use crate::fonts::{FallbackFace, FontCache, FontLibrary};
 use crate::geometry::{Matrix, Rect};
 use crate::pages::{PageId, PageTree};
 use crate::render::DisplaySpace;
 use crate::store::ObjectStore;
-use crate::syntax::Object;
-use crate::text::split_graphemes;
+use crate::syntax::{Dict, Name, Object};
+use crate::text::{BLOCK_TAG, split_graphemes};
 
 const LEADING: f64 = 1.2;
 
@@ -65,10 +66,13 @@ impl NewParagraph {
         let baseline = top + ascent * self.size;
         let text_matrix =
             Matrix::new(1.0, 0.0, 0.0, -1.0, left, baseline).then(&DisplaySpace::of(&page)?.display_to_user());
+        let block = PageText::extract(store, &FontCache::new(), library, self.page)?.next_block();
+        let properties: Dict = [(Name::from("Id"), Object::Int(block))].into_iter().collect();
         let mut content = ContentWriter::new();
         let numbers = |values: &[f64]| values.iter().map(|value| Object::Real(*value)).collect::<Vec<_>>();
         content
             .operation("q", &[])
+            .operation("BDC", &[Object::Name(Name::from(BLOCK_TAG)), Object::Dict(properties)])
             .operation("rg", &numbers(&self.color))
             .operation("BT", &[])
             .operation("Tf", &[Object::Name(name.clone()), Object::Real(self.size)])
@@ -89,7 +93,7 @@ impl NewParagraph {
                 content.operation("Tj", &[Object::String(codes.clone())]);
             }
         }
-        content.operation("ET", &[]).operation("Q", &[]);
+        content.operation("ET", &[]).operation("EMC", &[]).operation("Q", &[]);
         let caret_lines = CaretLines {
             angle: 0.0,
             ascent: ascent * self.size,

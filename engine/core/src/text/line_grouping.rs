@@ -16,6 +16,7 @@ const SAME_ANGLE: f64 = 0.01;
 
 struct LineDraft {
     glyphs: Vec<usize>,
+    block: Option<i64>,
     angle: f64,
     baseline: f64,
     size: f64,
@@ -33,7 +34,10 @@ impl LineDraft {
         let overlap = self.bottom.min(glyph.bounds.y1) - self.top.max(glyph.bounds.y0);
         let smaller = (self.bottom - self.top).min(glyph.bounds.height()).max(0.01);
         let in_band = overlap > SHARED_BAND * smaller && gap <= BACKWARD_TOLERANCE * size;
-        (glyph.angle - self.angle).abs() < SAME_ANGLE && forward && (on_baseline || in_band)
+        glyph.block == self.block
+            && (glyph.angle - self.angle).abs() < SAME_ANGLE
+            && forward
+            && (on_baseline || in_band)
     }
 }
 
@@ -53,6 +57,7 @@ pub fn group_lines(glyphs: &[TextGlyph]) -> Vec<LayoutLine> {
             }
             None => drafts.push(LineDraft {
                 glyphs: vec![index],
+                block: glyph.block,
                 angle: glyph.angle,
                 baseline: glyph.baseline,
                 size: glyph.size,
@@ -103,6 +108,7 @@ fn line_of(glyphs: &[TextGlyph], draft: LineDraft) -> LayoutLine {
         bottom: members.iter().map(|glyph| glyph.bounds.y1).fold(f64::NEG_INFINITY, f64::max),
         baseline: draft.baseline,
         size: draft.size,
+        block: draft.block,
         clusters,
     }
 }
@@ -126,7 +132,8 @@ fn assign_paragraphs(lines: &mut [LayoutLine]) {
             let ratio = current.size / previous.size.max(0.01);
             let step = current.baseline - previous.baseline;
             let overlaps = current.left() < span.1 && current.right() > span.0;
-            let continues = (0.8..=1.25).contains(&ratio)
+            let continues = current.block == previous.block
+                && (0.8..=1.25).contains(&ratio)
                 && step >= LEADING_FLOOR * previous.size
                 && step <= PARAGRAPH_STEP * previous.size
                 && overlaps;

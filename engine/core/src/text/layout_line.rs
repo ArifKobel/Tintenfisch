@@ -28,6 +28,7 @@ pub struct LayoutLine {
     pub bottom: f64,
     pub baseline: f64,
     pub size: f64,
+    pub block: Option<i64>,
     pub clusters: Vec<Cluster>,
 }
 

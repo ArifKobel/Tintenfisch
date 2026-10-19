@@ -13,6 +13,8 @@ pub struct RecordedGlyph {
     pub advance: f64,
 }
 
+pub const BLOCK_TAG: &str = "TfBlock";
+
 #[derive(Clone)]
 pub struct ShowRecord {
     pub form: Option<ObjId>,
@@ -27,6 +29,7 @@ pub struct ShowRecord {
     pub to_display: Matrix,
     pub glyphs: Vec<RecordedGlyph>,
     pub end: f64,
+    pub block: Option<i64>,
 }
 
 impl ShowRecord {
