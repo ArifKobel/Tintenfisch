@@ -1,12 +1,11 @@
 use std::rc::Rc;
 
-use crate::document::{DocumentCaches, PageSummary};
+use crate::document::{DocumentCaches, PageFont, PageSummary};
 use crate::error::{Error, Result};
-use crate::fonts::FontLibrary;
+use crate::fonts::{FontLibrary, FontProgram};
 use crate::pages::{Page, PageId, PageTree};
 use crate::render::{PageRenderer, Raster, RenderContext, Tile};
 use crate::store::ObjectStore;
-use crate::syntax::Name;
 use crate::text::{TextExtractor, TextGlyph, TextLayout};
 
 #[derive(Clone, Copy)]
@@ -59,7 +58,7 @@ impl<'a> DocumentView<'a> {
         TextExtractor::new(self.store, &self.caches.fonts, self.library).page(&self.page(id)?)
     }
 
-    pub fn fonts(&self, id: PageId) -> Result<Vec<(Name, Option<String>)>> {
+    pub fn fonts(&self, id: PageId) -> Result<Vec<PageFont>> {
         let page = self.page(id)?;
         let Some(fonts) = page.resources.get("Font") else { return Ok(Vec::new()) };
         let fonts = self.store.resolve(fonts)?.as_dict().cloned().unwrap_or_default();
@@ -67,7 +66,14 @@ impl<'a> DocumentView<'a> {
             .iter()
             .filter_map(|(name, entry)| {
                 let font = self.caches.fonts.font(entry, self.store, self.library).ok()?;
-                Some((name.clone(), font.family_name().map(String::from)))
+                Some(PageFont {
+                    name: name.clone(),
+                    family: font.family_name().map(String::from),
+                    base_font: font.base_font().to_string(),
+                    embedded: font.embedded_program().is_some(),
+                    face: font.fallback_face(),
+                    weight: font.embedded_program().and_then(FontProgram::weight),
+                })
             })
             .collect())
     }

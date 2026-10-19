@@ -8,10 +8,16 @@ use crate::fonts::{FallbackFace, Font, FontLibrary};
 use crate::syntax::Name;
 use crate::text::{RecordedGlyph, ShowRecord, TextState};
 
+#[derive(Clone, PartialEq)]
+enum GlyphSource {
+    Bundled(FallbackFace),
+    Replacement(String, usize),
+}
+
 pub struct GlyphEncoder<'a> {
     library: &'a FontLibrary,
     names_in_use: HashSet<Name>,
-    fallbacks: Vec<(FallbackFace, Name, FallbackGlyphs)>,
+    fallbacks: Vec<(GlyphSource, Name, FallbackGlyphs)>,
 }
 
 impl<'a> GlyphEncoder<'a> {
@@ -51,6 +57,13 @@ impl<'a> GlyphEncoder<'a> {
                 color,
             });
         }
+        for index in 0..self.library.replacements(own.base_font()).len() {
+            let source = GlyphSource::Replacement(own.base_font().to_string(), index);
+            let (name, glyphs) = self.source(source)?;
+            if glyphs.has(character) {
+                return Self::place(name, glyphs, target, character, size, color);
+            }
+        }
         self.bundled(own.fallback_face(), target, character, size, color)
     }
 
@@ -63,6 +76,17 @@ impl<'a> GlyphEncoder<'a> {
         color: Option<[f64; 3]>,
     ) -> Result<PlacedGlyph> {
         let (name, glyphs) = self.fallback(face)?;
+        Self::place(name, glyphs, target, character, size, color)
+    }
+
+    fn place(
+        name: Name,
+        glyphs: &mut FallbackGlyphs,
+        target: &ShowRecord,
+        character: char,
+        size: f64,
+        color: Option<[f64; 3]>,
+    ) -> Result<PlacedGlyph> {
         let glyph = glyphs.glyph(character)?;
         let state = &target.state;
         let advance = (glyphs.advance(glyph) * size + state.char_spacing) * state.horizontal_scale;
@@ -71,16 +95,28 @@ impl<'a> GlyphEncoder<'a> {
     }
 
     pub fn fallback(&mut self, face: FallbackFace) -> Result<(Name, &mut FallbackGlyphs)> {
-        let index = match self.fallbacks.iter().position(|(known, _, _)| *known == face) {
+        self.source(GlyphSource::Bundled(face))
+    }
+
+    fn source(&mut self, source: GlyphSource) -> Result<(Name, &mut FallbackGlyphs)> {
+        let index = match self.fallbacks.iter().position(|(known, _, _)| *known == source) {
             Some(index) => index,
             None => {
-                let data = self.library.face(face).ok_or_else(|| Error::new("no fallback face is registered"))?;
+                let glyphs = match &source {
+                    GlyphSource::Bundled(face) => FallbackGlyphs::bundled(
+                        *face,
+                        self.library.face(*face).ok_or_else(|| Error::new("no fallback face is registered"))?,
+                    ),
+                    GlyphSource::Replacement(base_font, index) => {
+                        FallbackGlyphs::replacement(self.library.replacements(base_font)[*index].clone())
+                    }
+                };
                 let name = (0..)
                     .map(|index| Name::new(format!("TfFallback{index}")))
                     .find(|name| !self.names_in_use.contains(name))
                     .unwrap_or_else(|| Name::from("TfFallback"));
                 self.names_in_use.insert(name.clone());
-                self.fallbacks.push((face, name, FallbackGlyphs::new(face, data)));
+                self.fallbacks.push((source, name, glyphs));
                 self.fallbacks.len() - 1
             }
         };

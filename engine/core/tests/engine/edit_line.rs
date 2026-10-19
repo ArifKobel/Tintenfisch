@@ -238,3 +238,36 @@ fn a_character_the_font_lacks_comes_from_an_embedded_fallback() {
     let fonts = reopened.document.store().resolve(&fonts).unwrap();
     assert!(fonts.as_dict().unwrap().get("TfFallback0").is_some_and(|font| matches!(font, Object::Ref(_))));
 }
+
+#[test]
+fn a_character_the_font_lacks_comes_from_its_registered_replacement_first() {
+    let fixture = fixtures::all().into_iter().find(|fixture| fixture.name == "chrome-article.pdf").unwrap();
+    let mut editing = Editing::new(fixture.bytes);
+    let replacement = std::fs::read(
+        std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../public/fonts/LiberationSerif-Bold.ttf"),
+    )
+    .unwrap();
+    for font in editing.document.view(&editing.library).fonts(editing.pages[0]).unwrap() {
+        if font.embedded {
+            editing.library.register_replacement(&font.base_font, replacement.clone());
+        }
+    }
+    let first = line_text(&editing.lines(0)[0]);
+    editing.edit(0, &first, &format!("{first} Ω"));
+    let view = editing.document.view(&editing.library);
+    let fonts = view.page(editing.pages[0]).unwrap().resources.get("Font").cloned().unwrap();
+    let fonts = editing.document.store().resolve(&fonts).unwrap();
+    let base_fonts: Vec<String> = fonts
+        .as_dict()
+        .unwrap()
+        .iter()
+        .filter_map(|(_, font)| editing.document.store().resolve(font).ok())
+        .filter_map(|font| {
+            font.as_dict()
+                .and_then(|dict| dict.name("BaseFont"))
+                .map(|name| String::from_utf8_lossy(name.as_bytes()).into_owned())
+        })
+        .collect();
+    assert!(base_fonts.iter().any(|name| name.ends_with("+LiberationSerifBold")), "{base_fonts:?}");
+    assert!(line_text(&editing.lines(0)[0]).ends_with('Ω'));
+}

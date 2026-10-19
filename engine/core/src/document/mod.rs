@@ -10,6 +10,7 @@ mod document_redaction;
 mod document_signatures;
 mod document_signing;
 mod document_view;
+mod page_font;
 mod page_summary;
 mod pdf_document;
 
@@ -17,5 +18,6 @@ pub use document_caches::DocumentCaches;
 pub use document_forms::FieldInput;
 pub use document_protection::ProtectionState;
 pub use document_view::DocumentView;
+pub use page_font::PageFont;
 pub use page_summary::PageSummary;
 pub use pdf_document::Document;

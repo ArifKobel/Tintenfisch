@@ -76,9 +76,16 @@ fn family_of(name: &str) -> FallbackFamily {
 }
 
 #[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
 struct PageFontReply {
     name: String,
     font: Option<String>,
+    base_font: String,
+    embedded: bool,
+    family: &'static str,
+    bold: bool,
+    italic: bool,
+    weight: Option<u16>,
 }
 
 #[wasm_bindgen]
@@ -107,9 +114,28 @@ impl Engine {
         let fonts = self.document()?.view(&self.library).fonts(page_id(page)?).map_err(fail)?;
         let replies: Vec<PageFontReply> = fonts
             .into_iter()
-            .map(|(name, font)| PageFontReply { name: String::from_utf8_lossy(name.as_bytes()).into_owned(), font })
+            .map(|font| PageFontReply {
+                name: String::from_utf8_lossy(font.name.as_bytes()).into_owned(),
+                font: font.family,
+                base_font: font.base_font,
+                embedded: font.embedded,
+                family: match font.face.family {
+                    FallbackFamily::Sans => "sans",
+                    FallbackFamily::Serif => "serif",
+                    FallbackFamily::Mono => "mono",
+                },
+                bold: font.face.bold,
+                italic: font.face.italic,
+                weight: font.weight,
+            })
             .collect();
         reply(&replies)
+    }
+
+    #[wasm_bindgen(js_name = registerFontReplacement)]
+    pub fn register_font_replacement(&mut self, base_font: &str, bytes: Vec<u8>) {
+        self.draft = None;
+        self.library.register_replacement(base_font, bytes);
     }
 
     #[wasm_bindgen(js_name = previewEdit)]

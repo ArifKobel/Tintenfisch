@@ -80,6 +80,12 @@ export interface ParagraphText {
 export interface PageFont {
   name: string
   font: string | null
+  baseFont: string
+  embedded: boolean
+  family: BundledFamily
+  bold: boolean
+  italic: boolean
+  weight: number | null
 }
 
 export type ClusterRange = [number, number]
@@ -319,6 +325,7 @@ export type Command =
   | { kind: 'previewEdit'; pageId: string; line: number; draft: EditDraft }
   | { kind: 'previewNewText'; pageId: string; draft: NewTextDraft }
   | { kind: 'pageFonts'; pageId: string }
+  | { kind: 'registerFontReplacement'; baseFont: string; bytes: Uint8Array }
   | { kind: 'images'; pageId: string }
   | { kind: 'insertImage'; pageId: string; bytes: Uint8Array; x: number; y: number }
   | { kind: 'moveImage'; pageId: string; index: number; frame: Highlight }
@@ -375,6 +382,7 @@ export interface Results {
   previewEdit: EditPreview
   previewNewText: EditPreview
   pageFonts: PageFont[]
+  registerFontReplacement: void
   images: Highlight[]
   insertImage: InsertedImage
   moveImage: DocumentChange

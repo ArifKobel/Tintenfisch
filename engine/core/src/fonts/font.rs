@@ -4,7 +4,7 @@ use tiny_skia::Path;
 
 use crate::error::Result;
 use crate::fonts::glyph_names::unicode_of;
-use crate::fonts::{CidFont, FallbackFace, FontLibrary, SimpleFont, ToUnicode, Type3Font, meaningful};
+use crate::fonts::{CidFont, FallbackFace, FontLibrary, FontProgram, SimpleFont, ToUnicode, Type3Font, meaningful};
 use crate::store::ObjectStore;
 use crate::syntax::{Dict, ObjId, Object};
 
@@ -57,12 +57,12 @@ impl Font {
         let (ascent, descent, flags) = descriptor_metrics(font, store)?;
         let base_font =
             font.name("BaseFont").map(|name| String::from_utf8_lossy(name.as_bytes()).into_owned()).unwrap_or_default();
-        let embedded_family = match &kind {
-            FontKind::Simple(font) => font.embedded_family(),
-            FontKind::Cid(font) => font.embedded_family(),
+        let embedded = match &kind {
+            FontKind::Simple(font) => font.embedded_program(),
+            FontKind::Cid(font) => font.embedded_program(),
             FontKind::Type3(_) => None,
         };
-        let family = embedded_family.or_else(|| {
+        let family = embedded.and_then(FontProgram::family_name).or_else(|| {
             let name =
                 base_font.split_once('+').filter(|(prefix, _)| prefix.len() == 6).map_or(&*base_font, |(_, name)| name);
             meaningful(name).map(String::from)
@@ -166,6 +166,18 @@ impl Font {
 
     pub fn is_vertical(&self) -> bool {
         matches!(&self.kind, FontKind::Cid(font) if font.is_vertical())
+    }
+
+    pub fn embedded_program(&self) -> Option<&FontProgram> {
+        match &self.kind {
+            FontKind::Simple(font) => font.embedded_program(),
+            FontKind::Cid(font) => font.embedded_program(),
+            FontKind::Type3(_) => None,
+        }
+    }
+
+    pub fn base_font(&self) -> &str {
+        &self.base_font
     }
 
     pub fn family_name(&self) -> Option<&str> {

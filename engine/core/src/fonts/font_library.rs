@@ -6,6 +6,7 @@ use crate::fonts::FallbackFace;
 #[derive(Default)]
 pub struct FontLibrary {
     faces: HashMap<FallbackFace, Rc<[u8]>>,
+    replacements: HashMap<String, Vec<Rc<[u8]>>>,
 }
 
 impl FontLibrary {
@@ -15,6 +16,14 @@ impl FontLibrary {
 
     pub fn register(&mut self, face: FallbackFace, data: impl Into<Rc<[u8]>>) {
         self.faces.insert(face, data.into());
+    }
+
+    pub fn register_replacement(&mut self, base_font: &str, data: impl Into<Rc<[u8]>>) {
+        self.replacements.entry(base_font.to_string()).or_default().push(data.into());
+    }
+
+    pub fn replacements(&self, base_font: &str) -> &[Rc<[u8]>] {
+        self.replacements.get(base_font).map_or(&[], Vec::as_slice)
     }
 
     pub fn face(&self, wanted: FallbackFace) -> Option<Rc<[u8]>> {

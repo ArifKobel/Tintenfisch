@@ -16,6 +16,7 @@ function backend(overrides: Partial<EngineBackend> = {}): EngineBackend {
     previewEdit: () => ({ caret: null, frame: { x: 1, y: 2, width: 50, height: 10, angle: 0 } }),
     previewNewText: () => ({ caret: null, frame: { x: 1, y: 2, width: 50, height: 10, angle: 0 }, selection: [] }),
     pageFonts: () => [{ name: 'F1', font: 'Helvetica' }],
+    registerFontReplacement: () => {},
     images: () => [],
     insertImage: () => ({ index: 0, dirtyPages: ['3-0'] }),
     moveImage: () => ({ dirtyPages: ['3-0'] }),

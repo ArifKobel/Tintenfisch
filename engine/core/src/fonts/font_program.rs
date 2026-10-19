@@ -74,6 +74,10 @@ impl FontProgram {
         })
     }
 
+    pub fn weight(&self) -> Option<u16> {
+        self.face()?.tables().os2.map(|os2| os2.weight().to_number())
+    }
+
     pub fn is_bare_cff(&self) -> bool {
         matches!(self.format, Format::BareCff)
     }

@@ -2,7 +2,7 @@ use std::collections::BTreeMap;
 use std::fmt::Write;
 use std::rc::Rc;
 
-use ttf_parser::{Face, GlyphId};
+use ttf_parser::{Face, GlyphId, name_id};
 
 use crate::error::{Error, Result};
 use crate::fonts::{FallbackFace, FallbackFamily, subset};
@@ -10,14 +10,42 @@ use crate::store::Transaction;
 use crate::syntax::{Dict, Name, ObjId, Object, Stream};
 
 pub struct FallbackGlyphs {
-    face: FallbackFace,
+    stem: String,
+    flags: i64,
     data: Rc<[u8]>,
     glyphs: BTreeMap<char, u16>,
 }
 
 impl FallbackGlyphs {
-    pub fn new(face: FallbackFace, data: Rc<[u8]>) -> Self {
-        Self { face, data, glyphs: BTreeMap::new() }
+    pub fn bundled(face: FallbackFace, data: Rc<[u8]>) -> Self {
+        let family = match face.family {
+            FallbackFamily::Mono => 1,
+            FallbackFamily::Serif => 2,
+            FallbackFamily::Sans => 0,
+        };
+        let flags = family | 32 | if face.italic { 64 } else { 0 };
+        Self { stem: face.file_name().trim_end_matches(".ttf").to_string(), flags, data, glyphs: BTreeMap::new() }
+    }
+
+    pub fn replacement(data: Rc<[u8]>) -> Self {
+        let face = Face::parse(&data, 0).ok();
+        let stem = face
+            .as_ref()
+            .and_then(|face| {
+                face.names()
+                    .into_iter()
+                    .filter(|name| name.name_id == name_id::POST_SCRIPT_NAME)
+                    .find_map(|name| name.to_string())
+            })
+            .map(|name| name.chars().filter(char::is_ascii_alphanumeric).collect::<String>())
+            .filter(|name| !name.is_empty())
+            .unwrap_or_else(|| "Replacement".to_string());
+        let italic = face.as_ref().is_some_and(Face::is_italic);
+        Self { stem, flags: 32 | if italic { 64 } else { 0 }, data, glyphs: BTreeMap::new() }
+    }
+
+    pub fn has(&self, character: char) -> bool {
+        self.parsed().is_ok_and(|face| face.glyph_index(character).is_some_and(|glyph| glyph.0 != 0))
     }
 
     fn parsed(&self) -> Result<Face<'_>> {
@@ -52,8 +80,7 @@ impl FallbackGlyphs {
         let scaled = |value: i16| Object::Real(value as f64 * per_em);
         let glyph_ids = self.glyphs.values().copied().collect();
         let program = subset(&self.data, &glyph_ids)?;
-        let base_font =
-            Name::new(format!("{}+{}", subset_tag(&self.glyphs), self.face.file_name().trim_end_matches(".ttf")));
+        let base_font = Name::new(format!("{}+{}", subset_tag(&self.glyphs), self.stem));
 
         let file = transaction.allocate(Object::Stream(Stream {
             dict: [(Name::from("Length1"), Object::Int(program.len() as i64))].into_iter().collect(),
@@ -63,7 +90,7 @@ impl FallbackGlyphs {
         let descriptor: Dict = [
             ("Type", Object::Name(Name::from("FontDescriptor"))),
             ("FontName", Object::Name(base_font.clone())),
-            ("Flags", Object::Int(self.flags())),
+            ("Flags", Object::Int(self.flags)),
             (
                 "FontBBox",
                 Object::Array(vec![
@@ -126,15 +153,6 @@ impl FallbackGlyphs {
         .map(|(key, value)| (Name::from(key), value))
         .collect();
         Ok(transaction.allocate(Object::Dict(font)))
-    }
-
-    fn flags(&self) -> i64 {
-        let family = match self.face.family {
-            FallbackFamily::Mono => 1,
-            FallbackFamily::Serif => 2,
-            FallbackFamily::Sans => 0,
-        };
-        family | 32 | if self.face.italic { 64 } else { 0 }
     }
 
     fn to_unicode_cmap(&self) -> String {

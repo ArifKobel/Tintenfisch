@@ -189,21 +189,25 @@ fn write_formatted_preview() {
 #[test]
 fn fonts_are_named_after_their_embedded_program_or_the_pdf_but_never_after_a_placeholder() {
     let desk = Desk::open(fixtures::embedded_font_names());
-    let mut fonts: Vec<(String, Option<String>)> = desk
+    type Described = (String, Option<String>, String, bool, Option<u16>);
+    let mut fonts: Vec<Described> = desk
         .document
         .view(&desk.library)
         .fonts(desk.page)
         .unwrap()
         .into_iter()
-        .map(|(name, font)| (String::from_utf8_lossy(name.as_bytes()).into_owned(), font))
+        .map(|font| {
+            let name = String::from_utf8_lossy(font.name.as_bytes()).into_owned();
+            (name, font.family, font.base_font, font.embedded, font.weight)
+        })
         .collect();
     fonts.sort();
     assert_eq!(
         fonts,
         [
-            ("F1".to_string(), Some("Liberation Sans Bold".to_string())),
-            ("F2".to_string(), Some("Helvetica".to_string())),
-            ("F3".to_string(), None),
+            ("F1".to_string(), Some("Liberation Sans Bold".to_string()), "AAAAAA+false".to_string(), true, Some(700)),
+            ("F2".to_string(), Some("Helvetica".to_string()), "BAAAAA+Helvetica".to_string(), false, None),
+            ("F3".to_string(), None, "CAAAAA+false".to_string(), false, None),
         ]
     );
 }
@@ -211,12 +215,15 @@ fn fonts_are_named_after_their_embedded_program_or_the_pdf_but_never_after_a_pla
 #[test]
 fn the_host_learns_the_style_of_every_cluster_the_fonts_of_the_page_and_where_a_selection_is() {
     let mut desk = Desk::open(fixtures::reflow_features());
-    let mut fonts = desk.document.view(&desk.library).fonts(desk.page).unwrap();
-    fonts.sort();
-    let names: Vec<(String, Option<String>)> = fonts
-        .iter()
-        .map(|(name, font)| (String::from_utf8_lossy(name.as_bytes()).into_owned(), font.clone()))
+    let mut names: Vec<(String, Option<String>)> = desk
+        .document
+        .view(&desk.library)
+        .fonts(desk.page)
+        .unwrap()
+        .into_iter()
+        .map(|font| (String::from_utf8_lossy(font.name.as_bytes()).into_owned(), font.family))
         .collect();
+    names.sort();
     assert_eq!(
         names,
         [("F1".to_string(), Some("Helvetica".to_string())), ("F2".to_string(), Some("Helvetica-Bold".to_string()))]

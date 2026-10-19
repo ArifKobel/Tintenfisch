@@ -15,6 +15,7 @@ export type EngineBackend = Pick<
   | 'previewEdit'
   | 'previewNewText'
   | 'pageFonts'
+  | 'registerFontReplacement'
   | 'images'
   | 'insertImage'
   | 'moveImage'
@@ -111,6 +112,8 @@ export class EngineHost {
         return this.#engine.previewNewText(command.pageId, command.draft)
       case 'pageFonts':
         return this.#engine.pageFonts(command.pageId)
+      case 'registerFontReplacement':
+        return this.#engine.registerFontReplacement(command.baseFont, command.bytes)
       case 'images':
         return this.#engine.images(command.pageId)
       case 'insertImage':

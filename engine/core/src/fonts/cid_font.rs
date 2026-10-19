@@ -99,8 +99,8 @@ impl CidFont {
         self.program.as_ref()?.outline(glyph)
     }
 
-    pub fn embedded_family(&self) -> Option<String> {
-        self.program.as_ref().filter(|_| self.embedded)?.family_name()
+    pub fn embedded_program(&self) -> Option<&FontProgram> {
+        self.program.as_ref().filter(|_| self.embedded)
     }
 }
 

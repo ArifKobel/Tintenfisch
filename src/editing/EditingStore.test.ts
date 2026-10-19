@@ -8,7 +8,7 @@ import { PageRevisionStore } from '@viewer/PageRevisionStore.ts'
 const caret = (x: number) => ({ x, y: 10, width: 0, height: 12, angle: 0 })
 const frame = { x: 5, y: 8, width: 300, height: 40, angle: 0 }
 const preview = (x: number) => ({ caret: caret(x), frame, selection: [] })
-const fonts = [{ name: 'F1', font: 'Helvetica' }]
+const fonts = [{ name: 'F1', font: 'Helvetica', baseFont: 'Helvetica', embedded: false, family: 'sans' as const, bold: false, italic: false, weight: null }]
 const look = { font: { kind: 'document', name: 'F1' }, size: 12, bold: false, italic: false, color: [0, 0, 0] }
 const styles = (count: number) => Array.from({ length: count }, () => ({ resource: 'F1', font: 'Helvetica', size: 12, bold: false, italic: false, color: [0, 0, 0] }))
 
