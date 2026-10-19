@@ -1,0 +1,11 @@
+.git
+.claude
+node_modules
+dist
+local
+local-*
+engine/target
+engine/wasm/pkg
+*.local
+*.log
+.DS_Store
