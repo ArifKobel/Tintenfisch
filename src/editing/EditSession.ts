@@ -66,7 +66,8 @@ export class EditSession {
 
   static open(pageId: string, line: number, clusters: readonly string[], caret: number, styles: readonly ClusterStyle[] = []): EditSession {
     const looks = clusters.map((_, index) => EditSession.#lookOf(styles[index]))
-    return new EditSession({ ...EditSession.#blank(pageId, null), line, original: clusters.join(''), clusters, looks, caret })
+    const newLook = looks[0] ?? NEW_TEXT_LOOK
+    return new EditSession({ ...EditSession.#blank(pageId, null), line, original: clusters.join(''), clusters, looks, caret, newLook })
   }
 
   static openNew(pageId: string, origin: Point): EditSession {
@@ -94,14 +95,14 @@ export class EditSession {
   get look(): TextLook {
     if (this.origin) return this.newLook
     const [start] = this.selection ?? [Math.max(this.caret - 1, 0)]
-    const base = this.looks[start] ?? this.looks[0] ?? NEW_TEXT_LOOK
+    const base = this.looks[start] ?? this.looks[0] ?? this.newLook
     return EditSession.#styled(base, this.typing ?? {})
   }
 
   insert(text: string): EditSession {
     const inserted = Array.from(graphemes.segment(text), (part) => part.segment)
     const [start, end] = this.selection ?? [this.caret, this.caret]
-    const neighbor = this.looks[start - 1] ?? this.looks[end] ?? NEW_TEXT_LOOK
+    const neighbor = this.looks[start - 1] ?? this.looks[end] ?? this.newLook
     const look = EditSession.#styled(neighbor, this.typing ?? {})
     const spliced = this.#spliced(start, end, inserted, inserted.map(() => look))
     const typing = this.typing

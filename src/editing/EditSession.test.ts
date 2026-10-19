@@ -79,6 +79,14 @@ describe('EditSession', () => {
     expect(session.moveToEnd().look.color).toEqual([1, 0, 0])
   })
 
+  it('keeps the look of the paragraph once all its text is gone', () => {
+    const heading = { resource: 'F5', font: 'Cabinet Grotesk Extrabold', size: 40, bold: true, italic: false, color: [0, 0, 0] as [number, number, number] }
+    const emptied = EditSession.open('3-0', 0, ['a', 'b'], 2, [heading, heading]).deleteBackward().deleteBackward()
+    expect(emptied.text).toBe('')
+    expect(emptied.look).toEqual({ font: { kind: 'document', name: 'F5' }, size: 40, bold: true, italic: false, color: [0, 0, 0] })
+    expect(emptied.insert('x').look.size).toBe(40)
+  })
+
   it('formats new text as a whole', () => {
     const fresh = EditSession.openNew('3-0', [10, 20]).insert('Hi').formatted({ bold: true, size: 20 })
     expect(fresh.newLook).toMatchObject({ bold: true, size: 20, font: { kind: 'bundled', family: 'sans' } })
