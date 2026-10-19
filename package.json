@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "license": "MIT",
   "type": "module",
+  "packageManager": "pnpm@12.14.0",
   "scripts": {
     "build:wasm": "wasm-pack build engine/wasm --target web --profiling",
     "predev": "pnpm build:wasm",
