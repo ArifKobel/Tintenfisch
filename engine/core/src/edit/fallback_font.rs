@@ -2,10 +2,10 @@ use std::collections::BTreeMap;
 use std::fmt::Write;
 use std::rc::Rc;
 
-use ttf_parser::{Face, GlyphId, name_id};
+use ttf_parser::{Face, GlyphId};
 
 use crate::error::{Error, Result};
-use crate::fonts::{FallbackFace, FallbackFamily, subset};
+use crate::fonts::{FallbackFace, FallbackFamily, FontProgram, subset};
 use crate::store::Transaction;
 use crate::syntax::{Dict, Name, ObjId, Object, Stream};
 
@@ -28,19 +28,12 @@ impl FallbackGlyphs {
     }
 
     pub fn replacement(data: Rc<[u8]>) -> Self {
-        let face = Face::parse(&data, 0).ok();
-        let stem = face
-            .as_ref()
-            .and_then(|face| {
-                face.names()
-                    .into_iter()
-                    .filter(|name| name.name_id == name_id::POST_SCRIPT_NAME)
-                    .find_map(|name| name.to_string())
-            })
+        let stem = FontProgram::parse(data.clone())
+            .and_then(|program| program.family_name())
             .map(|name| name.chars().filter(char::is_ascii_alphanumeric).collect::<String>())
             .filter(|name| !name.is_empty())
             .unwrap_or_else(|| "Replacement".to_string());
-        let italic = face.as_ref().is_some_and(Face::is_italic);
+        let italic = Face::parse(&data, 0).is_ok_and(|face| face.is_italic());
         Self { stem, flags: 32 | if italic { 64 } else { 0 }, data, glyphs: BTreeMap::new() }
     }
 
