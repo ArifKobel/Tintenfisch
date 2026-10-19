@@ -1,6 +1,5 @@
 import { useApplication } from '@app/ApplicationContext.ts'
 import { DocumentTitle } from '@document/DocumentTitle.tsx'
-import { OpenDocumentButton } from '@document/OpenDocumentButton.tsx'
 import { SaveDocumentButton } from '@document/SaveDocumentButton.tsx'
 import { useDocumentState } from '@document/useDocumentState.ts'
 import { SaveStatus } from '@files/SaveStatus.tsx'
@@ -47,7 +46,6 @@ export function AppHeader() {
       </div>
       <div className="header-actions">
         <FindBar />
-        <OpenDocumentButton />
         <SaveDocumentButton />
       </div>
     </header>

@@ -22,7 +22,6 @@ export type IconName =
   | 'export'
   | 'file-add'
   | 'file-text'
-  | 'folder-open'
   | 'image-add'
   | 'import'
   | 'link'
