@@ -141,6 +141,78 @@ fn a_highlight_covers_the_selected_lines_and_quotes_them() {
     assert!(dark(&after_inside) * 10 >= dark(&before_inside) * 9, "the text stays readable under the highlight");
 }
 
+fn highlight(from: (usize, usize), to: (usize, usize)) -> Markup {
+    Markup::Highlight {
+        anchor: TextPosition { line: from.0, offset: from.1 },
+        focus: TextPosition { line: to.0, offset: to.1 },
+    }
+}
+
+fn highlights(sheet: &Sheet, page: PageId) -> Vec<(tintenfisch::syntax::ObjId, String, Option<[f64; 3]>)> {
+    sheet
+        .document
+        .annotations(page)
+        .unwrap()
+        .into_iter()
+        .filter(|summary| summary.subtype == "Highlight")
+        .map(|summary| (summary.id, summary.contents, summary.color))
+        .collect()
+}
+
+fn article() -> (Sheet, PageId) {
+    let fixture = fixtures::all().into_iter().find(|fixture| fixture.name == "chrome-article.pdf").unwrap();
+    let sheet = Sheet::open(fixture.bytes);
+    let page = sheet.page(0);
+    (sheet, page)
+}
+
+#[test]
+fn highlighting_highlighted_text_again_in_the_same_color_changes_nothing() {
+    let (mut sheet, page) = article();
+    let first = sheet.add(page, &highlight((1, 4), (2, 6)));
+    let saved = sheet.document.save(false).unwrap();
+    let again = sheet.add(page, &highlight((1, 8), (1, 20)));
+    assert_eq!(again, first);
+    assert_eq!(highlights(&sheet, page).len(), 1);
+    assert!(sheet.document.save(false).unwrap() == saved, "nothing was written");
+}
+
+#[test]
+fn highlighting_the_same_text_in_another_color_recolors_it() {
+    let (mut sheet, page) = article();
+    sheet.add(page, &highlight((1, 4), (2, 6)));
+    let yellow = MarkupStyle { color: [1.0, 0.85, 0.1], ..style() };
+    sheet.document.add_markup(page, &highlight((1, 4), (2, 6)), &yellow, &sheet.library).unwrap();
+    let found = highlights(&sheet, page);
+    assert_eq!(found.len(), 1);
+    assert_eq!(found[0].2, Some([1.0, 0.85, 0.1]));
+}
+
+#[test]
+fn overlapping_highlights_of_one_color_merge_and_keep_a_written_note() {
+    let (mut sheet, page) = article();
+    let first = sheet.add(page, &highlight((1, 4), (1, 20)));
+    sheet.document.set_annotation_contents(first, "Look this up", "D:20261019120000Z", &sheet.library).unwrap();
+    sheet.add(page, &highlight((1, 12), (2, 6)));
+    let found = highlights(&sheet, page);
+    assert_eq!(found.len(), 1);
+    assert_eq!(found[0].1, "Look this up");
+    let quads = sheet.document.store().object(found[0].0).unwrap();
+    let quads = quads.as_dict().unwrap().get("QuadPoints").and_then(Object::as_array).unwrap().len();
+    assert_eq!(quads, 16, "the merged highlight spans both lines");
+    sheet.document.undo().unwrap();
+    assert_eq!(highlights(&sheet, page).len(), 1, "one undo brings back the first highlight alone");
+}
+
+#[test]
+fn a_highlight_in_another_color_that_only_overlaps_stays() {
+    let (mut sheet, page) = article();
+    sheet.add(page, &highlight((1, 4), (1, 20)));
+    let yellow = MarkupStyle { color: [1.0, 0.85, 0.1], ..style() };
+    sheet.document.add_markup(page, &highlight((1, 12), (2, 6)), &yellow, &sheet.library).unwrap();
+    assert_eq!(highlights(&sheet, page).len(), 2);
+}
+
 #[test]
 fn notes_and_stamps_stand_upright_on_a_turned_page() {
     let mut sheet = Sheet::open(fixtures::organize_features());

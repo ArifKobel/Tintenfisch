@@ -358,7 +358,7 @@ fn border(width: f64) -> Object {
     Object::Dict(border)
 }
 
-fn bounds(points: &[(f64, f64)], margin: f64) -> Rect {
+pub(super) fn bounds(points: &[(f64, f64)], margin: f64) -> Rect {
     let x0 = points.iter().map(|point| point.0).fold(f64::INFINITY, f64::min);
     let x1 = points.iter().map(|point| point.0).fold(f64::NEG_INFINITY, f64::max);
     let y0 = points.iter().map(|point| point.1).fold(f64::INFINITY, f64::min);

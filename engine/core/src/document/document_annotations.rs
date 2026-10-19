@@ -1,8 +1,8 @@
 use std::rc::Rc;
 
 use crate::annotations::{
-    Annotation, AnnotationSummary, Markup, MarkupBuilder, MarkupStyle, TextBoxAppearance, annotation_list,
-    write_annotation_list,
+    Annotation, AnnotationSummary, HighlightPlan, Markup, MarkupBuilder, MarkupStyle, TextBoxAppearance,
+    annotation_list, write_annotation_list,
 };
 use crate::document::Document;
 use crate::error::{Error, Result};
@@ -31,7 +31,23 @@ impl Document {
     ) -> Result<ObjId> {
         let page = self.page(page)?;
         let layout = self.view(library).text_layout(page.id)?;
-        let built = MarkupBuilder::new(&page, &layout, library)?.build(markup, style)?;
+        let (planned, replaced, notes) = match markup {
+            Markup::Highlight { anchor, focus } => {
+                let to_display = DisplaySpace::of(&page)?.user_to_display();
+                let existing = Annotation::on_page(&self.store, &page)?;
+                match HighlightPlan::new(&layout, &to_display, &existing, (*anchor, *focus), style.color) {
+                    HighlightPlan::Unchanged(id) => return Ok(id),
+                    HighlightPlan::Draw { anchor, focus, replaced, notes } => {
+                        (Markup::Highlight { anchor, focus }, replaced, notes)
+                    }
+                }
+            }
+            other => (other.clone(), Vec::new(), Vec::new()),
+        };
+        let mut built = MarkupBuilder::new(&page, &layout, library)?.build(&planned, style)?;
+        if !notes.is_empty() {
+            built.entries.insert("Contents", Object::String(encode_text(&notes.join("\n\n"))));
+        }
         let popup_rect = match markup {
             Markup::Note { at, .. } => Some(popup_rect(&page, *at)?),
             _ => None,
@@ -84,7 +100,20 @@ impl Document {
                 transaction.put(id, Object::Dict(annotation))?;
                 added.push(popup);
             }
-            let mut annotations = annotation_list(transaction, page.id.0)?;
+            let mut gone = replaced.clone();
+            for id in &replaced {
+                gone.extend(
+                    transaction
+                        .object(*id)?
+                        .as_dict()
+                        .and_then(|dict| dict.get("Popup"))
+                        .and_then(Object::as_reference),
+                );
+            }
+            let mut annotations: Vec<Object> = annotation_list(transaction, page.id.0)?
+                .into_iter()
+                .filter(|entry| entry.as_reference().is_none_or(|id| !gone.contains(&id)))
+                .collect();
             annotations.extend(added.into_iter().map(Object::Ref));
             write_annotation_list(transaction, page.id.0, annotations)?;
             Ok(id)
