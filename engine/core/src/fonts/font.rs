@@ -4,7 +4,7 @@ use tiny_skia::Path;
 
 use crate::error::Result;
 use crate::fonts::glyph_names::unicode_of;
-use crate::fonts::{CidFont, FallbackFace, FontLibrary, SimpleFont, ToUnicode, Type3Font};
+use crate::fonts::{CidFont, FallbackFace, FontLibrary, SimpleFont, ToUnicode, Type3Font, meaningful};
 use crate::store::ObjectStore;
 use crate::syntax::{Dict, ObjId, Object};
 
@@ -36,7 +36,7 @@ pub enum FontKind {
 pub struct Font {
     kind: FontKind,
     base_font: String,
-    family: String,
+    family: Option<String>,
     flags: u32,
     to_unicode: Option<ToUnicode>,
     ascent: f64,
@@ -62,12 +62,10 @@ impl Font {
             FontKind::Cid(font) => font.embedded_family(),
             FontKind::Type3(_) => None,
         };
-        let family = embedded_family.unwrap_or_else(|| {
-            base_font
-                .split_once('+')
-                .filter(|(prefix, _)| prefix.len() == 6)
-                .map_or(&*base_font, |(_, name)| name)
-                .to_string()
+        let family = embedded_family.or_else(|| {
+            let name =
+                base_font.split_once('+').filter(|(prefix, _)| prefix.len() == 6).map_or(&*base_font, |(_, name)| name);
+            meaningful(name).map(String::from)
         });
         Ok(Font { kind, base_font, family, flags, to_unicode, ascent, descent })
     }
@@ -170,8 +168,8 @@ impl Font {
         matches!(&self.kind, FontKind::Cid(font) if font.is_vertical())
     }
 
-    pub fn family_name(&self) -> &str {
-        &self.family
+    pub fn family_name(&self) -> Option<&str> {
+        self.family.as_deref()
     }
 
     pub fn fallback_face(&self) -> FallbackFace {

@@ -187,12 +187,25 @@ fn write_formatted_preview() {
 }
 
 #[test]
-fn fonts_are_named_after_their_embedded_program_and_otherwise_after_the_pdf() {
+fn fonts_are_named_after_their_embedded_program_or_the_pdf_but_never_after_a_placeholder() {
     let desk = Desk::open(fixtures::embedded_font_names());
-    let mut fonts = desk.document.view(&desk.library).fonts(desk.page).unwrap();
+    let mut fonts: Vec<(String, Option<String>)> = desk
+        .document
+        .view(&desk.library)
+        .fonts(desk.page)
+        .unwrap()
+        .into_iter()
+        .map(|(name, font)| (String::from_utf8_lossy(name.as_bytes()).into_owned(), font))
+        .collect();
     fonts.sort();
-    let names: Vec<&str> = fonts.iter().map(|(_, font)| font.as_str()).collect();
-    assert_eq!(names, ["Liberation Sans Bold", "Helvetica"]);
+    assert_eq!(
+        fonts,
+        [
+            ("F1".to_string(), Some("Liberation Sans Bold".to_string())),
+            ("F2".to_string(), Some("Helvetica".to_string())),
+            ("F3".to_string(), None),
+        ]
+    );
 }
 
 #[test]
@@ -200,11 +213,14 @@ fn the_host_learns_the_style_of_every_cluster_the_fonts_of_the_page_and_where_a_
     let mut desk = Desk::open(fixtures::reflow_features());
     let mut fonts = desk.document.view(&desk.library).fonts(desk.page).unwrap();
     fonts.sort();
-    let names: Vec<(String, String)> = fonts
+    let names: Vec<(String, Option<String>)> = fonts
         .iter()
         .map(|(name, font)| (String::from_utf8_lossy(name.as_bytes()).into_owned(), font.clone()))
         .collect();
-    assert_eq!(names, [("F1".to_string(), "Helvetica".to_string()), ("F2".to_string(), "Helvetica-Bold".to_string())]);
+    assert_eq!(
+        names,
+        [("F1".to_string(), Some("Helvetica".to_string())), ("F2".to_string(), Some("Helvetica-Bold".to_string()))]
+    );
     let line = desk.line_index("widest of them and flow on when");
     let paragraph = desk.document.paragraph_text(desk.page, line, &desk.library).unwrap();
     let flow = paragraph.clusters.concat().find("flow").unwrap();

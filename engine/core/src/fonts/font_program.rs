@@ -7,6 +7,7 @@ use ttf_parser::{Face, GlyphId, OutlineBuilder, PlatformId, cff, name_id};
 
 use crate::fonts::type1_charstring::CharstringInterpreter;
 use crate::fonts::type1_program::Type1Program;
+use crate::fonts::{from_postscript, meaningful, with_style};
 
 enum Format {
     Sfnt,
@@ -61,13 +62,15 @@ impl FontProgram {
                 .into_iter()
                 .filter(|name| name.name_id == id)
                 .find_map(|name| name.to_string())
-                .filter(|text| !text.trim().is_empty())
+                .filter(|text| meaningful(text).is_some())
         };
-        let family = read(name_id::TYPOGRAPHIC_FAMILY).or_else(|| read(name_id::FAMILY))?;
-        let style = read(name_id::TYPOGRAPHIC_SUBFAMILY).or_else(|| read(name_id::SUBFAMILY));
-        Some(match style.filter(|style| !matches!(style.as_str(), "Regular" | "Normal" | "Book" | "Roman")) {
-            Some(style) => format!("{family} {style}"),
-            None => family,
+        if let Some(family) = read(name_id::TYPOGRAPHIC_FAMILY).or_else(|| read(name_id::FAMILY)) {
+            let style = read(name_id::TYPOGRAPHIC_SUBFAMILY).or_else(|| read(name_id::SUBFAMILY));
+            return Some(with_style(&family, style.as_deref()));
+        }
+        read(name_id::POST_SCRIPT_NAME).and_then(|name| from_postscript(&name)).or_else(|| {
+            let unique = read(name_id::UNIQUE_ID)?;
+            from_postscript(unique.rsplit(';').next()?)
         })
     }
 

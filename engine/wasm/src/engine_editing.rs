@@ -78,7 +78,7 @@ fn family_of(name: &str) -> FallbackFamily {
 #[derive(Serialize)]
 struct PageFontReply {
     name: String,
-    font: String,
+    font: Option<String>,
 }
 
 #[wasm_bindgen]

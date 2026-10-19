@@ -59,7 +59,7 @@ impl<'a> DocumentView<'a> {
         TextExtractor::new(self.store, &self.caches.fonts, self.library).page(&self.page(id)?)
     }
 
-    pub fn fonts(&self, id: PageId) -> Result<Vec<(Name, String)>> {
+    pub fn fonts(&self, id: PageId) -> Result<Vec<(Name, Option<String>)>> {
         let page = self.page(id)?;
         let Some(fonts) = page.resources.get("Font") else { return Ok(Vec::new()) };
         let fonts = self.store.resolve(fonts)?.as_dict().cloned().unwrap_or_default();
@@ -67,7 +67,7 @@ impl<'a> DocumentView<'a> {
             .iter()
             .filter_map(|(name, entry)| {
                 let font = self.caches.fonts.font(entry, self.store, self.library).ok()?;
-                Some((name.clone(), font.family_name().to_string()))
+                Some((name.clone(), font.family_name().map(String::from)))
             })
             .collect())
     }

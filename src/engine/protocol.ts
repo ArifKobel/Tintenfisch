@@ -79,7 +79,7 @@ export interface ParagraphText {
 
 export interface PageFont {
   name: string
-  font: string
+  font: string | null
 }
 
 export type ClusterRange = [number, number]

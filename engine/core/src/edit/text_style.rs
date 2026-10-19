@@ -41,7 +41,7 @@ impl ClusterStyle {
         let face = record.font.as_deref().map(Font::fallback_face);
         ClusterStyle {
             resource: record.font_name.clone(),
-            font: record.font.as_deref().map(|font| font.family_name().to_string()).unwrap_or_default(),
+            font: record.font.as_deref().and_then(Font::family_name).unwrap_or_default().to_string(),
             size: record.state.size * record.display_scale(),
             bold: face.is_some_and(|face| face.bold),
             italic: face.is_some_and(|face| face.italic),
