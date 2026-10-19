@@ -26,11 +26,22 @@ interface PendingRequest {
 export class EngineClient {
   readonly #port: EnginePort
   readonly #pending = new Map<number, PendingRequest>()
+  readonly #changeListeners = new Set<() => void>()
   #nextId = 1
+  #revision = 0
 
   constructor(port: EnginePort) {
     this.#port = port
     port.onmessage = (event) => this.#settle(event.data)
+  }
+
+  get revision(): number {
+    return this.#revision
+  }
+
+  onChange(listener: () => void): () => void {
+    this.#changeListeners.add(listener)
+    return () => this.#changeListeners.delete(listener)
   }
 
   request<C extends Command>(command: C, options: RequestOptions = {}): Promise<Results[C['kind']]> {
@@ -57,6 +68,10 @@ export class EngineClient {
   }
 
   #settle(response: Response) {
+    if (response.ok && response.revision !== this.#revision) {
+      this.#revision = response.revision
+      this.#changeListeners.forEach((listener) => listener())
+    }
     const pending = this.#pending.get(response.id)
     if (!pending) return
     this.#pending.delete(response.id)

@@ -9,7 +9,7 @@ function runtime() {
   const handler = {
     handle: (request: Request) => {
       handled.push(request.id)
-      return { response: { id: request.id, ok: true as const, result: null }, transfer: [] }
+      return { response: { id: request.id, ok: true as const, result: null, revision: 0 }, transfer: [] }
     },
   }
   const worker = new WorkerRuntime(Promise.resolve(handler), (response) => posted.push(response), (resume) => waiting.push(resume))

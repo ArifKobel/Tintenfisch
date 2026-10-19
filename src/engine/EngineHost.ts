@@ -58,6 +58,7 @@ export type EngineBackend = Pick<
   | 'addImageSignature'
   | 'signField'
   | 'signatures'
+  | 'revision'
 >
 
 export interface HostReply {
@@ -75,7 +76,7 @@ export class EngineHost {
   handle(request: Request): HostReply {
     try {
       const result = this.#execute(request)
-      return { response: { id: request.id, ok: true, result }, transfer: EngineHost.#transferablesOf(result) }
+      return { response: { id: request.id, ok: true, result, revision: this.#engine.revision() }, transfer: EngineHost.#transferablesOf(result) }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error)
       return { response: { id: request.id, ok: false, error: message }, transfer: [] }

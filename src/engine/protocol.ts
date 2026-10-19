@@ -434,5 +434,5 @@ export interface Cancel {
 export type WorkerMessage = Request | Cancel
 
 export type Response =
-  | { id: number; ok: true; result: unknown }
+  | { id: number; ok: true; result: unknown; revision: number }
   | { id: number; ok: false; error: string; cancelled?: boolean }

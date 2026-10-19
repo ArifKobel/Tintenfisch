@@ -11,8 +11,8 @@ describe('EngineClient', () => {
     const first = client.request({ kind: 'open', bytes: new Uint8Array(1) })
     const second = client.request({ kind: 'pages' })
     const [a, b] = port.requests.map((request) => request.id)
-    port.answer({ id: b, ok: true, result: [] })
-    port.answer({ id: a, ok: true, result: opened })
+    port.answer({ id: b, ok: true, result: [], revision: 0 })
+    port.answer({ id: a, ok: true, result: opened, revision: 0 })
     expect(await first).toEqual(opened)
     expect(await second).toEqual([])
   })
@@ -51,6 +51,21 @@ describe('EngineClient', () => {
   it('ignores responses nobody waits for', () => {
     const port = new FakeEnginePort()
     void new EngineClient(port)
-    expect(() => port.answer({ id: 99, ok: true, result: null })).not.toThrow()
+    expect(() => port.answer({ id: 99, ok: true, result: null, revision: 0 })).not.toThrow()
+  })
+
+  it('tells listeners when a reply carries a new document revision', async () => {
+    const port = new FakeEnginePort()
+    const client = new EngineClient(port)
+    let changes = 0
+    client.onChange(() => changes++)
+    const pages = client.request({ kind: 'pages' })
+    await port.answerNext([], 0)
+    await pages
+    const rotated = client.request({ kind: 'rotatePages', pageIds: ['3-0'], quarterTurns: 1 })
+    await port.answerNext({ pages: [], dirtyPages: ['3-0'] }, 7)
+    await rotated
+    expect(changes).toBe(1)
+    expect(client.revision).toBe(7)
   })
 })

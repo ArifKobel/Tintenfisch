@@ -72,6 +72,10 @@ impl Engine {
         }
     }
 
+    pub fn revision(&self) -> f64 {
+        self.document.as_ref().map_or(0.0, |document| document.store().revision() as f64)
+    }
+
     pub fn pages(&self) -> Result<JsValue, JsError> {
         let summaries = self.document()?.view(&self.library).summaries().map_err(fail)?;
         reply(&summaries.iter().map(PageSummaryReply::from).collect::<Vec<_>>())
