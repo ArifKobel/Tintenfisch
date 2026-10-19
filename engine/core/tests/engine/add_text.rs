@@ -31,6 +31,7 @@ impl Writer {
             page: self.page,
             at,
             face: SANS,
+            catalog: None,
             size: 14.0,
             color: [0.1, 0.2, 0.6],
             text: text.to_string(),
@@ -139,6 +140,7 @@ fn added_text_is_set_in_the_face_size_and_color_asked_for() {
         page: writer.page,
         at: (60.0, 500.0),
         face,
+        catalog: None,
         size: 20.0,
         color: [0.8, 0.1, 0.1],
         text: "Styled".into(),
@@ -161,6 +163,7 @@ fn empty_text_plans_nothing_but_a_caret_and_unknown_characters_are_refused() {
         page: writer.page,
         at: (10.0, 10.0),
         face: SANS,
+        catalog: None,
         size: 12.0,
         color: [0.0; 3],
         text: String::new(),
@@ -250,4 +253,28 @@ fn write_added_text_preview() {
     std::fs::write(format!("{directory}/added-text.pdf"), writer.document.save(false).unwrap()).unwrap();
     let raster = writer.document.view(&writer.library).render(writer.page, 2.0, None).unwrap();
     std::fs::write(format!("{directory}/added-text.png"), support::rendering::to_png(&raster)).unwrap();
+}
+
+#[test]
+fn new_text_takes_a_registered_catalog_font() {
+    let mut writer = Writer::open(fixtures::editing_features());
+    let serif_bold = std::fs::read(
+        std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../public/fonts/LiberationSerif-Bold.ttf"),
+    )
+    .unwrap();
+    writer.library.register_replacement("fontsource:liberation-serif:700:normal", serif_bold);
+    let new = NewParagraph {
+        page: writer.page,
+        at: (60.0, 520.0),
+        face: SANS,
+        catalog: Some("fontsource:liberation-serif:700:normal".to_string()),
+        size: 18.0,
+        color: [0.0; 3],
+        text: "Catalog".into(),
+    };
+    let plan = writer.document.plan_new_text(&new, &writer.library).unwrap();
+    writer.document.apply(&plan, "").unwrap();
+    let line = writer.texts().iter().position(|text| text == "Catalog").unwrap();
+    let paragraph = writer.document.paragraph_text(writer.page, line, &writer.library).unwrap();
+    assert_eq!(paragraph.styles[0].font, "Liberation Serif Bold");
 }

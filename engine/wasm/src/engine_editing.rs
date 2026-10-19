@@ -63,6 +63,8 @@ struct NewTextRequest {
     caret: usize,
     selection: Option<[usize; 2]>,
     family: String,
+    #[serde(default)]
+    catalog: Option<String>,
     bold: bool,
     italic: bool,
     size: f64,
@@ -165,6 +167,7 @@ impl Engine {
             page: page_id(page)?,
             at: (request.x, request.y),
             face,
+            catalog: request.catalog,
             size: request.size,
             color: request.color,
             text: request.text,

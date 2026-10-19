@@ -20,6 +20,7 @@ pub struct NewParagraph {
     pub page: PageId,
     pub at: (f64, f64),
     pub face: FallbackFace,
+    pub catalog: Option<String>,
     pub size: f64,
     pub color: [f64; 3],
     pub text: String,
@@ -34,7 +35,7 @@ impl NewParagraph {
             .ok_or_else(|| Error::new(format!("no page {}", self.page)))?;
         let face = self.face;
         let mut encoder = GlyphEncoder::new(library, font_names_in_use(store, &page)?);
-        let (name, glyphs) = encoder.fallback(face)?;
+        let (name, glyphs) = encoder.new_text(face, self.catalog.as_deref())?;
         let (ascent, descent) = glyphs.vertical_extent();
         let leading = self.size * LEADING;
         let (left, top) = self.at;
@@ -53,7 +54,7 @@ impl NewParagraph {
             let mut codes = Vec::new();
             let mut width = 0.0;
             for character in line.iter().flat_map(|grapheme| grapheme.chars()) {
-                let (_, glyphs) = encoder.fallback(face)?;
+                let (_, glyphs) = encoder.new_text(face, self.catalog.as_deref())?;
                 let glyph = glyphs.glyph(character)?;
                 width += glyphs.advance(glyph) * self.size;
                 codes.extend(glyph.to_be_bytes());

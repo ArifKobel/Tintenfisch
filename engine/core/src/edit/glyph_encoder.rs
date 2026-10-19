@@ -125,6 +125,13 @@ impl<'a> GlyphEncoder<'a> {
         Ok(PlacedGlyph { bytes: glyph.to_be_bytes().to_vec(), font: Some(font), x: 0.0, advance, color })
     }
 
+    pub fn new_text(&mut self, face: FallbackFace, catalog: Option<&str>) -> Result<(Name, &mut FallbackGlyphs)> {
+        match catalog.filter(|key| !self.library.replacements(key).is_empty()) {
+            Some(key) => self.source(GlyphSource::Replacement(key.to_string(), 0)),
+            None => self.fallback(face),
+        }
+    }
+
     pub fn fallback(&mut self, face: FallbackFace) -> Result<(Name, &mut FallbackGlyphs)> {
         self.source(GlyphSource::Bundled(face))
     }
