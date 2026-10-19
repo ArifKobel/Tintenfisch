@@ -47,6 +47,10 @@ export class DocumentStore {
     await this.#settle(name, () => this.#client.request({ kind: 'unlock', password }))
   }
 
+  close() {
+    if (this.#state.phase !== 'empty') this.#update({ phase: 'empty' })
+  }
+
   replacePages(pages: PageSummary[]) {
     if (this.#state.phase === 'ready') this.#update({ ...this.#state, pages })
   }

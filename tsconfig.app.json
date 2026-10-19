@@ -23,6 +23,7 @@
       "@document/*": ["./src/document/*"],
       "@editing/*": ["./src/editing/*"],
       "@engine/*": ["./src/engine/*"],
+      "@files/*": ["./src/files/*"],
       "@find/*": ["./src/find/*"],
       "@forms/*": ["./src/forms/*"],
       "@images/*": ["./src/images/*"],

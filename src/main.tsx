@@ -12,6 +12,7 @@ import '@shell/shell.css'
 import '@tools/tools.css'
 import '@viewer/viewer.css'
 import '@document/document.css'
+import '@files/files.css'
 import '@selection/selection.css'
 import '@find/find.css'
 import '@editing/editing.css'
@@ -24,7 +25,9 @@ import '@protection/protection.css'
 import '@printing/printing.css'
 import '@thumbnails/thumbnails.css'
 
-const application = new Application(new EngineWorker())
+const application = new Application(new EngineWorker(), { indexedDB, window })
+void application.files.start()
+window.addEventListener('pagehide', () => void application.autoSave.flush())
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

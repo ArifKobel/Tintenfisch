@@ -1,6 +1,6 @@
 import { PasswordPrompt } from '@document/PasswordPrompt.tsx'
-import { StartScreen } from '@document/StartScreen.tsx'
 import { useDocumentState } from '@document/useDocumentState.ts'
+import { HomeScreen } from '@files/HomeScreen.tsx'
 import { DocumentScroller } from '@viewer/DocumentScroller.tsx'
 
 export function DocumentView() {
@@ -19,7 +19,7 @@ export function DocumentView() {
       ) : state.phase === 'loading' ? (
         <p className="hint">Opening {state.name}</p>
       ) : (
-        <StartScreen />
+        <HomeScreen />
       )}
     </section>
   )

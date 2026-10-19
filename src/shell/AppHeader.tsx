@@ -3,6 +3,7 @@ import { DocumentTitle } from '@document/DocumentTitle.tsx'
 import { OpenDocumentButton } from '@document/OpenDocumentButton.tsx'
 import { SaveDocumentButton } from '@document/SaveDocumentButton.tsx'
 import { useDocumentState } from '@document/useDocumentState.ts'
+import { SaveStatus } from '@files/SaveStatus.tsx'
 import { FindBar } from '@find/FindBar.tsx'
 import { DocumentMenu } from '@shell/DocumentMenu.tsx'
 import type { LeftPanel } from '@shell/PanelStore.ts'
@@ -14,17 +15,24 @@ const TABS: { panel: LeftPanel; label: string }[] = [
 ]
 
 export function AppHeader() {
-  const { panels } = useApplication()
+  const { files, panels } = useApplication()
   const { left } = usePanelState()
   const document = useDocumentState()
   return (
     <header className="app-header">
-      <div className="brand">
+      <a
+        className="brand"
+        href="/"
+        onClick={(event) => {
+          event.preventDefault()
+          files.goHome()
+        }}
+      >
         <span className="brand-mark" aria-hidden="true">
           T
         </span>
         <span className="brand-name">Tintenfisch</span>
-      </div>
+      </a>
       {document.phase === 'ready' && (
         <nav className="header-tabs" aria-label="Tool panels">
           {TABS.map(({ panel, label }) => (
@@ -36,6 +44,7 @@ export function AppHeader() {
       )}
       <div className="header-document">
         <DocumentTitle />
+        <SaveStatus />
         <DocumentMenu />
       </div>
       <div className="header-actions">

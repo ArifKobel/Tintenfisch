@@ -19,6 +19,8 @@
 
 .brand {
   display: flex;
+  color: inherit;
+  text-decoration: none;
   align-items: center;
   gap: 10px;
   padding-right: 16px;

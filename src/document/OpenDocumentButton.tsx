@@ -3,12 +3,12 @@ import { useApplication } from '@app/ApplicationContext.ts'
 import { Icon } from '@ui/Icon.tsx'
 
 export function OpenDocumentButton({ prominent = false }: { prominent?: boolean }) {
-  const { documents } = useApplication()
+  const { files } = useApplication()
 
   async function openSelectedFile(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]
     event.target.value = ''
-    if (file) await documents.open(file.name, new Uint8Array(await file.arrayBuffer()))
+    if (file) await files.openNew(file.name, new Uint8Array(await file.arrayBuffer()))
   }
 
   const input = <input type="file" accept="application/pdf" onChange={openSelectedFile} hidden />

@@ -2,6 +2,10 @@ import { CommentsStore } from '@comments/CommentsStore.ts'
 import { DocumentStore } from '@document/DocumentStore.ts'
 import { EditingStore } from '@editing/EditingStore.ts'
 import { EngineClient, type EnginePort } from '@engine/EngineClient.ts'
+import { AutoSave } from '@files/AutoSave.ts'
+import { DocumentLibrary } from '@files/DocumentLibrary.ts'
+import { FilesStore } from '@files/FilesStore.ts'
+import { Router, type BrowserWindow } from '@files/Router.ts'
 import { FindStore } from '@find/FindStore.ts'
 import { FormsStore } from '@forms/FormsStore.ts'
 import { ImagesStore } from '@images/ImagesStore.ts'
@@ -22,6 +26,11 @@ import { PageRevisionStore } from '@viewer/PageRevisionStore.ts'
 import { TileCache } from '@viewer/TileCache.ts'
 import { TileLoader } from '@viewer/TileLoader.ts'
 import { ViewportStore } from '@viewer/ViewportStore.ts'
+
+export interface Browser {
+  indexedDB: IDBFactory
+  window: BrowserWindow
+}
 
 export class Application {
   readonly engine: EngineClient
@@ -45,8 +54,10 @@ export class Application {
   readonly protection: ProtectionStore
   readonly signing: SignatureStore
   readonly digitalSignatures: DigitalSignatureStore
+  readonly autoSave: AutoSave
+  readonly files: FilesStore
 
-  constructor(port: EnginePort) {
+  constructor(port: EnginePort, browser: Browser) {
     this.engine = new EngineClient(port)
     this.documents = new DocumentStore(this.engine)
     this.viewport = new ViewportStore()
@@ -69,6 +80,9 @@ export class Application {
     this.printing = new PrintStore(this.engine, this.documents, this.viewport, this.editing, CanvasPictureEncoder.encode)
     this.signing = new SignatureStore(this.engine, this.revisions)
     this.digitalSignatures = new DigitalSignatureStore(this.engine, this.documents)
+    const library = new DocumentLibrary(browser.indexedDB)
+    this.autoSave = new AutoSave(this.engine, this.documents, library)
+    this.files = new FilesStore(library, this.documents, new Router(browser.window), this.autoSave)
     let previousTool = this.tools.getSnapshot().tool
     this.tools.subscribe(() => {
       const { tool } = this.tools.getSnapshot()
