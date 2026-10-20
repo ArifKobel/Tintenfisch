@@ -6,6 +6,7 @@ import { useToolState } from '@tools/useToolState.ts'
 
 const GROUPS: { label: string; tools: readonly Tool[] }[] = [
   { label: 'Select', tools: ['select'] },
+  { label: 'Edit text and images', tools: ['edit'] },
   { label: 'Add a comment', tools: ['note', 'textBox', 'stamp'] },
   { label: 'Highlight text', tools: ['highlight'] },
   { label: 'Draw', tools: ['ink', 'rectangle', 'ellipse', 'arrow'] },

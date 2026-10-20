@@ -14,7 +14,7 @@ import { useSelectionState } from '@selection/useSelectionState.ts'
 const UNITS: SelectionUnit[] = ['character', 'word', 'paragraph']
 
 export function TextLayer({ pageId, cssScale }: { pageId: string; cssScale: number }) {
-  const { selection, editing, comments, images } = useApplication()
+  const { selection, editing, comments, images, tools } = useApplication()
   const { tool } = useToolState()
   const selected = useSelectionState()
   const found = useFindState()
@@ -64,6 +64,13 @@ export function TextLayer({ pageId, cssScale }: { pageId: string; cssScale: numb
         images.select(null)
         if (clicks >= 2) void editing.press(pageId, x, y, clicks, false)
       })
+      return
+    }
+    if (tool === 'select' && event.detail === 2 && TextBlocks.contain(blocks, x, y)) {
+      event.preventDefault()
+      selection.clear()
+      tools.choose('edit')
+      void editing.begin(pageId, x, y)
       return
     }
     void selection.begin(pageId, x, y, UNITS[Math.min(Math.max(event.detail, 1), 3) - 1])
