@@ -15,7 +15,7 @@ export function EditPanel() {
   const { active } = useEditingState()
   const pick = (chosen: Tool) => tools.choose(tool === chosen ? 'edit' : chosen)
   return (
-    <SidePanel title="Edit" side="left" onClose={() => panels.showLeft(null)}>
+    <SidePanel title="Edit" side="left">
       <section className="panel-section">
         <h3 className="section-label">Format text</h3>
         {active ? <FormatBar /> : <p className="hint">Click into text on the page to change it and its format.</p>}

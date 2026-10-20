@@ -107,7 +107,7 @@ export class Application {
       if (tool !== 'link') this.links.select(null)
       if (tool === 'sign' && previousTool !== 'sign' && !this.signing.getSnapshot().mark) this.signing.openPad()
       if (EDITING_TOOLS.includes(tool)) this.panels.showLeft('edit')
-      else if (this.panels.getSnapshot().left === 'edit') this.panels.showLeft(null)
+      else if (this.panels.getSnapshot().left === 'edit') this.panels.showLeft('tools')
       previousTool = tool
     })
     this.panels.subscribe(() => {

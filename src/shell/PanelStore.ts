@@ -2,7 +2,7 @@ export type LeftPanel = 'tools' | 'edit'
 export type RightPanel = 'comments' | 'pages' | 'bookmarks'
 
 export interface PanelState {
-  left: LeftPanel | null
+  left: LeftPanel
   right: RightPanel | null
 }
 
@@ -10,7 +10,7 @@ type Listener = () => void
 
 export class PanelStore {
   readonly #listeners = new Set<Listener>()
-  #state: PanelState = { left: null, right: null }
+  #state: PanelState = { left: 'tools', right: null }
 
   readonly subscribe = (listener: Listener): (() => void) => {
     this.#listeners.add(listener)
@@ -19,12 +19,8 @@ export class PanelStore {
 
   readonly getSnapshot = (): PanelState => this.#state
 
-  showLeft(left: LeftPanel | null) {
+  showLeft(left: LeftPanel) {
     if (left !== this.#state.left) this.#update({ ...this.#state, left })
-  }
-
-  toggleLeft(left: LeftPanel) {
-    this.showLeft(this.#state.left === left ? null : left)
   }
 
   showRight(right: RightPanel | null) {

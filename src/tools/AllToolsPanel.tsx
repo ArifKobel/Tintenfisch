@@ -58,7 +58,7 @@ export function AllToolsPanel() {
   }
 
   return (
-    <SidePanel title="All tools" side="left" onClose={() => application.panels.showLeft(null)}>
+    <SidePanel title="All tools" side="left">
       {GROUPS.map(({ title, entries }) => (
         <section key={title} className="panel-group">
           <button type="button" className="panel-group-title" aria-expanded={!collapsed.has(title)} onClick={() => toggle(title)}>

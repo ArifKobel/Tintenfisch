@@ -4,14 +4,14 @@ import { IconButton } from '@ui/IconButton.tsx'
 export interface SidePanelProps {
   title: string
   side: 'left' | 'right'
-  onClose: () => void
+  onClose?: () => void
   actions?: ReactNode
   onKeyDown?: (event: KeyboardEvent<HTMLElement>) => void
   children: ReactNode
 }
 
 export function SidePanel({ title, side, onClose, actions, onKeyDown, children }: SidePanelProps) {
-  const close = <IconButton icon="close" label={`Close ${title.toLowerCase()}`} tooltip={side === 'right' ? 'below' : 'left'} onClick={onClose} />
+  const close = onClose && <IconButton icon="close" label={`Close ${title.toLowerCase()}`} tooltip={side === 'right' ? 'below' : 'left'} onClick={onClose} />
   return (
     <aside className={`panel panel-${side}`} aria-label={title} onKeyDown={onKeyDown}>
       <header className="panel-header">

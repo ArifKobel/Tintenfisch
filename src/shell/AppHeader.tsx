@@ -34,7 +34,7 @@ export function AppHeader() {
       {document.phase === 'ready' && (
         <nav className="header-tabs" aria-label="Tool panels">
           {TABS.map(({ panel, label }) => (
-            <button key={panel} type="button" className={`header-tab${left === panel ? ' header-tab-active' : ''}`} aria-pressed={left === panel} onClick={() => panels.toggleLeft(panel)}>
+            <button key={panel} type="button" className={`header-tab${left === panel ? ' header-tab-active' : ''}`} aria-pressed={left === panel} onClick={() => panels.showLeft(panel)}>
               {label}
             </button>
           ))}
