@@ -12,9 +12,12 @@ export function ZoomControls({ document }: { document: ReadyDocument }) {
     <div className="zoom-controls" role="group" aria-label="Zoom">
       <IconButton icon="maximize" label="Fit width" tooltip="left" onClick={() => viewport.fitWidth(widest)} />
       <IconButton icon="zoom-in" label="Zoom in" tooltip="left" onClick={() => viewport.zoomIn()} />
-      <span className="zoom-level" aria-live="polite">
+      <button type="button" className="zoom-level" aria-live="polite" aria-label={`Zoom ${Math.round(zoom * 100)}%, reset to 100%`} onClick={() => viewport.setZoom(1)}>
         {Math.round(zoom * 100)}%
-      </span>
+        <span className="tooltip tooltip-left" aria-hidden="true">
+          Reset to 100%
+        </span>
+      </button>
       <IconButton icon="zoom-out" label="Zoom out" tooltip="left" onClick={() => viewport.zoomOut()} />
     </div>
   )

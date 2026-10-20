@@ -23,7 +23,6 @@ export function DocumentScroller({ document }: { document: ReadyDocument }) {
   const previousLayout = useRef(layout)
   const shownFocus = useRef(0)
   const pixelRatio = window.devicePixelRatio || 1
-  const widestAtZoomOne = Math.max(...document.pages.map((page) => page.width)) * CSS_PIXELS_PER_POINT
 
   useLayoutEffect(() => {
     const element = container.current
@@ -49,9 +48,8 @@ export function DocumentScroller({ document }: { document: ReadyDocument }) {
   }, [viewport])
 
   useLayoutEffect(() => {
-    viewport.reportAvailableWidth((container.current?.clientWidth ?? 0) - 2 * PAGE_GAP)
-    viewport.fitWidth(widestAtZoomOne)
-  }, [viewport, document.session, widestAtZoomOne])
+    viewport.setZoom(1)
+  }, [viewport, document.session])
 
   useLayoutEffect(() => {
     const element = container.current
