@@ -36,6 +36,13 @@
   font-size: 15px;
 }
 
+.start-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
 .home-notice {
   width: min(100%, 960px);
   padding: 10px 16px;

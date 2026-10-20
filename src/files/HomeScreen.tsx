@@ -1,6 +1,7 @@
 import { OpenDocumentButton } from '@document/OpenDocumentButton.tsx'
 import { DeleteFileDialog } from '@files/DeleteFileDialog.tsx'
 import { RecentFiles } from '@files/RecentFiles.tsx'
+import { SampleDocumentButton } from '@files/SampleDocumentButton.tsx'
 import { useFilesState } from '@files/useFilesState.ts'
 
 export function HomeScreen() {
@@ -10,7 +11,10 @@ export function HomeScreen() {
       <section className="start-card">
         <h1 className="start-title">Drop a PDF here or select one</h1>
         <p className="start-text">Edit text and images, comment, organize pages, fill and sign forms. Files stay in this browser and never leave your device.</p>
-        <OpenDocumentButton />
+        <div className="start-actions">
+          <OpenDocumentButton />
+          <SampleDocumentButton />
+        </div>
       </section>
       {missing && (
         <p className="home-notice" role="status">
