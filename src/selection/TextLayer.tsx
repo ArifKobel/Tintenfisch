@@ -1,4 +1,4 @@
-import type { MouseEvent, PointerEvent } from 'react'
+import { useRef, type MouseEvent, type PointerEvent } from 'react'
 import { useApplication } from '@app/ApplicationContext.ts'
 import { useToolState } from '@tools/useToolState.ts'
 import { EditFrame } from '@editing/EditFrame.tsx'
@@ -22,14 +22,11 @@ export function TextLayer({ pageId, cssScale }: { pageId: string; cssScale: numb
   const active = edited.active?.pageId === pageId ? edited.active : null
   const caret = active ? active.caret : undefined
   const blocks = usePageTextBlocks(pageId)
+  const dragging = useRef<number | null>(null)
 
   function pointInPoints(event: MouseEvent<HTMLDivElement>) {
     const bounds = event.currentTarget.getBoundingClientRect()
     return { x: (event.clientX - bounds.left) / cssScale, y: (event.clientY - bounds.top) / cssScale }
-  }
-
-  function capture(event: PointerEvent<HTMLDivElement>) {
-    if (event.button === 0) event.currentTarget.setPointerCapture(event.pointerId)
   }
 
   function begin(event: MouseEvent<HTMLDivElement>) {
@@ -76,8 +73,18 @@ export function TextLayer({ pageId, cssScale }: { pageId: string; cssScale: numb
     void selection.begin(pageId, x, y, UNITS[Math.min(Math.max(event.detail, 1), 3) - 1])
   }
 
+  function press(event: PointerEvent<HTMLDivElement>) {
+    if (event.button !== 0 || !(event.target instanceof Element)) return
+    event.target.setPointerCapture(event.pointerId)
+    dragging.current = event.pointerId
+  }
+
+  function release(event: PointerEvent<HTMLDivElement>) {
+    if (dragging.current === event.pointerId) dragging.current = null
+  }
+
   function extend(event: PointerEvent<HTMLDivElement>) {
-    if ((event.buttons & 1) === 0) return
+    if (dragging.current !== event.pointerId || (event.buttons & 1) === 0) return
     const { x, y } = pointInPoints(event)
     if (!edited.enabled) void selection.extend(pageId, x, y)
     else if (active && tool !== 'addText') void editing.dragTo(pageId, x, y)
@@ -100,7 +107,7 @@ export function TextLayer({ pageId, cssScale }: { pageId: string; cssScale: numb
   const current = found.matches[found.current]
   const pageMatches = found.matches.filter((match) => match.pageId === pageId && match !== current)
   return (
-    <div className={`text-layer${tool === 'addText' ? ' text-layer-adding' : ''}`} onPointerDown={capture} onMouseDown={begin} onPointerMove={extend} onMouseUp={(event) => void finish(event)}>
+    <div className={`text-layer${tool === 'addText' ? ' text-layer-adding' : ''}`} onPointerDown={press} onMouseDown={begin} onPointerMove={extend} onPointerUp={release} onLostPointerCapture={release} onMouseUp={(event) => void finish(event)}>
       <HighlightBoxes boxes={blocks} cssScale={cssScale} className="text-block-region" />
       <HighlightBoxes boxes={pageMatches.flatMap((match) => match.rects)} cssScale={cssScale} className="find-match" />
       {current?.pageId === pageId && <HighlightBoxes boxes={current.rects} cssScale={cssScale} className="find-match find-match-current" />}
