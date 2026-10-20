@@ -200,3 +200,25 @@
   font-weight: 700;
   box-shadow: var(--shadow-dialog);
 }
+
+@media (max-width: 768px) {
+  .home {
+    gap: 24px;
+    padding: 24px 16px;
+  }
+
+  .start-card {
+    padding: 28px 20px;
+  }
+
+  .recent-table th,
+  .recent-table td {
+    padding: 8px 12px;
+  }
+
+  .recent-table th:nth-child(2),
+  .recent-table td:nth-child(2),
+  .save-status-label {
+    display: none;
+  }
+}

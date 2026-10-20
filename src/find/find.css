@@ -57,3 +57,9 @@
 .find-match-current {
   background: rgb(249 115 22 / 0.55);
 }
+
+@media (max-width: 768px) {
+  .find-field {
+    width: 140px;
+  }
+}

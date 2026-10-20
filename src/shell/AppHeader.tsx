@@ -6,17 +6,10 @@ import { SaveStatus } from '@files/SaveStatus.tsx'
 import { FindBar } from '@find/FindBar.tsx'
 import { DocumentMenu } from '@shell/DocumentMenu.tsx'
 import { GitHubStarLink } from '@shell/GitHubStarLink.tsx'
-import type { LeftPanel } from '@shell/PanelStore.ts'
-import { usePanelState } from '@shell/usePanelState.ts'
-
-const TABS: { panel: LeftPanel; label: string }[] = [
-  { panel: 'tools', label: 'All tools' },
-  { panel: 'edit', label: 'Edit' },
-]
+import { PanelTabs } from '@shell/PanelTabs.tsx'
 
 export function AppHeader() {
-  const { files, panels } = useApplication()
-  const { left } = usePanelState()
+  const { files } = useApplication()
   const document = useDocumentState()
   return (
     <header className="app-header">
@@ -31,15 +24,7 @@ export function AppHeader() {
         <img className="brand-mark" src="/brand/mark.png" alt="" width={28} height={28} />
         <span className="brand-name">Tintenfisch</span>
       </a>
-      {document.phase === 'ready' && (
-        <nav className="header-tabs" aria-label="Tool panels">
-          {TABS.map(({ panel, label }) => (
-            <button key={panel} type="button" className={`header-tab${left === panel ? ' header-tab-active' : ''}`} aria-pressed={left === panel} onClick={() => panels.showLeft(panel)}>
-              {label}
-            </button>
-          ))}
-        </nav>
-      )}
+      {document.phase === 'ready' && <PanelTabs className="header-tabs" />}
       <div className="header-document">
         <DocumentTitle />
         <SaveStatus />

@@ -17,12 +17,19 @@ interface Action {
 type Entry = Tool | Action
 
 const GROUPS: { title: string; entries: Entry[] }[] = [
+  {
+    title: 'View',
+    entries: [
+      { label: 'Comments', icon: 'comment', run: ({ panels }) => panels.showRight('comments') },
+      { label: 'Pages', icon: 'view-grid', run: ({ panels }) => panels.showRight('pages') },
+      { label: 'Bookmarks', icon: 'bookmark', run: ({ panels }) => panels.showRight('bookmarks') },
+    ],
+  },
   { title: 'Edit', entries: ['edit', 'addText', 'addImage', 'link'] },
   { title: 'Comment', entries: ['note', 'textBox', 'highlight', 'ink', 'rectangle', 'ellipse', 'arrow', 'stamp'] },
   {
     title: 'Organize pages',
     entries: [
-      { label: 'Show pages', icon: 'view-grid', run: ({ panels }) => panels.showRight('pages') },
       { label: 'Insert blank page', icon: 'file-add', run: ({ organize }) => void organize.insertBlank() },
     ],
   },
@@ -51,6 +58,12 @@ export function AllToolsPanel() {
   const { tool } = useToolState()
   const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(new Set())
 
+  function choose(entry: Entry) {
+    if (typeof entry === 'string') application.tools.choose(entry)
+    else entry.run(application)
+    application.panels.closeSheet()
+  }
+
   function toggle(title: string) {
     const next = new Set(collapsed)
     if (!next.delete(title)) next.add(title)
@@ -68,9 +81,9 @@ export function AllToolsPanel() {
           {!collapsed.has(title) &&
             entries.map((entry) =>
               typeof entry === 'string' ? (
-                <PanelItem key={entry} icon={TOOL_CATALOG[entry].icon} label={TOOL_CATALOG[entry].label} chosen={entry === tool} onClick={() => application.tools.choose(entry)} />
+                <PanelItem key={entry} icon={TOOL_CATALOG[entry].icon} label={TOOL_CATALOG[entry].label} chosen={entry === tool} onClick={() => choose(entry)} />
               ) : (
-                <PanelItem key={entry.label} icon={entry.icon} label={entry.label} onClick={() => entry.run(application)} />
+                <PanelItem key={entry.label} icon={entry.icon} label={entry.label} onClick={() => choose(entry)} />
               ),
             )}
         </section>

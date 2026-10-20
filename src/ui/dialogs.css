@@ -71,3 +71,11 @@
 .font-consent {
   max-width: 480px;
 }
+
+@media (max-width: 768px) {
+  .dialog {
+    min-width: 0;
+    width: calc(100vw - 32px);
+    padding: 24px 20px;
+  }
+}

@@ -294,3 +294,9 @@ input[type='radio'] {
   color: #fff;
   box-shadow: var(--shadow-dialog);
 }
+
+@media (hover: none) {
+  .tooltip {
+    display: none;
+  }
+}

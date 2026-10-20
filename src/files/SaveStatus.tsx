@@ -8,7 +8,7 @@ export function SaveStatus() {
     return (
       <span className="save-status save-status-failed" role="alert" title={error ?? undefined}>
         <Icon name="cloud-state-error" />
-        Not saved
+        <span className="save-status-label">Not saved</span>
       </span>
     )
   }
@@ -16,7 +16,7 @@ export function SaveStatus() {
   return (
     <span className="save-status" role="status">
       <Icon name={saved ? 'cloud-state-online' : 'cloud-state-in-progress'} />
-      {saved ? 'Saved' : 'Saving…'}
+      <span className="save-status-label">{saved ? 'Saved' : 'Saving…'}</span>
     </span>
   )
 }

@@ -298,3 +298,122 @@
 .zoom-level:hover {
   color: var(--text-strong);
 }
+
+.left-dock {
+  display: contents;
+}
+
+.sheet-header {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    gap: 8px;
+    padding: 0 12px;
+  }
+
+  .brand {
+    padding-right: 0;
+    border-right: 0;
+  }
+
+  .brand-name,
+  .header-tabs,
+  .document-kind,
+  .github-star,
+  .button-label,
+  .right-rail {
+    display: none;
+  }
+
+  .header-document {
+    justify-content: flex-start;
+    gap: 4px;
+  }
+
+  .header-actions {
+    gap: 4px;
+  }
+
+  .header-actions .button {
+    padding: 3px 8px 5px;
+  }
+
+  .header-document .menu-below {
+    right: 0;
+    left: auto;
+  }
+
+  .canvas {
+    flex-direction: column;
+  }
+
+  .context-bar {
+    top: 8px;
+    flex-wrap: wrap;
+    gap: 8px;
+    max-width: calc(100% - 16px);
+  }
+
+  .toasts {
+    bottom: 80px;
+    width: calc(100% - 32px);
+  }
+
+  .left-dock {
+    display: none;
+  }
+
+  .left-dock-open {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 26;
+    display: flex;
+    flex-direction: column;
+    max-height: 50vh;
+    border-radius: 12px 12px 0 0;
+    background: var(--surface);
+    box-shadow: 0 -4px 16px rgb(0 0 0 / 0.15);
+  }
+
+  .sheet-header {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: space-between;
+    height: 48px;
+    padding: 0 12px 0 20px;
+    border-bottom: 1px solid var(--divider);
+  }
+
+  .sheet-tabs {
+    display: flex;
+    align-self: stretch;
+    gap: 24px;
+  }
+
+  .left-dock .panel-left {
+    flex: 1;
+    width: auto;
+    border-right: 0;
+  }
+
+  .left-dock .panel-header {
+    display: none;
+  }
+
+  .left-dock .panel-body {
+    padding: 12px 20px 24px;
+  }
+
+  .panel-right {
+    position: fixed;
+    inset: 56px 0 0;
+    z-index: 25;
+    width: auto;
+    border-left: 0;
+  }
+}

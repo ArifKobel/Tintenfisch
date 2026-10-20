@@ -14,9 +14,9 @@ export function SaveDocumentButton() {
   }
 
   return (
-    <button type="button" className="button button-dark" onClick={save}>
+    <button type="button" className="button button-dark" aria-label="Download" onClick={save}>
       <Icon name="download" />
-      Download
+      <span className="button-label">Download</span>
     </button>
   )
 }

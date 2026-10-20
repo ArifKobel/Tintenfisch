@@ -19,3 +19,43 @@
   background: var(--surface);
   box-shadow: var(--shadow-float);
 }
+
+.sheet-toggle {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .quick-toolbar-gutter {
+    order: 1;
+    flex: none;
+    width: auto;
+    border-top: 1px solid var(--divider);
+    background: var(--surface);
+  }
+
+  .quick-toolbar {
+    position: static;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 0;
+    width: auto;
+    padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .sheet-toggle {
+    display: contents;
+  }
+
+  .quick-toolbar .menu-right {
+    top: auto;
+    bottom: calc(100% + 12px);
+    left: 0;
+  }
+
+  .quick-toolbar > .menu-anchor:nth-child(n + 5) .menu-right {
+    right: 0;
+    left: auto;
+  }
+}

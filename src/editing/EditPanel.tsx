@@ -13,7 +13,11 @@ export function EditPanel() {
   const { panels, tools } = useApplication()
   const { tool } = useToolState()
   const { active } = useEditingState()
-  const pick = (chosen: Tool) => tools.choose(tool === chosen ? 'edit' : chosen)
+  const choose = (chosen: Tool) => {
+    tools.choose(chosen)
+    panels.closeSheet()
+  }
+  const pick = (chosen: Tool) => choose(tool === chosen ? 'edit' : chosen)
   return (
     <SidePanel title="Edit" side="left">
       <section className="panel-section">
@@ -29,8 +33,8 @@ export function EditPanel() {
       <section className="panel-section">
         <h3 className="section-label">More options</h3>
         <PanelItem icon="view-grid" label="Organize pages" onClick={() => panels.showRight('pages')} />
-        <PanelItem icon={TOOL_CATALOG.redactText.icon} label={TOOL_CATALOG.redactText.label} onClick={() => tools.choose('redactText')} />
-        <PanelItem icon={TOOL_CATALOG.redactArea.icon} label={TOOL_CATALOG.redactArea.label} onClick={() => tools.choose('redactArea')} />
+        <PanelItem icon={TOOL_CATALOG.redactText.icon} label={TOOL_CATALOG.redactText.label} onClick={() => choose('redactText')} />
+        <PanelItem icon={TOOL_CATALOG.redactArea.icon} label={TOOL_CATALOG.redactArea.label} onClick={() => choose('redactArea')} />
       </section>
     </SidePanel>
   )
