@@ -32,7 +32,7 @@ describe('EditSession', () => {
 
   it('counts a moved or resized box as a change and drafts it with the text', () => {
     expect(line().movedTo(3, 4).changed).toBe(true)
-    expect(line().resizedTo(120).draft).toEqual({ text: 'Hello', caret: 5, dx: 0, dy: 0, width: 120, styles: [], selection: null })
+    expect(line().resizedTo(120).draft).toEqual({ clusters: ['H', 'e', 'l', 'l', 'o'], caret: 5, dx: 0, dy: 0, width: 120, styles: [], selection: null })
     expect(line().movedTo(3, 4).insert('!').box).toEqual({ dx: 3, dy: 4, width: null })
   })
 

@@ -105,7 +105,7 @@ describe('EngineHost', () => {
         },
       }),
     )
-    const draft = { text: 'new', caret: 1, dx: 4, dy: 0, width: null, styles: [{ start: 0, end: 2, bold: true }], selection: [0, 2] as [number, number] }
+    const draft = { clusters: ['n', 'e', 'w'], caret: 1, dx: 4, dy: 0, width: null, styles: [{ start: 0, end: 2, bold: true }], selection: [0, 2] as [number, number] }
     host.handle({ id: 3, priority: 'interactive', kind: 'previewEdit', pageId: '3-0', line: 2, draft })
     expect(calls).toEqual([['3-0', 2, draft]])
   })

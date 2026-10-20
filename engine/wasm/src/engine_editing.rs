@@ -13,7 +13,7 @@ use crate::replies::{ChangeReply, ClusterStyleReply, ParagraphReply, PreviewRepl
 
 #[derive(Deserialize)]
 struct DraftRequest {
-    text: String,
+    clusters: Vec<String>,
     caret: usize,
     dx: f64,
     dy: f64,
@@ -165,8 +165,9 @@ impl Engine {
         let offset = draft.caret;
         let selection = draft.selection;
         let styles = draft.styles.into_iter().map(StyleChange::from).collect();
-        let mut edit =
-            ParagraphEdit::new(page_id(page)?, line, draft.text).moved_by(draft.dx, draft.dy).with_styles(styles);
+        let mut edit = ParagraphEdit::clustered(page_id(page)?, line, draft.clusters)
+            .moved_by(draft.dx, draft.dy)
+            .with_styles(styles);
         if let Some(width) = draft.width {
             edit = edit.with_width(width);
         }

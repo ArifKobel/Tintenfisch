@@ -222,9 +222,9 @@ export class EditingStore {
   }
 
   static #previewOf(session: EditSession) {
-    const { pageId, line, draft, origin, newLook } = session
+    const { pageId, line, draft, origin, newLook, text } = session
     if (!origin) return { kind: 'previewEdit', pageId, line, draft } as const
-    const { text, caret, selection, dx, dy } = draft
+    const { caret, selection, dx, dy } = draft
     const family = newLook.font?.kind === 'bundled' ? newLook.font.family : 'sans'
     const catalog = newLook.font?.kind === 'catalog' ? newLook.font.key : null
     const { bold, italic, size } = newLook

@@ -28,15 +28,21 @@ const MIN_WIDTH: f64 = 4.0;
 pub struct ParagraphEdit {
     pub page: PageId,
     pub line: usize,
-    pub text: String,
+    pub clusters: Vec<String>,
     pub offset: (f64, f64),
     pub width: Option<f64>,
     pub styles: Vec<StyleChange>,
 }
 
 impl ParagraphEdit {
-    pub fn new(page: PageId, line: usize, text: impl Into<String>) -> Self {
-        Self { page, line, text: text.into(), offset: (0.0, 0.0), width: None, styles: Vec::new() }
+    pub fn new(page: PageId, line: usize, text: impl AsRef<str>) -> Self {
+        Self::clustered(page, line, split_graphemes(&text.as_ref().replace("\r\n", "\n")))
+    }
+
+    pub fn clustered(page: PageId, line: usize, clusters: Vec<String>) -> Self {
+        let clusters =
+            clusters.into_iter().map(|cluster| if cluster == "\r\n" { "\n".to_string() } else { cluster }).collect();
+        Self { page, line, clusters, offset: (0.0, 0.0), width: None, styles: Vec::new() }
     }
 
     pub fn with_styles(self, styles: Vec<StyleChange>) -> Self {
@@ -78,8 +84,8 @@ impl<'a> ParagraphPlanner<'a> {
         let mut encoder = GlyphEncoder::new(self.library, font_names_in_use(self.store, &text.page)?);
         let source = ParagraphSource::new(&text, edit.line, &mut encoder)?;
         let old = &source.items;
-        let typed = split_graphemes(&edit.text.replace("\r\n", "\n"));
-        let prefix = old.iter().zip(&typed).take_while(|(item, grapheme)| item.text == **grapheme).count();
+        let typed = &edit.clusters;
+        let prefix = old.iter().zip(typed).take_while(|(item, grapheme)| item.text == **grapheme).count();
         let limit = old.len().min(typed.len()) - prefix;
         let suffix = old
             .iter()

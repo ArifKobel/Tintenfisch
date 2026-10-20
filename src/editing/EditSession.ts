@@ -89,7 +89,7 @@ export class EditSession {
   }
 
   get draft(): EditDraft {
-    return { text: this.text, caret: this.caret, ...this.box, styles: [...this.styles], selection: this.selection }
+    return { clusters: [...this.clusters], caret: this.caret, ...this.box, styles: [...this.styles], selection: this.selection }
   }
 
   get look(): TextLook {

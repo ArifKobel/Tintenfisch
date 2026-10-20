@@ -94,7 +94,7 @@ export interface PageFont {
 export type ClusterRange = [number, number]
 
 export interface EditDraft {
-  text: string
+  clusters: string[]
   caret: number
   dx: number
   dy: number
