@@ -31,7 +31,7 @@ export function PageSlot({ session, page, placement, left, scale, cssScale, pixe
       <PageBackdrop session={session} page={page} />
       {tiles.map((tile) => (
         <TileCanvas
-          key={`${tile.x},${tile.y}`}
+          key={`${scale}:${tile.x},${tile.y}`}
           address={{ session, pageId: page.id, revision, scale, tile }}
           pixelRatio={pixelRatio}
         />
