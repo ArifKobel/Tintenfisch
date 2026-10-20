@@ -122,6 +122,15 @@
   gap: 8px;
 }
 
+.github-star {
+  text-decoration: none;
+}
+
+.github-star .icon {
+  width: 16px;
+  height: 16px;
+}
+
 .workspace {
   display: flex;
   flex: 1;

@@ -5,6 +5,7 @@ import { useDocumentState } from '@document/useDocumentState.ts'
 import { SaveStatus } from '@files/SaveStatus.tsx'
 import { FindBar } from '@find/FindBar.tsx'
 import { DocumentMenu } from '@shell/DocumentMenu.tsx'
+import { GitHubStarLink } from '@shell/GitHubStarLink.tsx'
 import type { LeftPanel } from '@shell/PanelStore.ts'
 import { usePanelState } from '@shell/usePanelState.ts'
 
@@ -47,6 +48,7 @@ export function AppHeader() {
       <div className="header-actions">
         <FindBar />
         <SaveDocumentButton />
+        <GitHubStarLink />
       </div>
     </header>
   )
