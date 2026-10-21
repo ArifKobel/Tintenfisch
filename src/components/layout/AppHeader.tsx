@@ -1,4 +1,5 @@
 import { Link } from '@tanstack/react-router'
+import { isTauri } from '@tauri-apps/api/core'
 import { DocumentTitle } from '@/components/document/DocumentTitle.tsx'
 import { SaveDocumentButton } from '@/components/document/SaveDocumentButton.tsx'
 import { SaveStatus } from '@/components/document/SaveStatus.tsx'
@@ -25,7 +26,7 @@ export function AppHeader() {
       <div className="flex items-center gap-2 max-md:gap-1">
         <FindBar />
         <SaveDocumentButton />
-        <GitHubStarLink />
+        {!isTauri() && <GitHubStarLink />}
       </div>
     </header>
   )
