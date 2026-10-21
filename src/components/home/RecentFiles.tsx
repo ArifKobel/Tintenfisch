@@ -20,38 +20,38 @@ function size(bytes: number): string {
 export function RecentFiles({ files }: { files: StoredFile[] }) {
   const askToDelete = useLibraryStore((state) => state.askToDelete)
   return (
-    <section className="recent-files" aria-labelledby="recent-title">
-      <h2 id="recent-title" className="recent-title">
+    <section className="flex w-[min(100%,960px)] flex-none flex-col gap-3" aria-labelledby="recent-title">
+      <h2 id="recent-title" className="self-start border-b-2 border-ink-strong pb-1.5 font-bold text-ink-strong">
         Recent
       </h2>
-      <table className="recent-table">
+      <table className="w-full border-separate border-spacing-0 overflow-hidden rounded-lg border border-divider bg-surface [&_td]:border-t [&_td]:border-divider [&_td]:px-4 [&_td]:py-2 [&_td]:whitespace-nowrap [&_td]:text-ink-strong [&_th]:px-4 [&_th]:py-3 [&_th]:text-left [&_th]:text-[11px] [&_th]:font-bold [&_th]:tracking-[0.06em] [&_th]:text-ink [&_th]:uppercase max-md:[&_td]:px-3 max-md:[&_th]:px-3 max-md:[&_td:nth-child(2)]:hidden max-md:[&_th:nth-child(2)]:hidden">
         <thead>
           <tr>
             <th scope="col">Name</th>
             <th scope="col">Opened</th>
             <th scope="col">Size</th>
             <th scope="col">
-              <span className="visually-hidden">Actions</span>
+              <span className="sr-only">Actions</span>
             </th>
           </tr>
         </thead>
         <tbody>
           {files.map((file) => (
-            <tr key={file.id}>
-              <td>
-                <Link className="recent-name" to="/documents/$documentId" params={{ documentId: file.id }}>
-                  <span className="recent-icon">
+            <tr key={file.id} className="hover:bg-canvas">
+              <td className="w-full max-w-0">
+                <Link className="group/name flex items-center gap-3 text-inherit no-underline" to="/documents/$documentId" params={{ documentId: file.id }}>
+                  <span className="grid h-10 w-8 flex-none place-items-center rounded-[2px] border border-separator bg-white text-negative">
                     <Icon name="file-text" />
                   </span>
-                  <span>
-                    <span className="recent-file">{file.name}</span>
-                    <span className="recent-kind">PDF</span>
+                  <span className="flex min-w-0 flex-col">
+                    <span className="truncate group-hover/name:underline">{file.name}</span>
+                    <span className="text-xs text-ink-muted">PDF</span>
                   </span>
                 </Link>
               </td>
               <td>{when(file.opened)}</td>
               <td>{size(file.size)}</td>
-              <td className="recent-actions">
+              <td className="text-right">
                 <IconButton icon="delete" label={`Delete ${file.name}`} tooltip="left" onClick={() => askToDelete(file)} />
               </td>
             </tr>

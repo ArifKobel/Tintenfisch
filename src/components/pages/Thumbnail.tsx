@@ -53,12 +53,11 @@ export function Thumbnail({ session, page, number, current, selected, dropBefore
     onChoose({ toggle: event.metaKey || event.ctrlKey, range: event.shiftKey })
   }
 
-  const classes = ['thumbnail', current && 'thumbnail-current', selected && 'thumbnail-selected', dropBefore && 'thumbnail-drop-before']
   return (
     <button
       ref={button}
       type="button"
-      className={classes.filter(Boolean).join(' ')}
+      className={`group/thumb flex cursor-pointer flex-col items-center gap-1.5 p-0 text-xs text-ink ${dropBefore ? 'shadow-[-6px_0_0_-3px_var(--color-selection)]' : ''}`}
       onClick={choose}
       draggable
       onDragStart={onDragStart}
@@ -67,8 +66,11 @@ export function Thumbnail({ session, page, number, current, selected, dropBefore
       aria-current={current}
       aria-pressed={selected}
     >
-      <canvas ref={canvas} style={{ width: THUMBNAIL_WIDTH, height: (THUMBNAIL_WIDTH * page.height) / page.width }} />
-      <span className="thumbnail-number">{number}</span>
+      <canvas
+        ref={canvas}
+        className={`rounded-lg border bg-white outline-offset-2 ${selected ? 'border-selection outline-3 outline-selection-fill' : current ? 'border-edit-outline outline-1 outline-transparent' : 'border-separator outline-1 outline-transparent group-hover/thumb:border-menu-border'}`}
+        style={{ width: THUMBNAIL_WIDTH, height: (THUMBNAIL_WIDTH * page.height) / page.width }} />
+      <span className={selected ? 'font-bold text-accent-ink' : ''}>{number}</span>
     </button>
   )
 }

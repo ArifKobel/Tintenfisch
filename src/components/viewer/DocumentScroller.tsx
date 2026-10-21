@@ -98,8 +98,8 @@ export function DocumentScroller({ document }: { document: ReadyDocument }) {
   const visible = layout.visible(scroll.top - scroll.height, scroll.top + 2 * scroll.height)
   const scale = zoom * CSS_PIXELS_PER_POINT * pixelRatio
   return (
-    <div ref={container} className="document-scroller">
-      <div className="document-canvas" style={{ height: layout.totalHeight, width: contentWidth }}>
+    <div ref={container} className="flex-1 overflow-auto">
+      <div className="relative" style={{ height: layout.totalHeight, width: contentWidth }}>
         {visible.map((placement) => {
           const left = Math.max(PAGE_GAP, (contentWidth - placement.width) / 2)
           const visibleArea = {

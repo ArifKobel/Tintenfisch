@@ -2,6 +2,10 @@ import { useState, type ChangeEvent, type PointerEvent } from 'react'
 import type { Point, Rgb } from '@/types/protocol.ts'
 import { SignaturePicture } from '@/services/SignaturePicture.ts'
 import { useSignatureStore } from '@/stores/signatureStore.ts'
+import { Button } from '@/components/ui/Button.tsx'
+import { buttonClass } from '@/components/ui/controlStyles.ts'
+import { Notice } from '@/components/ui/Text.tsx'
+import { Dialog, DialogActions } from '@/components/ui/Dialog.tsx'
 
 const PAD_WIDTH = 420
 const PAD_HEIGHT = 140
@@ -52,12 +56,10 @@ export function SignaturePad() {
 
   const ink = `rgb(${INK.map((part) => part * 255).join(' ')})`
   return (
-    <div className="dialog-backdrop">
-      <div className="dialog signature-pad" role="dialog" aria-modal="true" aria-label="Create signature">
-        <h2 className="dialog-title">Create signature</h2>
-        <p className="dialog-hint">Draw with the mouse, pen or finger, or use a picture of your signature.</p>
+    <Dialog title="Create signature" label="Create signature">
+        <p className="text-ink-body">Draw with the mouse, pen or finger, or use a picture of your signature.</p>
         <svg
-          className="signature-canvas"
+          className="cursor-crosshair touch-none rounded border border-field-border bg-white [&_polyline]:fill-none [&_polyline]:[stroke-linecap:round] [&_polyline]:[stroke-linejoin:round]"
           width={PAD_WIDTH}
           height={PAD_HEIGHT}
           aria-label="Signature pad"
@@ -70,27 +72,24 @@ export function SignaturePad() {
           ))}
         </svg>
         {notice && (
-          <p className="notice" role="status">
-            {notice}
-          </p>
+          <Notice>{notice}</Notice>
         )}
-        <div className="dialog-actions">
-          <button type="button" className="button" onClick={() => setStrokes([])} disabled={strokes.length === 0}>
+        <DialogActions>
+          <Button onClick={() => setStrokes([])} disabled={strokes.length === 0}>
             Clear
-          </button>
-          <label className="button">
+          </Button>
+          <label className={buttonClass()}>
             Use a picture
             <input type="file" accept="image/*" hidden onChange={(event) => void choosePicture(event)} />
           </label>
-          <span className="dialog-spacer" />
-          <button type="button" className="button" onClick={() => signing.closePad()}>
+          <span className="flex-1" />
+          <Button onClick={() => signing.closePad()}>
             Cancel
-          </button>
-          <button type="button" className="button button-primary" onClick={adopt} disabled={strokes.length === 0}>
+          </Button>
+          <Button look="primary" onClick={adopt} disabled={strokes.length === 0}>
             Use signature
-          </button>
-        </div>
-      </div>
-    </div>
+          </Button>
+        </DialogActions>
+    </Dialog>
   )
 }

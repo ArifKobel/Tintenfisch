@@ -1,8 +1,10 @@
 import { CommentItem } from '@/components/comments/CommentItem.tsx'
-import { SidePanel } from '@/components/ui/SidePanel.tsx'
+import { EmptyState, SidePanel } from '@/components/ui/SidePanel.tsx'
 import { useCommentsStore } from '@/stores/commentsStore.ts'
 import { useDocumentStore } from '@/stores/documentStore.ts'
 import { useWorkspaceStore } from '@/stores/workspaceStore.ts'
+import { Button } from '@/components/ui/Button.tsx'
+import { Notice } from '@/components/ui/Text.tsx'
 
 export function CommentsPanel() {
   const workspace = useWorkspaceStore()
@@ -13,20 +15,15 @@ export function CommentsPanel() {
   return (
     <SidePanel title="Comments" side="right" onClose={() => workspace.showRight(null)}>
       {notice && (
-        <p className="notice" role="status">
-          {notice}
-        </p>
+        <Notice>{notice}</Notice>
       )}
       {comments.length === 0 ? (
-        <div className="empty-state">
-          <h3 className="empty-state-title">Get started</h3>
+        <EmptyState title="Get started">
           <p>Add comments to make notes for yourself or others. Pick a sticky note, a text box or a drawing tool on the left.</p>
-          <button type="button" className="button" onClick={() => workspace.choose('note')}>
-            Add a sticky note
-          </button>
-        </div>
+          <Button onClick={() => workspace.choose('note')}>Add a sticky note</Button>
+        </EmptyState>
       ) : (
-        <div className="comment-list">
+        <div className="flex flex-col gap-3">
           {comments.map((comment) => (
             <CommentItem key={comment.id} comment={comment} pageNumber={numbers.get(comment.pageId) ?? 0} selected={comment.id === selected} />
           ))}

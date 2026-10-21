@@ -28,12 +28,12 @@ export function PrintSheet() {
   if (!sheet) return null
   const actual = settings.fit === 'actual'
   return createPortal(
-    <div ref={holder} className={`print-sheet${actual ? ' print-sheet-actual' : ''}`}>
+    <div ref={holder} className="hidden print:block">
       <style>{pageRules(sheet, actual)}</style>
       {sheet.map((page, index) => (
         <img
           key={page.url}
-          className="print-page"
+          className={`hidden break-after-page last:break-after-auto print:block ${actual ? '' : 'mx-auto max-h-screen max-w-full object-contain'}`}
           src={page.url}
           alt={`Page ${index + 1}`}
           style={actual ? { page: sizeName(page), width: `${page.width}pt`, height: `${page.height}pt` } : { page: `print-${orientationOf(page)}` }}

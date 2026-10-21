@@ -1,6 +1,6 @@
 import { TOOL_CATALOG } from '@/components/tools/toolCatalog.ts'
 import { Icon } from '@/components/ui/Icon.tsx'
-import { MenuButton } from '@/components/ui/MenuButton.tsx'
+import { MenuButton, MenuItem } from '@/components/ui/Menu.tsx'
 import { useDigitalSignatureStore } from '@/stores/digitalSignatureStore.ts'
 import { useSignatureStore } from '@/stores/signatureStore.ts'
 import { useWorkspaceStore } from '@/stores/workspaceStore.ts'
@@ -15,10 +15,8 @@ export function SignMenuButton() {
     <MenuButton icon="pen-brush" label="Sign" tooltip="right" look={active ? 'selected' : null} opens="right">
       {(close) => (
         <>
-          <button
-            type="button"
-            role="menuitem"
-            className={`menu-item${active ? ' menu-item-chosen' : ''}`}
+          <MenuItem
+            chosen={active}
             onClick={() => {
               workspace.choose('sign')
               close()
@@ -26,11 +24,8 @@ export function SignMenuButton() {
           >
             <Icon name={TOOL_CATALOG.sign.icon} />
             {TOOL_CATALOG.sign.label}
-          </button>
-          <button
-            type="button"
-            role="menuitem"
-            className="menu-item"
+          </MenuItem>
+          <MenuItem
             onClick={() => {
               signing.openPad()
               close()
@@ -38,11 +33,8 @@ export function SignMenuButton() {
           >
             <Icon name="draw" />
             Create signature
-          </button>
-          <button
-            type="button"
-            role="menuitem"
-            className="menu-item"
+          </MenuItem>
+          <MenuItem
             onClick={() => {
               digitalSignatures.openDialog()
               close()
@@ -50,7 +42,7 @@ export function SignMenuButton() {
           >
             <Icon name="badge-verified" />
             Sign with certificate
-          </button>
+          </MenuItem>
         </>
       )}
     </MenuButton>

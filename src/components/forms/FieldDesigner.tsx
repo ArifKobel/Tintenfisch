@@ -54,13 +54,13 @@ export function FieldDesigner({ pageId, cssScale }: { pageId: string; cssScale: 
     height: Math.abs(drawn.to[1] - drawn.from[1]) * cssScale,
   }
   return (
-    <div className="field-designer" onPointerDown={press} onPointerMove={(event) => drawn && setDrawn({ ...drawn, to: point(event) })} onPointerUp={release}>
+    <div className="absolute inset-0 cursor-crosshair" onPointerDown={press} onPointerMove={(event) => drawn && setDrawn({ ...drawn, to: point(event) })} onPointerUp={release}>
       {fields.flatMap((field) =>
         field.widgets
           .filter((widget) => widget.pageId === pageId)
           .map((widget) => <FieldBox key={widget.id} field={field} widget={widget} selected={field.id === selected} cssScale={cssScale} />),
       )}
-      {box && <div className="field-box field-box-drawn" style={box} />}
+      {box && <div className="pointer-events-none absolute border border-dashed border-selection bg-selection/10" style={box} />}
     </div>
   )
 }

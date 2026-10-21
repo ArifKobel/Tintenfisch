@@ -6,17 +6,17 @@ export function SaveStatus() {
   if (status === 'idle') return null
   if (status === 'failed') {
     return (
-      <span className="save-status save-status-failed" role="alert" title={error ?? undefined}>
-        <Icon name="cloud-state-error" />
-        <span className="save-status-label">Not saved</span>
+      <span className="flex flex-none items-center gap-1 text-xs text-negative" role="alert" title={error ?? undefined}>
+        <Icon name="cloud-state-error" className="size-4" />
+        <span className="max-md:hidden">Not saved</span>
       </span>
     )
   }
   const saved = status === 'saved'
   return (
-    <span className="save-status" role="status">
-      <Icon name={saved ? 'cloud-state-online' : 'cloud-state-in-progress'} />
-      <span className="save-status-label">{saved ? 'Saved' : 'Saving…'}</span>
+    <span className="flex flex-none items-center gap-1 text-xs text-ink-muted" role="status">
+      <Icon name={saved ? 'cloud-state-online' : 'cloud-state-in-progress'} className="size-4" />
+      <span className="max-md:hidden">{saved ? 'Saved' : 'Saving…'}</span>
     </span>
   )
 }

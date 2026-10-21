@@ -1,6 +1,10 @@
 import { useState, type FormEvent } from 'react'
 import type { Permissions, ProtectionState } from '@/types/protocol.ts'
 import { useProtectionStore } from '@/stores/protectionStore.ts'
+import { Button } from '@/components/ui/Button.tsx'
+import { Hint } from '@/components/ui/Text.tsx'
+import { Dialog, DialogActions, DialogChoice } from '@/components/ui/Dialog.tsx'
+import { Input } from '@/components/ui/Field.tsx'
 
 const PERMISSIONS: { key: keyof Permissions; label: string }[] = [
   { key: 'print', label: 'Printing' },
@@ -43,59 +47,58 @@ export function ProtectionForm({ current }: { current: ProtectionState }) {
   }
 
   return (
-    <form className="dialog protection-dialog" role="dialog" aria-modal="true" aria-label="Protection" onSubmit={submit}>
-      <h2 className="dialog-title">Protection</h2>
-      <p className="dialog-hint">{current.encrypted ? 'This document is protected with a password.' : 'This document is not protected.'} New protection uses AES-256.</p>
-      <label className="dialog-choice">
+    <Dialog title="Protection" label="Protection" className="max-w-[440px]" onSubmit={submit}>
+      <p className="text-ink-body">{current.encrypted ? 'This document is protected with a password.' : 'This document is not protected.'} New protection uses AES-256.</p>
+      <DialogChoice>
         <input type="checkbox" checked={openWithPassword} onChange={(event) => setOpenWithPassword(event.target.checked)} />
         Require a password to open the document
-      </label>
+      </DialogChoice>
       {openWithPassword && (
-        <div className="protection-passwords">
-          <input type="password" aria-label="Password to open" placeholder="Password" autoComplete="new-password" value={userPassword} onChange={(event) => setUserPassword(event.target.value)} />
-          <input type="password" aria-label="Repeat the password to open" placeholder="Repeat" autoComplete="new-password" value={userRepeated} onChange={(event) => setUserRepeated(event.target.value)} />
-          {!restrict && <p className="hint">Anyone with this password can also change or remove the protection.</p>}
+        <div className="ml-[22px] grid gap-2">
+          <Input type="password" aria-label="Password to open" placeholder="Password" autoComplete="new-password" value={userPassword} onChange={(event) => setUserPassword(event.target.value)} />
+          <Input type="password" aria-label="Repeat the password to open" placeholder="Repeat" autoComplete="new-password" value={userRepeated} onChange={(event) => setUserRepeated(event.target.value)} />
+          {!restrict && <Hint>Anyone with this password can also change or remove the protection.</Hint>}
         </div>
       )}
-      <label className="dialog-choice">
+      <DialogChoice>
         <input type="checkbox" checked={restrict} onChange={(event) => setRestrict(event.target.checked)} />
         Restrict what others may do
-      </label>
+      </DialogChoice>
       {restrict && (
         <>
-          <div className="protection-passwords">
-            <input type="password" aria-label="Permissions password" placeholder="Permissions password" autoComplete="new-password" value={ownerPassword} onChange={(event) => setOwnerPassword(event.target.value)} />
-            <input type="password" aria-label="Repeat the permissions password" placeholder="Repeat" autoComplete="new-password" value={ownerRepeated} onChange={(event) => setOwnerRepeated(event.target.value)} />
+          <div className="ml-[22px] grid gap-2">
+            <Input type="password" aria-label="Permissions password" placeholder="Permissions password" autoComplete="new-password" value={ownerPassword} onChange={(event) => setOwnerPassword(event.target.value)} />
+            <Input type="password" aria-label="Repeat the permissions password" placeholder="Repeat" autoComplete="new-password" value={ownerRepeated} onChange={(event) => setOwnerRepeated(event.target.value)} />
           </div>
-          <fieldset className="protection-permissions">
+          <fieldset className="m-0 ml-[22px] grid gap-1.5 rounded border border-separator px-3 py-2.5">
             <legend>Allow</legend>
             {PERMISSIONS.map(({ key, label }) => (
-              <label key={key} className="dialog-choice">
+              <DialogChoice key={key}>
                 <input type="checkbox" checked={permissions[key]} onChange={(event) => setPermissions({ ...permissions, [key]: event.target.checked })} />
                 {label}
-              </label>
+              </DialogChoice>
             ))}
           </fieldset>
         </>
       )}
       {(problem || notice) && (
-        <p className="dialog-hint" role="status">
+        <p className="text-ink-body" role="status">
           {notice ?? problem}
         </p>
       )}
-      <div className="dialog-actions">
+      <DialogActions>
         {current.encrypted && (
-          <button type="button" className="button" onClick={() => void protection.unprotect()}>
+          <Button onClick={() => void protection.unprotect()}>
             Remove protection
-          </button>
+          </Button>
         )}
-        <button type="button" className="button" onClick={() => protection.closeDialog()}>
+        <Button onClick={() => protection.closeDialog()}>
           Cancel
-        </button>
-        <button type="submit" className="button button-primary" disabled={problem !== null}>
+        </Button>
+        <Button type="submit" look="primary" disabled={problem !== null}>
           Apply
-        </button>
-      </div>
-    </form>
+        </Button>
+      </DialogActions>
+    </Dialog>
   )
 }

@@ -71,7 +71,7 @@ export function AnnotationLayer({ pageId, cssScale }: { pageId: string; cssScale
   const onPage = tool === 'select' ? all.filter((comment) => comment.pageId === pageId) : []
   return (
     <div
-      className={`annotation-layer${drawing ? ' annotation-layer-drawing' : ''}`}
+      className={`absolute inset-0 ${drawing ? 'pointer-events-auto cursor-crosshair' : 'pointer-events-none'}`}
       onPointerDown={press}
       onPointerMove={move}
       onPointerUp={release}
@@ -80,7 +80,7 @@ export function AnnotationLayer({ pageId, cssScale }: { pageId: string; cssScale
         <button
           key={comment.id}
           type="button"
-          className={`comment-box${comment.id === selected ? ' comment-box-selected' : ''}`}
+          className={`pointer-events-auto absolute cursor-pointer border p-0 ${comment.id === selected ? 'border-selection outline-2 outline-selection/35' : 'border-transparent hover:border-selection'}`}
           aria-label={`${comment.subtype} comment`}
           style={{
             left: comment.rect.x * cssScale,
@@ -102,7 +102,7 @@ function SketchPreview({ sketch, cssScale }: { sketch: Sketch; cssScale: number 
   const [[x0, y0], [x1, y1]] = [points[0], points[points.length - 1]]
   const box = { x: Math.min(x0, x1), y: Math.min(y0, y1), width: Math.abs(x1 - x0), height: Math.abs(y1 - y0) }
   return (
-    <svg className="annotation-sketch">
+    <svg className="absolute inset-0 size-full overflow-visible fill-none stroke-selection stroke-2 [stroke-linecap:round] [stroke-linejoin:round]">
       {sketch.tool === 'ink' && <polyline points={points.map((point) => point.join(',')).join(' ')} />}
       {(sketch.tool === 'rectangle' || sketch.tool === 'redactArea' || sketch.tool === 'textBox') && <rect {...box} />}
       {sketch.tool === 'ellipse' && <ellipse cx={box.x + box.width / 2} cy={box.y + box.height / 2} rx={box.width / 2} ry={box.height / 2} />}

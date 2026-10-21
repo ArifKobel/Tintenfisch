@@ -46,14 +46,14 @@ export function SignatureLayer({ pageId, cssScale }: { pageId: string; cssScale:
   const shown = drag && boxBetween(drag.from, drag.to)
   return (
     <div
-      className="signature-layer"
+      className="absolute inset-0 cursor-crosshair"
       onPointerDown={press}
       onPointerMove={(event) => drag && setDrag({ ...drag, to: point(event) })}
       onPointerUp={release}
     >
       {shown && (
         <div
-          className="signature-placement"
+          className="absolute border border-dashed border-selection bg-selection/8"
           style={{ left: shown.x * cssScale, top: shown.y * cssScale, width: shown.width * cssScale, height: shown.height * cssScale }}
         />
       )}

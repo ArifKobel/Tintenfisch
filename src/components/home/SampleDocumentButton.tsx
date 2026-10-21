@@ -2,6 +2,7 @@ import { useState } from 'react'
 import sampleUrl from '@/assets/sample.pdf?url'
 import { useOpenFile } from '@/hooks/useOpenFile.ts'
 import { useToastStore } from '@/stores/toastStore.ts'
+import { Button } from '@/components/ui/Button.tsx'
 
 export function SampleDocumentButton() {
   const openFile = useOpenFile()
@@ -21,8 +22,8 @@ export function SampleDocumentButton() {
   }
 
   return (
-    <button type="button" className="button button-quiet" disabled={loading} onClick={openSample}>
+    <Button look="quiet" disabled={loading} onClick={openSample}>
       Try with a sample PDF
-    </button>
+    </Button>
   )
 }

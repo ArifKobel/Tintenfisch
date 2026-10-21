@@ -21,14 +21,14 @@ export function PageNavigator({ document }: { document: ReadyDocument }) {
 
   return (
     <form
-      className="page-navigator"
+      className="mt-auto flex flex-col items-center gap-2 py-2"
       onSubmit={(event) => {
         event.preventDefault()
         commit()
       }}
     >
       <input
-        className="page-number"
+        className="size-8 rounded border border-menu-border bg-[#fafafa] p-0 text-center text-ink focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-selection"
         inputMode="numeric"
         aria-label={`Page number, ${count} pages`}
         value={typed ?? String(index + 1)}
@@ -36,7 +36,7 @@ export function PageNavigator({ document }: { document: ReadyDocument }) {
         onChange={(event) => setTyped(event.target.value)}
         onBlur={commit}
       />
-      <span className="page-count">{count}</span>
+      <span className="text-ink tabular-nums">{count}</span>
       <IconButton icon="chevron-up" label="Previous page" tooltip="left" disabled={index === 0} onClick={() => show(index - 1)} />
       <IconButton icon="chevron-down" label="Next page" tooltip="left" disabled={index >= count - 1} onClick={() => show(index + 1)} />
     </form>

@@ -1,6 +1,7 @@
 import { useState, type DragEvent, type KeyboardEvent } from 'react'
 import type { Bookmark } from '@/types/protocol.ts'
 import { useBookmarksStore, type BookmarkPlace } from '@/stores/bookmarksStore.ts'
+import { Input } from '@/components/ui/Field.tsx'
 
 export const BOOKMARK_TYPE = 'application/x-tintenfisch-bookmark'
 
@@ -10,6 +11,13 @@ function zoneOf(event: DragEvent<HTMLElement>): Zone {
   const bounds = event.currentTarget.getBoundingClientRect()
   const share = (event.clientY - bounds.top) / Math.max(1, bounds.height)
   return share < 0.25 ? 'before' : share > 0.75 ? 'after' : 'inside'
+}
+
+
+const DROP_ZONES = {
+  before: 'shadow-[inset_0_2px_0_var(--color-selection)]',
+  after: 'shadow-[inset_0_-2px_0_var(--color-selection)]',
+  inside: 'outline-1 outline-selection',
 }
 
 export function BookmarkRow({ bookmark, parent, index, depth }: { bookmark: Bookmark; parent: string | null; index: number; depth: number }) {
@@ -39,9 +47,9 @@ export function BookmarkRow({ bookmark, parent, index, depth }: { bookmark: Book
   }
 
   return (
-    <li className="bookmark" role="treeitem" aria-expanded={hasChildren ? !collapsed : undefined} aria-selected={selected === bookmark.id}>
+    <li role="treeitem" aria-expanded={hasChildren ? !collapsed : undefined} aria-selected={selected === bookmark.id}>
       <div
-        className={`bookmark-row${selected === bookmark.id ? ' bookmark-row-selected' : ''}${zone ? ` bookmark-drop-${zone}` : ''}`}
+        className={`flex min-h-8 items-center gap-0.5 rounded ${selected === bookmark.id ? 'bg-selection-fill' : 'hover:bg-hover'} ${zone ? DROP_ZONES[zone] : ''}`}
         style={{ paddingLeft: 4 + depth * 14 }}
         draggable={renaming !== bookmark.id}
         onDragStart={(event) => {
@@ -58,14 +66,14 @@ export function BookmarkRow({ bookmark, parent, index, depth }: { bookmark: Book
       >
         <button
           type="button"
-          className={`bookmark-toggle${hasChildren ? '' : ' bookmark-toggle-empty'}${collapsed ? '' : ' bookmark-toggle-open'}`}
+          className={`size-5 flex-none cursor-pointer p-0 before:mx-auto before:block before:size-1.5 before:border-r-[1.5px] before:border-b-[1.5px] before:border-ink before:content-[''] ${collapsed ? 'before:-rotate-45' : 'before:rotate-45'} ${hasChildren ? '' : 'invisible'}`}
           aria-label={collapsed ? 'Expand' : 'Collapse'}
           tabIndex={hasChildren ? 0 : -1}
           onClick={() => hasChildren && bookmarks.toggleCollapsed(bookmark)}
         />
         {renaming === bookmark.id ? (
-          <input
-            className="bookmark-rename"
+          <Input
+            className="min-w-0 flex-1"
             aria-label="Bookmark title"
             defaultValue={bookmark.title}
             autoFocus
@@ -74,13 +82,13 @@ export function BookmarkRow({ bookmark, parent, index, depth }: { bookmark: Book
             onKeyDown={typed}
           />
         ) : (
-          <button type="button" className="bookmark-title" onClick={() => bookmarks.follow(bookmark)} onDoubleClick={() => bookmarks.startRenaming(bookmark.id)}>
+          <button type="button" className="flex-1 cursor-pointer truncate p-1 text-left text-ink-strong" onClick={() => bookmarks.follow(bookmark)} onDoubleClick={() => bookmarks.startRenaming(bookmark.id)}>
             {bookmark.title || 'Untitled'}
           </button>
         )}
       </div>
       {hasChildren && !collapsed && (
-        <ul className="bookmark-children" role="group">
+        <ul className="m-0 list-none p-0" role="group">
           {bookmark.children.map((child, childIndex) => (
             <BookmarkRow key={child.id} bookmark={child} parent={bookmark.id} index={childIndex} depth={depth + 1} />
           ))}

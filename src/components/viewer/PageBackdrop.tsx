@@ -11,5 +11,5 @@ export function PageBackdrop({ session, page }: { session: number; page: PageSum
   const scale = BACKDROP_WIDTH / page.width
   const tile = { x: 0, y: 0, width: Math.ceil(page.width * scale), height: Math.ceil(page.height * scale) }
   useTile(canvas, { session, pageId: page.id, revision, scale, tile }, 'visible')
-  return <canvas ref={canvas} className="page-backdrop" />
+  return <canvas ref={canvas} className="absolute inset-0 size-full" />
 }

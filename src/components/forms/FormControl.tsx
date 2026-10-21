@@ -2,6 +2,10 @@ import type { CSSProperties, KeyboardEvent } from 'react'
 import type { FormField, FormWidget } from '@/types/protocol.ts'
 import { useFormsStore } from '@/stores/formsStore.ts'
 
+const TEXT = 'pointer-events-auto absolute m-0 disabled:cursor-default resize-none border border-transparent bg-transparent px-0.5 py-0 font-[Helvetica,Arial,sans-serif] text-transparent caret-transparent hover:border-selection/60 focus:bg-white focus:text-caret focus:caret-auto focus:outline-2 focus:outline-selection'
+
+const TOGGLE = 'pointer-events-auto absolute m-0 disabled:cursor-default cursor-pointer opacity-0'
+
 const FONT_SHARE = 0.6
 
 export function FormControl({ field, widget, cssScale }: { field: FormField; widget: FormWidget; cssScale: number }) {
@@ -24,7 +28,7 @@ export function FormControl({ field, widget, cssScale }: { field: FormField; wid
       return field.multiline ? (
         <textarea
           key={field.text}
-          className="form-control form-text"
+          className={TEXT}
           style={style}
           aria-label={label}
           defaultValue={field.text}
@@ -34,7 +38,7 @@ export function FormControl({ field, widget, cssScale }: { field: FormField; wid
       ) : (
         <input
           key={field.text}
-          className="form-control form-text"
+          className={TEXT}
           style={style}
           aria-label={label}
           type={field.password ? 'password' : 'text'}
@@ -49,7 +53,7 @@ export function FormControl({ field, widget, cssScale }: { field: FormField; wid
     case 'checkbox':
       return (
         <input
-          className="form-control form-toggle"
+          className={TOGGLE}
           style={style}
           aria-label={label}
           type="checkbox"
@@ -61,7 +65,7 @@ export function FormControl({ field, widget, cssScale }: { field: FormField; wid
     case 'radio':
       return (
         <input
-          className="form-control form-toggle"
+          className={TOGGLE}
           style={style}
           aria-label={`${label} ${widget.onState ?? ''}`}
           type="radio"
@@ -75,7 +79,7 @@ export function FormControl({ field, widget, cssScale }: { field: FormField; wid
     case 'list':
       return (
         <select
-          className="form-control form-choice"
+          className={TOGGLE}
           style={style}
           aria-label={label}
           multiple={field.kind === 'list'}

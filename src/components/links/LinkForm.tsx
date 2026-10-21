@@ -1,6 +1,9 @@
 import { useState, type FormEvent } from 'react'
 import { useLinksStore, type LinkDraft } from '@/stores/linksStore.ts'
 import { useDocumentStore } from '@/stores/documentStore.ts'
+import { Button } from '@/components/ui/Button.tsx'
+import { Dialog, DialogActions, DialogChoice } from '@/components/ui/Dialog.tsx'
+import { Input } from '@/components/ui/Field.tsx'
 
 const SCHEME = /^[a-z][a-z0-9+.-]*:/i
 
@@ -29,14 +32,12 @@ export function LinkForm({ draft }: { draft: LinkDraft }) {
   }
 
   return (
-    <div className="dialog-backdrop">
-      <form className="dialog link-dialog" role="dialog" aria-modal="true" aria-label={draft.linkId ? 'Edit link' : 'New link'} onSubmit={submit}>
-        <h2 className="dialog-title">{draft.linkId ? 'Edit link' : 'New link'}</h2>
-        <label className="dialog-choice">
+    <Dialog title={draft.linkId ? 'Edit link' : 'New link'} label={draft.linkId ? 'Edit link' : 'New link'} onSubmit={submit}>
+        <DialogChoice>
           <input type="radio" name="link-kind" checked={kind === 'page'} onChange={() => setKind('page')} />
           Go to page
-          <input
-            className="link-page"
+          <Input
+            className="w-[5em]"
             type="number"
             min={1}
             max={pages.length}
@@ -46,26 +47,25 @@ export function LinkForm({ draft }: { draft: LinkDraft }) {
             onChange={(event) => setPageNumber(event.target.value)}
           />
           of {pages.length}
-        </label>
-        <label className="dialog-choice">
+        </DialogChoice>
+        <DialogChoice>
           <input type="radio" name="link-kind" checked={kind === 'uri'} onChange={() => setKind('uri')} />
           Open web address
-        </label>
-        <input className="link-address" aria-label="Web address" placeholder="https://" value={uri} onFocus={() => setKind('uri')} onChange={(event) => setUri(event.target.value)} />
-        <div className="dialog-actions">
+        </DialogChoice>
+        <Input className="ml-[22px]" aria-label="Web address" placeholder="https://" value={uri} onFocus={() => setKind('uri')} onChange={(event) => setUri(event.target.value)} />
+        <DialogActions>
           {draft.linkId && (
-            <button type="button" className="button" onClick={() => void links.removeSelected()}>
+            <Button onClick={() => void links.removeSelected()}>
               Delete
-            </button>
+            </Button>
           )}
-          <button type="button" className="button" onClick={() => links.closeDraft()}>
+          <Button onClick={() => links.closeDraft()}>
             Cancel
-          </button>
-          <button type="submit" className="button button-primary" disabled={!ready}>
+          </Button>
+          <Button type="submit" look="primary" disabled={!ready}>
             Save
-          </button>
-        </div>
-      </form>
-    </div>
+          </Button>
+        </DialogActions>
+    </Dialog>
   )
 }

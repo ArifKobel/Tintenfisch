@@ -17,8 +17,8 @@ export function RightRail() {
     { panel: 'bookmarks', icon: 'bookmark', label: 'Bookmarks' },
   ]
   return (
-    <nav className="right-rail" aria-label="Panels and navigation">
-      <div className="rail-group">
+    <nav className="flex w-[51px] flex-none flex-col items-center border-l border-divider bg-surface py-2 max-md:hidden" aria-label="Panels and navigation">
+      <div className="flex flex-col items-center gap-2 pb-2">
         {toggles.map(({ panel, icon, label }) => (
           <IconButton key={panel} icon={icon} label={label} tooltip="left" look={right === panel ? 'toggled' : null} pressed={right === panel} onClick={() => toggleRight(panel)} />
         ))}

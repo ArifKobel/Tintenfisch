@@ -48,11 +48,12 @@ export function FindBar() {
   }
 
   return (
-    <div className="find-bar" role="search">
-      <label className="find-field">
-        <Icon name="search" />
+    <div className="flex items-center gap-1" role="search">
+      <label className="flex h-8 w-[260px] items-center gap-1.5 rounded-pill border border-field-border bg-white px-2.5 focus-within:outline-2 focus-within:-outline-offset-1 focus-within:outline-selection max-md:w-[140px]">
+        <Icon name="search" className="size-4 text-ink-muted" />
         <input
           ref={input}
+          className="min-w-0 flex-1 border-0 bg-transparent p-0 outline-none [&::-webkit-search-cancel-button]:hidden"
           type="search"
           placeholder="Find text"
           value={query}
@@ -61,7 +62,7 @@ export function FindBar() {
           aria-label="Find in document"
           autoFocus
         />
-        <span className="find-count">{query ? `${matches.length === 0 ? 0 : current + 1} of ${matches.length}` : ''}</span>
+        <span className="flex-none text-xs text-ink-muted tabular-nums">{query ? `${matches.length === 0 ? 0 : current + 1} of ${matches.length}` : ''}</span>
       </label>
       <IconButton icon="chevron-up" label="Previous match" disabled={matches.length === 0} onClick={() => find.previous()} />
       <IconButton icon="chevron-down" label="Next match" disabled={matches.length === 0} onClick={() => find.next()} />

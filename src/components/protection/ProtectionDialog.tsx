@@ -6,6 +6,6 @@ export function ProtectionDialog() {
   const { dialogOpen, current } = useProtectionStore()
   if (!dialogOpen || !current) return null
   return (
-    <div className="dialog-backdrop">{current.ownerRights ? <ProtectionForm current={current} /> : <OwnerPasswordForm />}</div>
+    current.ownerRights ? <ProtectionForm current={current} /> : <OwnerPasswordForm />
   )
 }

@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/Button.tsx'
 import { Icon } from '@/components/ui/Icon.tsx'
 import { FileDownload } from '@/services/FileDownload.ts'
 import { useDocumentStore } from '@/stores/documentStore.ts'
@@ -12,9 +13,9 @@ export function SaveDocumentButton() {
   }
 
   return (
-    <button type="button" className="button button-dark" aria-label="Download" onClick={save}>
+    <Button look="dark" className="max-md:px-2" aria-label="Download" onClick={save}>
       <Icon name="download" />
-      <span className="button-label">Download</span>
-    </button>
+      <span className="max-md:hidden">Download</span>
+    </Button>
   )
 }

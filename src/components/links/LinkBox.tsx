@@ -1,6 +1,7 @@
 import type { PointerEvent } from 'react'
 import type { Box, DocumentLink } from '@/types/protocol.ts'
 import { useLinksStore } from '@/stores/linksStore.ts'
+import { RESIZE_HANDLE } from '@/components/ui/controlStyles.ts'
 
 const SMALLEST = 6
 
@@ -47,14 +48,14 @@ export function LinkBox({ link, pageId, selected, cssScale }: { link: DocumentLi
 
   return (
     <div
-      className={`link-box${selected ? ' link-box-selected' : ''}`}
+      className={`absolute cursor-move border border-selection bg-selection/8 ${selected ? 'outline-2 outline-selection/30' : 'border-dashed'}`}
       style={placement(link.rect, cssScale)}
       role="button"
       aria-label="Link"
       onPointerDown={drag(moved)}
       onDoubleClick={() => links.editSelected()}
     >
-      {selected && <span className="link-box-resize" aria-label="Resize link" onPointerDown={drag(resized)} />}
+      {selected && <span className={RESIZE_HANDLE} aria-label="Resize link" onPointerDown={drag(resized)} />}
     </div>
   )
 }

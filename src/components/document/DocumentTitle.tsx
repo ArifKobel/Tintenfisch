@@ -9,9 +9,9 @@ export function DocumentTitle() {
   if (state.phase !== 'ready') {
     const detail = state.phase === 'loading' ? 'Opening' : state.phase === 'locked' ? 'Password required' : state.message
     return (
-      <div className={`document-title document-title-${state.phase}`} role="status">
-        <span className="document-name">{state.name}</span>
-        <span className="document-detail">{detail}</span>
+      <div className="flex min-w-0 items-baseline gap-2" role="status">
+        <span className="truncate font-bold text-ink-strong">{state.name}</span>
+        <span className={`flex-none text-xs ${state.phase === 'failed' ? 'text-negative' : 'text-ink-muted'}`}>{detail}</span>
       </div>
     )
   }
@@ -21,12 +21,12 @@ export function DocumentTitle() {
     ...(state.repaired ? ['repaired'] : []),
   ]
   return (
-    <div className="document-title" role="status" title={facts.join(', ')}>
-      <span className="document-name">{state.name}</span>
-      <span className="document-kind">PDF {state.version}</span>
+    <div className="flex min-w-0 items-baseline gap-2" role="status" title={facts.join(', ')}>
+      <span className="truncate font-bold text-ink-strong">{state.name}</span>
+      <span className="flex-none text-xs text-ink-muted max-md:hidden">PDF {state.version}</span>
       {pending && (
-        <span className="document-pending" title={pending}>
-          <Icon name="lock" />
+        <span className="flex self-center text-ink-muted" title={pending}>
+          <Icon name="lock" className="size-4" />
         </span>
       )}
     </div>

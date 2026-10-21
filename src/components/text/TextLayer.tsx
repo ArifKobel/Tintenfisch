@@ -12,6 +12,10 @@ import { useSelectionStore } from '@/stores/selectionStore.ts'
 import { useWorkspaceStore } from '@/stores/workspaceStore.ts'
 import type { SelectionUnit } from '@/types/protocol.ts'
 
+const FIND_MATCH = 'pointer-events-none bg-[rgb(250_204_21/0.4)]'
+
+const SELECTED = 'pointer-events-none bg-[rgb(20_115_230/0.3)]'
+
 const UNITS: SelectionUnit[] = ['character', 'word', 'paragraph']
 
 export function TextLayer({ pageId, cssScale }: { pageId: string; cssScale: number }) {
@@ -110,14 +114,14 @@ export function TextLayer({ pageId, cssScale }: { pageId: string; cssScale: numb
   const current = found.matches[found.current]
   const pageMatches = found.matches.filter((match) => match.pageId === pageId && match !== current)
   return (
-    <div className={`text-layer${tool === 'addText' ? ' text-layer-adding' : ''}`} onPointerDown={press} onMouseDown={begin} onPointerMove={extend} onPointerUp={release} onLostPointerCapture={release} onMouseUp={(event) => void finish(event)}>
-      <HighlightBoxes boxes={blocks} cssScale={cssScale} className="text-block-region" />
-      <HighlightBoxes boxes={pageMatches.flatMap((match) => match.rects)} cssScale={cssScale} className="find-match" />
-      {current?.pageId === pageId && <HighlightBoxes boxes={current.rects} cssScale={cssScale} className="find-match find-match-current" />}
-      {selected?.pageId === pageId && <HighlightBoxes boxes={selected.rects} cssScale={cssScale} className="text-selection" />}
+    <div className={`absolute inset-0 ${tool === 'addText' ? 'cursor-text' : 'cursor-default'}`} onPointerDown={press} onMouseDown={begin} onPointerMove={extend} onPointerUp={release} onLostPointerCapture={release} onMouseUp={(event) => void finish(event)}>
+      <HighlightBoxes boxes={blocks} cssScale={cssScale} className="cursor-text" />
+      <HighlightBoxes boxes={pageMatches.flatMap((match) => match.rects)} cssScale={cssScale} className={FIND_MATCH} />
+      {current?.pageId === pageId && <HighlightBoxes boxes={current.rects} cssScale={cssScale} className="pointer-events-none bg-[rgb(249_115_22/0.55)]" />}
+      {selected?.pageId === pageId && <HighlightBoxes boxes={selected.rects} cssScale={cssScale} className={SELECTED} />}
       {active && <EditFrame frame={active.frame} cssScale={cssScale} />}
-      {active && <HighlightBoxes boxes={active.selection} cssScale={cssScale} className="text-selection" />}
-      {caret && active?.selection.length === 0 && <HighlightBoxes boxes={[caret]} cssScale={cssScale} className="edit-caret" />}
+      {active && <HighlightBoxes boxes={active.selection} cssScale={cssScale} className={SELECTED} />}
+      {caret && active?.selection.length === 0 && <HighlightBoxes boxes={[caret]} cssScale={cssScale} className="pointer-events-none animate-caret-blink border-l-[1.5px] border-caret" />}
       {caret !== undefined && <EditInput caret={caret} cssScale={cssScale} />}
     </div>
   )

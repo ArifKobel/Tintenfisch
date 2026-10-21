@@ -18,13 +18,13 @@ export function QuickToolbar() {
   const phase = useDocumentStore((state) => state.document.phase)
   if (phase !== 'ready') return null
   return (
-    <div className="quick-toolbar-gutter">
-      <div className="quick-toolbar" role="toolbar" aria-label="Quick tools" aria-orientation="vertical">
+    <div className="relative z-12 w-[66px] flex-none max-md:order-1 max-md:w-auto max-md:border-t max-md:border-divider max-md:bg-surface">
+      <div className="absolute top-4 left-4 flex w-10 flex-col items-center gap-2 rounded bg-surface py-1 shadow-float max-md:static max-md:w-auto max-md:flex-row max-md:justify-between max-md:gap-0 max-md:rounded-none max-md:px-3 max-md:pt-2 max-md:pb-[calc(8px+env(safe-area-inset-bottom))] max-md:shadow-none max-md:[&>:nth-child(n+5)_[role=menu]]:right-0 max-md:[&>:nth-child(n+5)_[role=menu]]:left-auto" role="toolbar" aria-label="Quick tools" aria-orientation="vertical">
         {GROUPS.map((group) => (
           <ToolGroupButton key={group.label} label={group.label} tools={group.tools} current={tool} />
         ))}
         <SignMenuButton />
-        <span className="sheet-toggle">
+        <span className="hidden max-md:contents">
           <IconButton
             icon={left === 'edit' ? 'text' : 'tools'}
             label={left === 'edit' ? 'Edit panel' : 'All tools'}

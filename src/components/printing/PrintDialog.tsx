@@ -1,5 +1,9 @@
 import type { FormEvent } from 'react'
 import { usePrintStore, type PrintChoice, type PrintFit } from '@/stores/printStore.ts'
+import { Button } from '@/components/ui/Button.tsx'
+import { Notice } from '@/components/ui/Text.tsx'
+import { Dialog, DialogActions, DialogChoice } from '@/components/ui/Dialog.tsx'
+import { Input, Select } from '@/components/ui/Field.tsx'
 
 const CHOICES: { choice: PrintChoice; label: string }[] = [
   { choice: 'all', label: 'All pages' },
@@ -8,6 +12,8 @@ const CHOICES: { choice: PrintChoice; label: string }[] = [
 ]
 
 const RESOLUTIONS = [150, 300]
+
+const ROW = 'flex items-center justify-between gap-4'
 
 export function PrintDialog() {
   const printing = usePrintStore()
@@ -20,18 +26,16 @@ export function PrintDialog() {
   }
 
   return (
-    <div className="dialog-backdrop">
-      <form className="dialog print-dialog" role="dialog" aria-modal="true" aria-label="Print" onSubmit={submit}>
-        <h2 className="dialog-title">Print</h2>
-        <fieldset className="dialog-choices">
+    <Dialog title="Print" label="Print" onSubmit={submit}>
+        <fieldset className="m-0 grid gap-2 border-0 p-0">
           {CHOICES.map(({ choice, label }) => (
-            <label key={choice} className="dialog-choice">
+            <DialogChoice key={choice}>
               <input type="radio" name="print-choice" checked={settings.choice === choice} onChange={() => printing.change({ choice })} />
               {label}
-            </label>
+            </DialogChoice>
           ))}
-          <input
-            className="print-range"
+          <Input
+            className="ml-[22px]"
             aria-label="Page range"
             placeholder="1-3, 5"
             value={settings.range}
@@ -39,42 +43,39 @@ export function PrintDialog() {
             onChange={(event) => printing.change({ choice: 'range', range: event.target.value })}
           />
         </fieldset>
-        <label className="print-field">
+        <label className={ROW}>
           Size
-          <select value={settings.fit} onChange={(event) => printing.change({ fit: event.target.value as PrintFit })}>
+          <Select value={settings.fit} onChange={(event) => printing.change({ fit: event.target.value as PrintFit })}>
             <option value="fit">Fit to paper</option>
             <option value="actual">Actual size</option>
-          </select>
+          </Select>
         </label>
-        <label className="print-field">
+        <label className={ROW}>
           Quality
-          <select value={settings.resolution} onChange={(event) => printing.change({ resolution: Number(event.target.value) })}>
+          <Select value={settings.resolution} onChange={(event) => printing.change({ resolution: Number(event.target.value) })}>
             {RESOLUTIONS.map((resolution) => (
               <option key={resolution} value={resolution}>
                 {resolution} dpi
               </option>
             ))}
-          </select>
+          </Select>
         </label>
         {progress && (
-          <p className="hint" role="status">
+          <p className="text-[13px] text-ink-muted" role="status">
             Preparing page {Math.min(progress.done + 1, progress.total)} of {progress.total}
           </p>
         )}
         {notice && (
-          <p className="notice" role="alert">
-            {notice}
-          </p>
+          <Notice role="alert">{notice}</Notice>
         )}
-        <div className="dialog-actions">
-          <button type="button" className="button" disabled={progress !== null} onClick={() => printing.closeDialog()}>
+        <DialogActions>
+          <Button disabled={progress !== null} onClick={() => printing.closeDialog()}>
             Cancel
-          </button>
-          <button type="submit" className="button button-primary" disabled={progress !== null}>
+          </Button>
+          <Button type="submit" look="primary" disabled={progress !== null}>
             Print
-          </button>
-        </div>
-      </form>
-    </div>
+          </Button>
+        </DialogActions>
+    </Dialog>
   )
 }

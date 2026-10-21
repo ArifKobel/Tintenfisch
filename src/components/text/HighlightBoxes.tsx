@@ -6,7 +6,7 @@ export function HighlightBoxes({ boxes, cssScale, className }: { boxes: Highligh
       {boxes.map((box, index) => (
         <div
           key={index}
-          className={className}
+          className={`absolute origin-top-left ${className}`}
           style={{
             left: box.x * cssScale,
             top: box.y * cssScale,

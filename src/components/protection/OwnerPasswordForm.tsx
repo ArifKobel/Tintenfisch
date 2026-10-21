@@ -1,5 +1,9 @@
 import { useState, type FormEvent } from 'react'
 import { useProtectionStore } from '@/stores/protectionStore.ts'
+import { Button } from '@/components/ui/Button.tsx'
+import { Notice } from '@/components/ui/Text.tsx'
+import { Dialog, DialogActions } from '@/components/ui/Dialog.tsx'
+import { Input } from '@/components/ui/Field.tsx'
 
 export function OwnerPasswordForm() {
   const protection = useProtectionStore()
@@ -12,23 +16,20 @@ export function OwnerPasswordForm() {
   }
 
   return (
-    <form className="dialog link-dialog" role="dialog" aria-modal="true" aria-label="Protection" onSubmit={submit}>
-      <h2 className="dialog-title">Protection</h2>
-      <p className="dialog-hint">This document is protected. Enter its permissions password to change or remove the protection.</p>
-      <input type="password" aria-label="Permissions password" autoComplete="off" autoFocus value={password} onChange={(event) => setPassword(event.target.value)} />
+    <Dialog title="Protection" label="Protection" onSubmit={submit}>
+      <p className="text-ink-body">This document is protected. Enter its permissions password to change or remove the protection.</p>
+      <Input type="password" aria-label="Permissions password" autoComplete="off" autoFocus value={password} onChange={(event) => setPassword(event.target.value)} />
       {notice && (
-        <p className="notice" role="alert">
-          {notice}
-        </p>
+        <Notice role="alert">{notice}</Notice>
       )}
-      <div className="dialog-actions">
-        <button type="button" className="button" onClick={() => protection.closeDialog()}>
+      <DialogActions>
+        <Button onClick={() => protection.closeDialog()}>
           Cancel
-        </button>
-        <button type="submit" className="button button-primary">
+        </Button>
+        <Button type="submit" look="primary">
           Unlock
-        </button>
-      </div>
-    </form>
+        </Button>
+      </DialogActions>
+    </Dialog>
   )
 }

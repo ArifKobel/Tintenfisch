@@ -1,7 +1,7 @@
 import type { MouseEvent } from 'react'
 import { Icon, type IconName } from '@/components/ui/Icon.tsx'
-
-export type TooltipSide = 'right' | 'left' | 'below'
+import { Tooltip, type TooltipSide } from '@/components/ui/Tooltip.tsx'
+import { iconButtonClass } from '@/components/ui/controlStyles.ts'
 
 export interface IconButtonProps {
   icon: IconName
@@ -15,15 +15,19 @@ export interface IconButtonProps {
 }
 
 export function IconButton({ icon, label, tooltip = 'below', look = null, pressed, flyout = false, disabled = false, onClick }: IconButtonProps) {
-  const classes = ['icon-button', look && `icon-button-${look}`, flyout && 'icon-button-flyout']
   return (
-    <button type="button" className={classes.filter(Boolean).join(' ')} aria-label={label} aria-pressed={pressed} aria-haspopup={flyout ? 'menu' : undefined} disabled={disabled} onClick={onClick}>
+    <button
+      type="button"
+      className={iconButtonClass(look)}
+      aria-label={label}
+      aria-pressed={pressed}
+      aria-haspopup={flyout ? 'menu' : undefined}
+      disabled={disabled}
+      onClick={onClick}
+    >
       <Icon name={icon} />
-      {tooltip && (
-        <span className={`tooltip tooltip-${tooltip}`} aria-hidden="true">
-          {label}
-        </span>
-      )}
+      {flyout && <span className="absolute right-0.5 bottom-0.5 border-r-4 border-b-4 border-r-transparent border-b-current" aria-hidden="true" />}
+      {tooltip && <Tooltip side={tooltip}>{label}</Tooltip>}
     </button>
   )
 }

@@ -27,7 +27,7 @@ export function PageSlot({ session, page, placement, left, scale, cssScale, pixe
   const grid = new TileGrid(placement.width * pixelRatio, placement.height * pixelRatio)
   const tiles = grid.covering(visibleArea)
   return (
-    <div className="page-slot" style={{ top: placement.top, left, width: placement.width, height: placement.height }}>
+    <div className="absolute overflow-hidden bg-white shadow-[0_0_0_1px_rgb(0_0_0/0.04),0_1px_3px_rgb(0_0_0/0.08)]" style={{ top: placement.top, left, width: placement.width, height: placement.height }}>
       <PageBackdrop session={session} page={page} />
       {tiles.map((tile) => (
         <TileCanvas

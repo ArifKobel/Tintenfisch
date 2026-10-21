@@ -1,9 +1,10 @@
 import type { KeyboardEvent } from 'react'
 import { BookmarkRow } from '@/components/bookmarks/BookmarkRow.tsx'
 import { IconButton } from '@/components/ui/IconButton.tsx'
-import { SidePanel } from '@/components/ui/SidePanel.tsx'
+import { EmptyState, PanelActions, SidePanel } from '@/components/ui/SidePanel.tsx'
 import { useBookmarksStore } from '@/stores/bookmarksStore.ts'
 import { useWorkspaceStore } from '@/stores/workspaceStore.ts'
+import { Notice } from '@/components/ui/Text.tsx'
 
 export function BookmarksPanel() {
   const bookmarks = useBookmarksStore()
@@ -21,31 +22,28 @@ export function BookmarksPanel() {
   }
 
   const actions = (
-    <div className="panel-actions">
+    <PanelActions>
       <IconButton icon="add" label="Add bookmark" onClick={() => void bookmarks.add()} />
       <IconButton icon="target" label="Set to current view" disabled={!selected} onClick={() => void bookmarks.setDestination()} />
       <IconButton icon="delete" label="Delete bookmark" disabled={!selected} onClick={() => void bookmarks.removeSelected()} />
-    </div>
+    </PanelActions>
   )
 
   return (
     <SidePanel title="Bookmarks" side="right" onClose={() => workspace.showRight(null)} actions={actions} onKeyDown={pressed}>
       {items.length === 0 ? (
-        <div className="empty-state">
-          <h3 className="empty-state-title">No bookmarks yet</h3>
+        <EmptyState title="No bookmarks yet">
           <p>Add one to mark the page you are looking at.</p>
-        </div>
+        </EmptyState>
       ) : (
-        <ul className="bookmark-tree" role="tree">
+        <ul className="m-0 list-none p-0" role="tree">
           {items.map((bookmark, index) => (
             <BookmarkRow key={bookmark.id} bookmark={bookmark} parent={null} index={index} depth={0} />
           ))}
         </ul>
       )}
       {notice && (
-        <p className="notice" role="alert">
-          {notice}
-        </p>
+        <Notice role="alert">{notice}</Notice>
       )}
     </SidePanel>
   )

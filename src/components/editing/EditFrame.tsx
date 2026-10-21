@@ -5,6 +5,8 @@ import type { Highlight } from '@/types/protocol.ts'
 
 const MIN_WIDTH = 12
 
+const HANDLE = 'pointer-events-auto absolute size-2.5 rounded-[2px] border border-selection bg-surface'
+
 type Drag = (session: EditSession, dx: number, dy: number) => EditSession
 
 export function EditFrame({ frame, cssScale }: { frame: Highlight; cssScale: number }) {
@@ -41,7 +43,7 @@ export function EditFrame({ frame, cssScale }: { frame: Highlight; cssScale: num
 
   return (
     <div
-      className="edit-frame"
+      className="pointer-events-none absolute origin-top-left outline-1 outline-offset-2 outline-edit-outline outline-dashed"
       style={{
         left: frame.x * cssScale,
         top: frame.y * cssScale,
@@ -50,8 +52,8 @@ export function EditFrame({ frame, cssScale }: { frame: Highlight; cssScale: num
         transform: frame.angle === 0 ? undefined : `rotate(${frame.angle}rad)`,
       }}
     >
-      <div className="edit-frame-move" aria-label="Move paragraph" onPointerDown={drag(moveBox)} onMouseDown={stopFocusChange} />
-      <div className="edit-frame-resize" aria-label="Resize paragraph" onPointerDown={drag(resizeBox)} onMouseDown={stopFocusChange} />
+      <div className={`${HANDLE} -top-3.5 -left-3.5 cursor-move`} aria-label="Move paragraph" onPointerDown={drag(moveBox)} onMouseDown={stopFocusChange} />
+      <div className={`${HANDLE} top-[calc(50%-5px)] -right-[9px] cursor-ew-resize`} aria-label="Resize paragraph" onPointerDown={drag(resizeBox)} onMouseDown={stopFocusChange} />
     </div>
   )
 }

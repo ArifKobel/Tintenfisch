@@ -15,7 +15,7 @@ function isEditable(target: EventTarget | null): boolean {
 }
 
 function typesText(target: EventTarget | null): boolean {
-  if (target instanceof HTMLTextAreaElement) return !target.classList.contains('edit-input')
+  if (target instanceof HTMLTextAreaElement) return !('editInput' in target.dataset)
   return target instanceof HTMLInputElement && !NOT_TYPED.includes(target.type)
 }
 

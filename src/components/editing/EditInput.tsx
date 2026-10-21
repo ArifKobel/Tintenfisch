@@ -61,7 +61,7 @@ export function EditInput({ caret, cssScale }: { caret: Highlight | null; cssSca
       }
     }
     const left = (event: FocusEvent) => {
-      if (event.relatedTarget instanceof Element && event.relatedTarget.closest('.format-bar, .font-consent')) return
+      if (event.relatedTarget instanceof Element && event.relatedTarget.closest('[data-keeps-edit]')) return
       void editing.commit()
     }
     field.addEventListener('beforeinput', typed)
@@ -81,7 +81,8 @@ export function EditInput({ caret, cssScale }: { caret: Highlight | null; cssSca
   return (
     <textarea
       ref={input}
-      className="edit-input"
+      data-edit-input
+      className="pointer-events-none absolute w-px resize-none overflow-hidden border-0 p-0 opacity-0"
       aria-label="Edit paragraph"
       autoCapitalize="off"
       autoCorrect="off"

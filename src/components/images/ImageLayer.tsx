@@ -42,7 +42,7 @@ export function ImageLayer({ pageId, cssScale }: { pageId: string; cssScale: num
 
   const placing = tool === 'addImage'
   return (
-    <div className={`image-layer${placing ? ' image-layer-placing' : ''}`} onMouseDown={placing ? place : undefined}>
+    <div className={`absolute inset-0 ${placing ? 'pointer-events-auto cursor-copy' : 'pointer-events-none'}`} onMouseDown={placing ? place : undefined}>
       {frames.map((frame, index) => {
         const chosen = selected?.pageId === pageId && selected.index === index
         return <ImageBox key={index} frame={frame} choice={{ pageId, index }} selected={chosen && !placing} cssScale={cssScale} />

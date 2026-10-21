@@ -51,9 +51,9 @@ export type IconName =
   | 'zoom-in'
   | 'zoom-out'
 
-export function Icon({ name }: { name: IconName }) {
+export function Icon({ name, className = 'size-5' }: { name: IconName; className?: string }) {
   return (
-    <svg className="icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+    <svg className={`flex-none fill-current ${className}`} viewBox="0 0 20 20" aria-hidden="true" focusable="false">
       <use href={`${sprite}#icon-${name}`} />
     </svg>
   )

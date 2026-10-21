@@ -74,9 +74,9 @@ export function AllToolsPanel() {
   return (
     <SidePanel title="All tools" side="left">
       {GROUPS.map(({ title, entries }) => (
-        <section key={title} className="panel-group">
-          <button type="button" className="panel-group-title" aria-expanded={!collapsed.has(title)} onClick={() => toggle(title)}>
-            <Icon name={collapsed.has(title) ? 'chevron-right' : 'chevron-down'} />
+        <section key={title} className="flex flex-col border-b border-separator pb-2">
+          <button type="button" className="flex min-h-10 cursor-pointer items-center gap-2 p-0 text-[13px] font-bold text-ink-strong" aria-expanded={!collapsed.has(title)} onClick={() => toggle(title)}>
+            <Icon name={collapsed.has(title) ? 'chevron-right' : 'chevron-down'} className="size-3.5" />
             {title}
           </button>
           {!collapsed.has(title) &&

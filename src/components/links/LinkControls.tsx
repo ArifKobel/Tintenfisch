@@ -1,5 +1,6 @@
 import { useLinksStore } from '@/stores/linksStore.ts'
 import { useWorkspaceStore } from '@/stores/workspaceStore.ts'
+import { Button } from '@/components/ui/Button.tsx'
 
 export function LinkControls() {
   const links = useLinksStore()
@@ -7,21 +8,21 @@ export function LinkControls() {
   const { tool } = useWorkspaceStore()
   if (tool !== 'link') return null
   return (
-    <div className="context-group" role="group" aria-label="Link">
+    <div className="flex min-h-10 items-center gap-2" role="group" aria-label="Link">
       {selected ? (
         <>
-          <button type="button" className="button" onClick={() => links.editSelected()}>
+          <Button onClick={() => links.editSelected()}>
             Edit link
-          </button>
-          <button type="button" className="button" onClick={() => void links.removeSelected()}>
+          </Button>
+          <Button onClick={() => void links.removeSelected()}>
             Delete link
-          </button>
+          </Button>
         </>
       ) : (
-        <span className="hint">Drag over the page to add a link</span>
+        <span className="text-[13px] text-ink-muted">Drag over the page to add a link</span>
       )}
       {notice && (
-        <span className="notice" role="status">
+        <span className="text-[13px] text-negative" role="status">
           {notice}
         </span>
       )}

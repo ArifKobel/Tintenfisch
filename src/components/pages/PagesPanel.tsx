@@ -57,7 +57,7 @@ export function PagesPanel() {
   return (
     <SidePanel title="Pages" side="right" onClose={() => workspace.showRight(null)} onKeyDown={press}>
       <OrganizeToolbar />
-      <div className="thumbnail-list" onDragOver={(event) => drag && event.preventDefault()} onDrop={drop} onDragEnd={() => setDrag(null)}>
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] justify-items-center gap-x-2 gap-y-4 py-2" onDragOver={(event) => drag && event.preventDefault()} onDrop={drop} onDragEnd={() => setDrag(null)}>
         {document.pages.map((page, index) => (
           <Thumbnail
             key={page.id}
@@ -72,7 +72,7 @@ export function PagesPanel() {
             onHover={(lowerHalf) => hover(page.id, lowerHalf)}
           />
         ))}
-        {drag && drag.before === null && <div className="thumbnail-drop-line" />}
+        {drag && drag.before === null && <div className="h-[120px] w-[3px] rounded-[2px] bg-selection" />}
       </div>
     </SidePanel>
   )

@@ -1,6 +1,7 @@
 import type { PointerEvent } from 'react'
 import type { Box, FormField, FormWidget } from '@/types/protocol.ts'
 import { useFormsStore } from '@/stores/formsStore.ts'
+import { RESIZE_HANDLE } from '@/components/ui/controlStyles.ts'
 
 const SMALLEST = 6
 
@@ -39,14 +40,14 @@ export function FieldBox({ field, widget, selected, cssScale }: { field: FormFie
 
   return (
     <div
-      className={`field-box${selected ? ' field-box-selected' : ''}`}
+      className={`absolute cursor-move border border-selection bg-selection/10 ${selected ? 'outline-2 outline-selection/35' : 'border-dashed'}`}
       style={{ left: widget.rect.x * cssScale, top: widget.rect.y * cssScale, width: widget.rect.width * cssScale, height: widget.rect.height * cssScale }}
       onPointerDown={drag(moved)}
       role="button"
       aria-label={`Field ${field.name}`}
     >
-      <span className="field-box-name">{field.name}</span>
-      {selected && <span className="field-box-resize" aria-label="Resize field" onPointerDown={drag(resized)} />}
+      <span className="absolute bottom-full left-0 rounded-[2px] bg-selection px-1 text-[10px] leading-[14px] whitespace-nowrap text-white">{field.name}</span>
+      {selected && <span className={RESIZE_HANDLE} aria-label="Resize field" onPointerDown={drag(resized)} />}
     </div>
   )
 }

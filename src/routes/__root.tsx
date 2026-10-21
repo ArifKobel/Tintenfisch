@@ -22,13 +22,13 @@ export const Route = createRootRoute({ component: Shell })
 function Shell() {
   useKeyboardShortcuts()
   return (
-    <main className="app">
+    <main className="flex h-full flex-col">
       <AppHeader />
-      <div className="workspace">
+      <div className="flex min-h-0 flex-1">
         <LeftDock />
-        <div className="document-area">
+        <div className="flex min-w-0 flex-1 flex-col bg-canvas">
           <SignatureStatusList />
-          <div className="canvas">
+          <div className="relative flex min-h-0 flex-1 max-md:flex-col">
             <QuickToolbar />
             <Outlet />
             <ContextBar />

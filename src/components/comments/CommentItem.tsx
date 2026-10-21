@@ -3,6 +3,7 @@ import type { Comment } from '@/types/protocol.ts'
 import { IconButton } from '@/components/ui/IconButton.tsx'
 import { useCommentsStore } from '@/stores/commentsStore.ts'
 import { useViewportStore } from '@/stores/viewportStore.ts'
+import { TextArea } from '@/components/ui/Field.tsx'
 
 const KINDS: Record<string, string> = {
   Highlight: 'Highlight',
@@ -38,22 +39,22 @@ export function CommentItem({ comment, pageNumber, selected }: { comment: Commen
   }
 
   return (
-    <article className={`comment-item${selected ? ' comment-item-selected' : ''}`} onClick={reveal}>
-      <header className="comment-item-header">
-        <span className="comment-kind">{KINDS[comment.subtype] ?? comment.subtype}</span>
-        <span className="comment-page">Page {pageNumber}</span>
+    <article className={`flex cursor-pointer flex-col gap-2 rounded-lg border bg-surface p-3 ${selected ? 'border-selection shadow-[0_0_0_1px_var(--color-selection)]' : 'border-separator hover:border-menu-border'}`} onClick={reveal}>
+      <header className="flex items-center gap-2">
+        <span className="font-bold text-ink-strong">{KINDS[comment.subtype] ?? comment.subtype}</span>
+        <span className="flex-1 text-xs text-ink-muted">Page {pageNumber}</span>
         <IconButton icon="delete" label="Delete comment" tooltip="left" onClick={remove} />
       </header>
-      <textarea
+      <TextArea
         key={comment.contents}
-        className="comment-text"
+        className="min-h-14 resize-y"
         defaultValue={comment.contents}
         placeholder="Add a comment"
         aria-label="Comment"
         onBlur={(event) => void comments.setContents(comment.id, event.target.value)}
       />
       {(comment.author || comment.date) && (
-        <footer className="comment-meta">{[comment.author, readableDate(comment.date)].filter(Boolean).join(' · ')}</footer>
+        <footer className="text-xs text-ink-muted">{[comment.author, readableDate(comment.date)].filter(Boolean).join(' · ')}</footer>
       )}
     </article>
   )

@@ -2,6 +2,8 @@ import type { FieldProperties, FormField } from '@/types/protocol.ts'
 import { SidePanel } from '@/components/ui/SidePanel.tsx'
 import { useFormsStore } from '@/stores/formsStore.ts'
 import { useWorkspaceStore } from '@/stores/workspaceStore.ts'
+import { Button } from '@/components/ui/Button.tsx'
+import { Input, TextArea } from '@/components/ui/Field.tsx'
 
 function propertiesOf(field: FormField): FieldProperties {
   return {
@@ -24,28 +26,28 @@ export function FieldPanel() {
   const choice = field.kind === 'combo' || field.kind === 'list'
   return (
     <SidePanel title="Field properties" side="right" onClose={() => forms.select(null)}>
-      <label className="field-panel-row">
+      <label className="flex flex-col gap-1">
         Name
-        <input key={field.partialName} defaultValue={field.partialName} onBlur={(event) => event.target.value !== field.partialName && change({ name: event.target.value })} />
+        <Input key={field.partialName} defaultValue={field.partialName} onBlur={(event) => event.target.value !== field.partialName && change({ name: event.target.value })} />
       </label>
-      <label className="field-panel-check">
+      <label className="flex items-center gap-2">
         <input type="checkbox" checked={field.required} onChange={(event) => change({ required: event.target.checked })} />
         Required
       </label>
-      <label className="field-panel-check">
+      <label className="flex items-center gap-2">
         <input type="checkbox" checked={field.readOnly} onChange={(event) => change({ readOnly: event.target.checked })} />
         Read only
       </label>
       {field.kind === 'text' && (
-        <label className="field-panel-check">
+        <label className="flex items-center gap-2">
           <input type="checkbox" checked={field.multiline} onChange={(event) => change({ multiline: event.target.checked })} />
           Several lines
         </label>
       )}
       {choice && (
-        <label className="field-panel-row">
+        <label className="flex flex-col gap-1">
           Entries, one per line
-          <textarea
+          <TextArea
             key={current.options.join('\n')}
             defaultValue={current.options.join('\n')}
             rows={5}
@@ -54,9 +56,9 @@ export function FieldPanel() {
         </label>
       )}
       <div>
-        <button type="button" className="button" onClick={() => void forms.deleteSelected()}>
+        <Button onClick={() => void forms.deleteSelected()}>
           Delete field
-        </button>
+        </Button>
       </div>
     </SidePanel>
   )

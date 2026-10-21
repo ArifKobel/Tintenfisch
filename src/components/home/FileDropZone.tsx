@@ -53,8 +53,8 @@ export function FileDropZone() {
 
   if (!dragging) return null
   return (
-    <div className="file-drop" aria-hidden="true">
-      <div className="file-drop-message">
+    <div className="pointer-events-none fixed inset-0 z-60 grid place-items-center bg-[rgb(2_101_220/0.08)] p-6 shadow-[inset_0_0_0_3px_var(--color-primary)]" aria-hidden="true">
+      <div className="flex items-center gap-2.5 rounded-pill bg-primary px-6 py-3.5 text-base font-bold text-white shadow-dialog">
         <Icon name="import" />
         Drop a PDF to open it
       </div>

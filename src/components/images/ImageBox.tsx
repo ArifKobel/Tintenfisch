@@ -1,6 +1,7 @@
 import type { PointerEvent } from 'react'
 import type { Highlight } from '@/types/protocol.ts'
 import { useImagesStore, type ImageChoice } from '@/stores/imagesStore.ts'
+import { RESIZE_HANDLE } from '@/components/ui/controlStyles.ts'
 
 const SMALLEST = 8
 
@@ -54,13 +55,13 @@ export function ImageBox({ frame, choice, selected, cssScale }: { frame: Highlig
 
   return (
     <div
-      className={`image-box${selected ? ' image-box-selected' : ''}`}
+      className={`absolute origin-top-left border ${selected ? 'pointer-events-auto cursor-move border-selection outline-2 outline-selection/30' : 'pointer-events-none border-dashed border-edit-outline'}`}
       style={placement(frame, cssScale)}
       onPointerDown={selected ? drag(moved) : undefined}
       onMouseDown={selected ? (event) => event.stopPropagation() : undefined}
       aria-label={selected ? 'Selected image' : undefined}
     >
-      {selected && <span className="image-box-resize" aria-label="Resize image" onPointerDown={drag(resized)} />}
+      {selected && <span className={RESIZE_HANDLE} aria-label="Resize image" onPointerDown={drag(resized)} />}
     </div>
   )
 }

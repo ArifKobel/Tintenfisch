@@ -1,7 +1,9 @@
 import type { NewFieldKind, Rgb } from '@/types/protocol.ts'
 import { TOOL_CATALOG } from '@/components/tools/toolCatalog.ts'
 import { useWorkspaceStore, DRAWING_TOOLS, EDITING_TOOLS, MARKUP_COLORS, STAMP_LABELS } from '@/stores/workspaceStore.ts'
+import { Select } from '@/components/ui/Field.tsx'
 import { Icon } from '@/components/ui/Icon.tsx'
+import { Swatch } from '@/components/ui/Swatch.tsx'
 
 const FIELD_KINDS: { kind: NewFieldKind; label: string }[] = [
   { kind: 'text', label: 'Text field' },
@@ -23,42 +25,41 @@ export function ToolOptions() {
   const colored = tool === 'highlight' || (DRAWING_TOOLS.includes(tool) && tool !== 'redactArea')
   const color = tool === 'highlight' ? workspace.highlightColor : workspace.color
   return (
-    <div className="tool-options" role="group" aria-label={`${TOOL_CATALOG[tool].label} options`}>
-      <span className="tool-options-name">
+    <div className="flex min-h-10 items-center gap-2" role="group" aria-label={`${TOOL_CATALOG[tool].label} options`}>
+      <span className="flex items-center gap-2 font-bold text-ink-strong">
         <Icon name={TOOL_CATALOG[tool].icon} />
         {TOOL_CATALOG[tool].label}
       </span>
       {colored && (
-        <div className="swatches" role="radiogroup" aria-label="Color">
+        <div className="flex items-center gap-1.5" role="radiogroup" aria-label="Color">
           {MARKUP_COLORS.map((swatch, index) => (
-            <button
+            <Swatch
               key={css(swatch)}
-              type="button"
+              color={css(swatch)}
+              chosen={swatch === color}
               role="radio"
               aria-checked={swatch === color}
               aria-label={COLOR_NAMES[index]}
-              className={`swatch${swatch === color ? ' swatch-chosen' : ''}`}
-              style={{ background: css(swatch) }}
               onClick={() => workspace.setColor(swatch)}
             />
           ))}
         </div>
       )}
       {tool === 'form' && (
-        <select className="field field-compact" value={fieldKind} onChange={(event) => workspace.setFieldKind(event.target.value as NewFieldKind)} aria-label="Field kind">
+        <Select compact value={fieldKind} onChange={(event) => workspace.setFieldKind(event.target.value as NewFieldKind)} aria-label="Field kind">
           {FIELD_KINDS.map((entry) => (
             <option key={entry.kind} value={entry.kind}>
               {entry.label}
             </option>
           ))}
-        </select>
+        </Select>
       )}
       {tool === 'stamp' && (
-        <select className="field field-compact" value={stampLabel} onChange={(event) => workspace.setStampLabel(event.target.value)} aria-label="Stamp">
+        <Select compact value={stampLabel} onChange={(event) => workspace.setStampLabel(event.target.value)} aria-label="Stamp">
           {STAMP_LABELS.map((label) => (
             <option key={label}>{label}</option>
           ))}
-        </select>
+        </Select>
       )}
     </div>
   )

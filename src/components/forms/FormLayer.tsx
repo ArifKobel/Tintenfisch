@@ -9,7 +9,7 @@ export function FormLayer({ pageId, cssScale }: { pageId: string; cssScale: numb
   if (tool === 'form') return <FieldDesigner pageId={pageId} cssScale={cssScale} />
   if (tool !== 'select') return null
   return (
-    <div className="form-layer">
+    <div className="pointer-events-none absolute inset-0">
       {fields.flatMap((field) =>
         field.widgets
           .filter((widget) => widget.pageId === pageId)

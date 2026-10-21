@@ -1,5 +1,9 @@
 import { useState, type FormEvent } from 'react'
 import { useDocumentStore } from '@/stores/documentStore.ts'
+import { Button } from '@/components/ui/Button.tsx'
+import { DialogActions, DialogField, DialogPanel } from '@/components/ui/Dialog.tsx'
+import { Input } from '@/components/ui/Field.tsx'
+import { Notice } from '@/components/ui/Text.tsx'
 
 export function PasswordPrompt({ name, wrongPassword }: { name: string; wrongPassword: boolean }) {
   const [password, setPassword] = useState('')
@@ -10,18 +14,16 @@ export function PasswordPrompt({ name, wrongPassword }: { name: string; wrongPas
   }
 
   return (
-    <form className="dialog password-prompt" onSubmit={unlock}>
-      <h2 className="dialog-title">{name} is protected</h2>
-      <label className="dialog-field">
-        Password
-        <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoFocus />
-      </label>
-      {wrongPassword && <p className="notice">That password does not open this document.</p>}
-      <div className="dialog-actions">
-        <button type="submit" className="button button-primary">
+    <DialogPanel title={`${name} is protected`} className="w-[400px]" onSubmit={unlock}>
+      <DialogField label="Password">
+        <Input type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoFocus />
+      </DialogField>
+      {wrongPassword && <Notice>That password does not open this document.</Notice>}
+      <DialogActions>
+        <Button type="submit" look="primary">
           Unlock
-        </button>
-      </div>
-    </form>
+        </Button>
+      </DialogActions>
+    </DialogPanel>
   )
 }

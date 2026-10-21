@@ -28,12 +28,12 @@ export function LinkLayer({ pageId, cssScale }: { pageId: string; cssScale: numb
 
   if (tool === 'select') {
     return (
-      <div className="link-layer">
+      <div className="pointer-events-none absolute inset-0">
         {pageLinks.map((link) => (
           <button
             key={link.id}
             type="button"
-            className="link-spot"
+            className="pointer-events-auto absolute cursor-pointer p-0 hover:bg-selection/12"
             title={describe(link.target)}
             aria-label={describe(link.target)}
             style={{ left: link.rect.x * cssScale, top: link.rect.y * cssScale, width: link.rect.width * cssScale, height: link.rect.height * cssScale }}
@@ -69,12 +69,12 @@ export function LinkLayer({ pageId, cssScale }: { pageId: string; cssScale: numb
   }
 
   return (
-    <div className="link-layer link-layer-editing" onPointerDown={start}>
+    <div className="pointer-events-auto absolute inset-0 cursor-crosshair" onPointerDown={start}>
       {pageLinks.map((link) => (
         <LinkBox key={link.id} link={link} pageId={pageId} selected={selected?.id === link.id} cssScale={cssScale} />
       ))}
       {drawn && (
-        <div className="link-box link-box-drawn" style={{ left: drawn.x * cssScale, top: drawn.y * cssScale, width: drawn.width * cssScale, height: drawn.height * cssScale }} />
+        <div className="pointer-events-none absolute border border-dashed border-selection bg-selection/8" style={{ left: drawn.x * cssScale, top: drawn.y * cssScale, width: drawn.width * cssScale, height: drawn.height * cssScale }} />
       )}
     </div>
   )

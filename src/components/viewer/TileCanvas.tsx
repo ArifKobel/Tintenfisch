@@ -9,7 +9,7 @@ export function TileCanvas({ address, pixelRatio }: { address: TileAddress; pixe
   return (
     <canvas
       ref={canvas}
-      className="page-tile"
+      className="absolute"
       style={{
         left: tile.x / pixelRatio,
         top: tile.y / pixelRatio,

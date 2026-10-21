@@ -4,7 +4,10 @@ import { catalogFamilies } from '@/services/fontCatalog.ts'
 import { useEditingStore } from '@/stores/editingStore.ts'
 import { useFontStore } from '@/stores/fontStore.ts'
 import type { Rgb, TextStyle } from '@/types/protocol.ts'
+import { Select } from '@/components/ui/Field.tsx'
 import { Icon } from '@/components/ui/Icon.tsx'
+import { iconButtonClass } from '@/components/ui/controlStyles.ts'
+import { Swatch } from '@/components/ui/Swatch.tsx'
 
 const SIZES = [6, 8, 9, 10, 11, 12, 14, 16, 18, 20, 24, 28, 32, 36, 48, 72]
 
@@ -43,18 +46,18 @@ export function FormatBar() {
     if (choice) format({ ...style, font: choice })
   }
   return (
-    <div className="format-bar" role="group" aria-label="Text format">
+    <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Text format" data-keeps-edit>
       <FontPicker look={look} fonts={documentFonts} onChoose={(font) => format({ font })} />
-      <select className="field format-size" aria-label="Font size" value={size} onChange={(event) => format({ size: Number(event.target.value) })}>
+      <Select className="mr-auto w-[88px]" aria-label="Font size" value={size} onChange={(event) => format({ size: Number(event.target.value) })}>
         {sizes.map((choice) => (
           <option key={choice} value={choice}>
             {choice}
           </option>
         ))}
-      </select>
+      </Select>
       <button
         type="button"
-        className={`icon-button${look.bold ? ' icon-button-toggled' : ''}`}
+        className={iconButtonClass(look.bold ? 'toggled' : null)}
         aria-label="Bold"
         aria-pressed={look.bold}
         onMouseDown={keepFocus}
@@ -64,7 +67,7 @@ export function FormatBar() {
       </button>
       <button
         type="button"
-        className={`icon-button${look.italic ? ' icon-button-toggled' : ''}`}
+        className={iconButtonClass(look.italic ? 'toggled' : null)}
         aria-label="Italic"
         aria-pressed={look.italic}
         onMouseDown={keepFocus}
@@ -72,15 +75,14 @@ export function FormatBar() {
       >
         <Icon name="text-italic" />
       </button>
-      <div className="swatches" role="group" aria-label="Text color">
+      <div className="flex w-full items-center gap-1.5" role="group" aria-label="Text color">
         {COLORS.map(({ color, label }) => (
-          <button
+          <Swatch
             key={label}
-            type="button"
-            className={`swatch${sameColor(look.color, color) ? ' swatch-chosen' : ''}`}
+            color={`rgb(${color.map((part) => Math.round(part * 255)).join(' ')})`}
+            chosen={sameColor(look.color, color)}
             aria-label={label}
             aria-pressed={sameColor(look.color, color)}
-            style={{ background: `rgb(${color.map((part) => Math.round(part * 255)).join(' ')})` }}
             onMouseDown={keepFocus}
             onClick={() => format({ color })}
           />

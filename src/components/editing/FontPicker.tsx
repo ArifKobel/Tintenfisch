@@ -4,6 +4,8 @@ import { FontOptions } from '@/lib/FontOptions.ts'
 import type { BundledFamily, FontChoice, PageFont } from '@/types/protocol.ts'
 import { catalogFamilies, type CatalogFamily } from '@/services/fontCatalog.ts'
 import { useFontStore } from '@/stores/fontStore.ts'
+import { CHEVRON, FIELD } from '@/components/ui/controlStyles.ts'
+import { Hint } from '@/components/ui/Text.tsx'
 
 const BUNDLED: { family: BundledFamily; label: string }[] = [
   { family: 'sans', label: 'Sans' },
@@ -166,15 +168,15 @@ export function FontPicker({ look, fonts, onChoose }: { look: TextLook; fonts: r
   }
 
   return (
-    <div ref={root} className="font-picker">
-      <button type="button" className="field font-picker-trigger" aria-haspopup="listbox" aria-expanded={open} disabled={loading !== null} onClick={() => (open ? close() : show())}>
+    <div ref={root} className="w-full">
+      <button type="button" className={`${FIELD} ${CHEVRON} min-h-8 w-full truncate py-1 pl-2.5 text-left`} aria-haspopup="listbox" aria-expanded={open} disabled={loading !== null} onClick={() => (open ? close() : show())}>
         {shown}
       </button>
       {open && (
-        <div className="menu font-picker-menu" style={place ?? undefined}>
+        <div className="fixed z-45 flex max-h-[min(420px,calc(100vh-120px))] flex-col gap-1 rounded border border-menu-border bg-surface p-2 shadow-menu" style={place ?? undefined}>
           <input
             ref={search}
-            className="field font-picker-search"
+            className={`${FIELD} min-h-8 w-full flex-none px-2.5 py-1`}
             type="search"
             placeholder="Search fonts"
             aria-label="Search fonts"
@@ -189,11 +191,11 @@ export function FontPicker({ look, fonts, onChoose }: { look: TextLook; fonts: r
             }}
             onKeyDown={press}
           />
-          <div id={list} className="font-picker-list" role="listbox" aria-label="Fonts">
-            {families === null && <p className="hint font-picker-note">Loading the font list…</p>}
+          <div id={list} className="overflow-y-auto" role="listbox" aria-label="Fonts">
+            {families === null && <Hint className="px-2 py-1.5">Loading the font list…</Hint>}
             {sections.map((section) => (
               <div key={section.title} role="group" aria-label={section.title}>
-                <p className="section-label font-picker-section">{section.title}</p>
+                <p className="px-2 pt-2.5 pb-1 text-[11px] leading-[14px] tracking-[0.06em] text-ink uppercase">{section.title}</p>
                 {section.entries.map((entry) => {
                   const index = entries.indexOf(entry)
                   return (
@@ -202,20 +204,20 @@ export function FontPicker({ look, fonts, onChoose }: { look: TextLook; fonts: r
                       id={`${list}-${index}`}
                       role="option"
                       aria-selected={entry.chosen}
-                      className={`font-picker-option${index === active ? ' font-picker-option-active' : ''}${entry.chosen ? ' font-picker-option-chosen' : ''}`}
+                      className={`flex min-h-8 cursor-pointer items-baseline gap-2 rounded px-2 py-1.5 text-ink-strong ${index === active ? 'bg-hover' : ''} ${entry.chosen ? 'shadow-[inset_0_0_0_2px_var(--color-selection)]' : ''}`}
                       onMouseDown={(event) => event.preventDefault()}
                       onMouseEnter={() => setActive(index)}
                       onClick={entry.choose}
                     >
-                      <span className="font-picker-name">{entry.label}</span>
-                      {entry.detail && <span className="font-picker-detail">{entry.detail}</span>}
+                      <span className="flex-1 truncate">{entry.label}</span>
+                      {entry.detail && <span className="flex-none text-xs text-ink-muted">{entry.detail}</span>}
                     </div>
                   )
                 })}
-                {section.hidden > 0 && <p className="hint font-picker-note">{section.hidden} more, keep typing to narrow them down</p>}
+                {section.hidden > 0 && <Hint className="px-2 py-1.5">{section.hidden} more, keep typing to narrow them down</Hint>}
               </div>
             ))}
-            {families !== null && entries.length === 0 && <p className="hint font-picker-note">No font matches “{query}”.</p>}
+            {families !== null && entries.length === 0 && <Hint className="px-2 py-1.5">No font matches “{query}”.</Hint>}
           </div>
         </div>
       )}

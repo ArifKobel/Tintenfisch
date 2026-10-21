@@ -2,6 +2,7 @@ import { useRef, type ChangeEvent } from 'react'
 import { PICTURE_TYPES } from '@/components/images/ImageLayer.tsx'
 import { useImagesStore } from '@/stores/imagesStore.ts'
 import { useWorkspaceStore } from '@/stores/workspaceStore.ts'
+import { Button } from '@/components/ui/Button.tsx'
 
 export function ImageControls() {
   const images = useImagesStore()
@@ -15,23 +16,23 @@ export function ImageControls() {
     if (file) await images.replaceSelected(new Uint8Array(await file.arrayBuffer()))
   }
 
-  if (tool === 'addImage') return <span className="hint">Click where the image goes</span>
+  if (tool === 'addImage') return <span className="text-[13px] text-ink-muted">Click where the image goes</span>
   if (!selected && !notice) return null
   return (
-    <div className="context-group" role="group" aria-label="Image">
+    <div className="flex min-h-10 items-center gap-2" role="group" aria-label="Image">
       {selected && (
         <>
-          <button type="button" className="button" onClick={() => picker.current?.click()}>
+          <Button onClick={() => picker.current?.click()}>
             Replace image
-          </button>
-          <button type="button" className="button" onClick={() => void images.removeSelected()}>
+          </Button>
+          <Button onClick={() => void images.removeSelected()}>
             Delete image
-          </button>
+          </Button>
           <input ref={picker} type="file" accept={PICTURE_TYPES} hidden onChange={(event) => void picked(event)} />
         </>
       )}
       {notice && (
-        <span className="notice" role="status">
+        <span className="text-[13px] text-negative" role="status">
           {notice}
         </span>
       )}

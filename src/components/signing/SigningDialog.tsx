@@ -2,6 +2,10 @@ import { useState, type FormEvent } from 'react'
 import { FileDownload } from '@/services/FileDownload.ts'
 import { useDigitalSignatureStore } from '@/stores/digitalSignatureStore.ts'
 import { useFormsStore } from '@/stores/formsStore.ts'
+import { Button } from '@/components/ui/Button.tsx'
+import { Notice } from '@/components/ui/Text.tsx'
+import { Dialog, DialogActions, DialogField } from '@/components/ui/Dialog.tsx'
+import { Input, Select } from '@/components/ui/Field.tsx'
 
 export function SigningDialog() {
   const digitalSignatures = useDigitalSignatureStore()
@@ -28,57 +32,46 @@ export function SigningDialog() {
   }
 
   return (
-    <div className="dialog-backdrop">
-      <form className="dialog signature-pad" role="dialog" aria-modal="true" aria-label="Sign with certificate" onSubmit={(event) => void submit(event)}>
-        <h2 className="dialog-title">Sign with certificate</h2>
+    <Dialog title="Sign with certificate" label="Sign with certificate" onSubmit={(event) => void submit(event)}>
         {unsigned.length === 0 ? (
-          <p className="dialog-hint">Place a signature on the page first; signing fills one of the signature fields.</p>
+          <p className="text-ink-body">Place a signature on the page first; signing fills one of the signature fields.</p>
         ) : (
           <>
-            <label className="dialog-field">
-              Signature field
-              <select value={chosen} onChange={(event) => setFieldId(event.target.value)}>
+            <DialogField label="Signature field">
+              <Select value={chosen} onChange={(event) => setFieldId(event.target.value)}>
                 {unsigned.map((field) => (
                   <option key={field.id} value={field.id}>
                     {field.name}
                   </option>
                 ))}
-              </select>
-            </label>
-            <label className="dialog-field">
-              Certificate file (.p12, .pfx)
-              <input type="file" accept=".p12,.pfx,application/x-pkcs12" onChange={(event) => setCertificate(event.target.files?.[0] ?? null)} />
-            </label>
-            <label className="dialog-field">
-              Password
-              <input type="password" autoComplete="off" value={password} onChange={(event) => setPassword(event.target.value)} />
-            </label>
-            <label className="dialog-field">
-              Reason
-              <input value={reason} onChange={(event) => setReason(event.target.value)} />
-            </label>
-            <label className="dialog-field">
-              Location
-              <input value={location} onChange={(event) => setLocation(event.target.value)} />
-            </label>
-            <p className="dialog-hint">Signing saves every change so far and downloads the signed file.</p>
+              </Select>
+            </DialogField>
+            <DialogField label="Certificate file (.p12, .pfx)">
+              <Input type="file" accept=".p12,.pfx,application/x-pkcs12" onChange={(event) => setCertificate(event.target.files?.[0] ?? null)} />
+            </DialogField>
+            <DialogField label="Password">
+              <Input type="password" autoComplete="off" value={password} onChange={(event) => setPassword(event.target.value)} />
+            </DialogField>
+            <DialogField label="Reason">
+              <Input value={reason} onChange={(event) => setReason(event.target.value)} />
+            </DialogField>
+            <DialogField label="Location">
+              <Input value={location} onChange={(event) => setLocation(event.target.value)} />
+            </DialogField>
+            <p className="text-ink-body">Signing saves every change so far and downloads the signed file.</p>
           </>
         )}
         {notice && (
-          <p className="notice" role="status">
-            {notice}
-          </p>
+          <Notice>{notice}</Notice>
         )}
-        <div className="dialog-actions">
-          <span className="dialog-spacer" />
-          <button type="button" className="button" onClick={() => digitalSignatures.closeDialog()} disabled={signing}>
+        <DialogActions>
+          <Button onClick={() => digitalSignatures.closeDialog()} disabled={signing}>
             Cancel
-          </button>
-          <button type="submit" className="button button-primary" disabled={signing || !certificate || !chosen}>
+          </Button>
+          <Button type="submit" look="primary" disabled={signing || !certificate || !chosen}>
             {signing ? 'Signing' : 'Sign'}
-          </button>
-        </div>
-      </form>
-    </div>
+          </Button>
+        </DialogActions>
+    </Dialog>
   )
 }

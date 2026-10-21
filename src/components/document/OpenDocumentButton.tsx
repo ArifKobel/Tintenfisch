@@ -1,5 +1,6 @@
 import type { ChangeEvent } from 'react'
 import { useOpenFile } from '@/hooks/useOpenFile.ts'
+import { buttonClass } from '@/components/ui/controlStyles.ts'
 
 export function OpenDocumentButton() {
   const openFile = useOpenFile()
@@ -11,7 +12,7 @@ export function OpenDocumentButton() {
   }
 
   return (
-    <label className="button button-primary">
+    <label className={buttonClass('primary')}>
       Select a file
       <input type="file" accept="application/pdf" onChange={openSelectedFile} hidden />
     </label>

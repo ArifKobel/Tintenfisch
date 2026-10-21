@@ -1,5 +1,5 @@
 import { Icon } from '@/components/ui/Icon.tsx'
-import { MenuButton } from '@/components/ui/MenuButton.tsx'
+import { MenuButton, MenuItem } from '@/components/ui/Menu.tsx'
 import { useDocumentStore } from '@/stores/documentStore.ts'
 import { useFontStore } from '@/stores/fontStore.ts'
 import { usePrintStore } from '@/stores/printStore.ts'
@@ -19,11 +19,8 @@ export function DocumentMenu() {
     <MenuButton icon="more" label="More options" opens="below">
       {(close) =>
         entries.map(({ label, icon, run }) => (
-          <button
+          <MenuItem
             key={label}
-            type="button"
-            role="menuitem"
-            className="menu-item"
             onClick={() => {
               run()
               close()
@@ -31,7 +28,7 @@ export function DocumentMenu() {
           >
             <Icon name={icon} />
             {label}
-          </button>
+          </MenuItem>
         ))
       }
     </MenuButton>
