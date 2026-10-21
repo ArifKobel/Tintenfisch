@@ -58,6 +58,14 @@ Tintenfisch never uploads your documents. The only outgoing requests are optiona
 
 Tintenfisch needs a current browser with WebAssembly, Web Workers, OffscreenCanvas and IndexedDB, such as current versions of Chrome, Edge, Firefox and Safari.
 
+## Desktop app
+
+Every release also ships a desktop app on the [releases page](https://github.com/ArifKobel/Tintenfisch/releases): a `.dmg` for macOS (Apple Silicon and Intel) and an `.exe` installer for Windows. It runs the same app in the system web view, works offline and can open PDFs from the file manager. To make it the default for PDFs on macOS, select a PDF in Finder, choose File > Get Info, pick Tintenfisch under Open with and click Change All.
+
+The builds are not signed by Apple or Microsoft yet. On macOS, allow the app once under System Settings > Privacy & Security > Open Anyway. On Windows, SmartScreen asks once: More info > Run anyway.
+
+Downloaded PDFs are saved to the Downloads folder.
+
 ## Development
 
 ```sh
@@ -68,6 +76,8 @@ pnpm dev
 You need Node.js 24, pnpm and Rust stable with the `wasm32-unknown-unknown` target. [CONTRIBUTING.md](CONTRIBUTING.md) explains the setup, the project layout and the checks a pull request needs.
 
 Link previews point to the address in `VITE_SITE_URL` (`.env`, https://tintenfisch.app by default). Set it in `.env.local` to build for another address.
+
+`pnpm tauri dev` starts the desktop app against the dev server, `pnpm tauri build` bundles it for the current platform.
 
 Engine tests run natively:
 
