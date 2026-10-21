@@ -10,9 +10,9 @@
     "predev": "pnpm build:wasm",
     "dev": "vite",
     "prebuild": "wasm-pack build engine/wasm --target web",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b tsconfig.app.json tsconfig.node.json && vite build",
     "lint": "oxlint",
-    "test": "vitest run",
+    "test": "tsc -p tsconfig.test.json && vitest run",
     "fonts:catalog": "node scripts/snapshot-font-catalog.ts"
   },
   "dependencies": {
