@@ -529,3 +529,32 @@ fn a_point_in_the_draft_maps_back_to_the_offset_whose_caret_is_there() {
         assert_eq!(found, Some(offset), "offset {offset}");
     }
 }
+
+#[test]
+fn a_ligature_stays_one_cluster_so_the_caret_reaches_the_end_of_the_line() {
+    let library = library();
+    let sample = include_bytes!("../../../../src/assets/sample.pdf");
+    let mut document = Document::open(sample.to_vec(), "").unwrap();
+    let page = document.view(&library).pages().unwrap()[0].id;
+    let lines = document.view(&library).text_layout(page).unwrap().lines().to_vec();
+    let heading = lines.iter().position(|line| line_text(line) == "Welcome to Tintenfisch").unwrap();
+    let paragraph = document.paragraph_text(page, heading, &library).unwrap();
+    assert!(paragraph.clusters.contains(&"fi".to_string()));
+
+    for suffix in ["", "!"] {
+        let mut clusters = paragraph.clusters.clone();
+        clusters.extend((!suffix.is_empty()).then(|| suffix.to_string()));
+        let end = clusters.len();
+        let edit = ParagraphEdit::clustered(page, paragraph.line, clusters);
+        let plan = document.plan_edit(&edit, &library).unwrap();
+        let (caret, right) = document
+            .preview(&plan, &library, |view| {
+                let layout = view.text_layout(page).unwrap();
+                let shown = format!("Welcome to Tintenfisch{suffix}");
+                let line = layout.lines().iter().find(|line| line_text(line) == shown).unwrap().clone();
+                (plan.caret(&layout, end).unwrap(), line.right())
+            })
+            .unwrap();
+        assert!((caret.x - right).abs() < 1e-6, "caret {} short of {right} with {suffix:?}", caret.x);
+    }
+}

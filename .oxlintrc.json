@@ -6,7 +6,8 @@
     "oxc"
   ],
   "ignorePatterns": [
-    "engine/**"
+    "engine/**",
+    "src/routeTree.gen.ts"
   ],
   "rules": {
     "react/rules-of-hooks": "error",
@@ -26,10 +27,20 @@
               "./*",
               "../*"
             ],
-            "message": "Import through a path alias such as @engine/ instead of a relative path."
+            "message": "Import through a path alias such as @/stores/ instead of a relative path."
           }
         ]
       }
     ]
-  }
+  },
+  "overrides": [
+    {
+      "files": [
+        "src/routes/**"
+      ],
+      "rules": {
+        "react/only-export-components": "off"
+      }
+    }
+  ]
 }
