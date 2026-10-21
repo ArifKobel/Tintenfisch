@@ -1,25 +1,28 @@
 import { useRef, type MouseEvent, type PointerEvent } from 'react'
-import { useApplication } from '@/app/ApplicationContext.ts'
-import { useToolState } from '@/hooks/useToolState.ts'
 import { EditFrame } from '@/components/editing/EditFrame.tsx'
 import { EditInput } from '@/components/editing/EditInput.tsx'
-import { useEditingState } from '@/hooks/useEditingState.ts'
-import type { SelectionUnit } from '@/types/protocol.ts'
-import { useFindState } from '@/hooks/useFindState.ts'
 import { HighlightBoxes } from '@/components/text/HighlightBoxes.tsx'
-import { TextBlocks } from '@/lib/TextBlocks.ts'
 import { usePageTextBlocks } from '@/hooks/usePageTextBlocks.ts'
-import { useSelectionState } from '@/hooks/useSelectionState.ts'
+import { TextBlocks } from '@/lib/TextBlocks.ts'
+import { useCommentsStore } from '@/stores/commentsStore.ts'
+import { useEditingStore } from '@/stores/editingStore.ts'
+import { useFindStore } from '@/stores/findStore.ts'
+import { useImagesStore } from '@/stores/imagesStore.ts'
+import { useSelectionStore } from '@/stores/selectionStore.ts'
+import { useWorkspaceStore } from '@/stores/workspaceStore.ts'
+import type { SelectionUnit } from '@/types/protocol.ts'
 
 const UNITS: SelectionUnit[] = ['character', 'word', 'paragraph']
 
 export function TextLayer({ pageId, cssScale }: { pageId: string; cssScale: number }) {
-  const { selection, editing, comments, images, tools } = useApplication()
-  const { tool } = useToolState()
-  const selected = useSelectionState()
-  const found = useFindState()
-  const edited = useEditingState()
-  const active = edited.active?.pageId === pageId ? edited.active : null
+  const { tool, choose } = useWorkspaceStore()
+  const selection = useSelectionStore()
+  const selected = selection.selection
+  const found = useFindStore()
+  const editing = useEditingStore()
+  const images = useImagesStore()
+  const addComment = useCommentsStore((state) => state.add)
+  const active = editing.active?.pageId === pageId ? editing.active : null
   const caret = active ? active.caret : undefined
   const blocks = usePageTextBlocks(pageId)
   const dragging = useRef<number | null>(null)
@@ -32,7 +35,7 @@ export function TextLayer({ pageId, cssScale }: { pageId: string; cssScale: numb
   function begin(event: MouseEvent<HTMLDivElement>) {
     if (event.button !== 0) return
     const { x, y } = pointInPoints(event)
-    if (edited.enabled) {
+    if (editing.enabled) {
       event.preventDefault()
       selection.clear()
       if (tool === 'addText') {
@@ -66,7 +69,7 @@ export function TextLayer({ pageId, cssScale }: { pageId: string; cssScale: numb
     if (tool === 'select' && event.detail === 2 && TextBlocks.contain(blocks, x, y)) {
       event.preventDefault()
       selection.clear()
-      tools.choose('edit')
+      choose('edit')
       void editing.begin(pageId, x, y)
       return
     }
@@ -86,7 +89,7 @@ export function TextLayer({ pageId, cssScale }: { pageId: string; cssScale: numb
   function extend(event: PointerEvent<HTMLDivElement>) {
     if (dragging.current !== event.pointerId || (event.buttons & 1) === 0) return
     const { x, y } = pointInPoints(event)
-    if (!edited.enabled) void selection.extend(pageId, x, y)
+    if (!editing.enabled) void selection.extend(pageId, x, y)
     else if (active && tool !== 'addText') void editing.dragTo(pageId, x, y)
   }
 
@@ -94,10 +97,10 @@ export function TextLayer({ pageId, cssScale }: { pageId: string; cssScale: numb
     if ((tool !== 'highlight' && tool !== 'redactText') || event.button !== 0) return
     const { x, y } = pointInPoints(event)
     await selection.extend(pageId, x, y)
-    const chosen = selection.getSnapshot()
+    const chosen = useSelectionStore.getState().selection
     if (chosen?.pageId !== pageId || chosen.text.trim() === '') return
     selection.clear()
-    await comments.add(pageId, {
+    await addComment(pageId, {
       kind: tool === 'highlight' ? 'highlight' : 'redactText',
       anchor: [chosen.anchor.line, chosen.anchor.offset],
       focus: [chosen.focus.line, chosen.focus.offset],

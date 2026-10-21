@@ -1,12 +1,15 @@
-import { useApplication } from '@/app/ApplicationContext.ts'
-import { TOOL_CATALOG } from '@/lib/toolCatalog.ts'
-import { useToolState } from '@/hooks/useToolState.ts'
+import { TOOL_CATALOG } from '@/components/tools/toolCatalog.ts'
 import { Icon } from '@/components/ui/Icon.tsx'
 import { MenuButton } from '@/components/ui/MenuButton.tsx'
+import { useDigitalSignatureStore } from '@/stores/digitalSignatureStore.ts'
+import { useSignatureStore } from '@/stores/signatureStore.ts'
+import { useWorkspaceStore } from '@/stores/workspaceStore.ts'
 
 export function SignMenuButton() {
-  const { tools, signing, digitalSignatures } = useApplication()
-  const { tool } = useToolState()
+  const workspace = useWorkspaceStore()
+  const signing = useSignatureStore()
+  const digitalSignatures = useDigitalSignatureStore()
+  const { tool } = workspace
   const active = tool === 'sign'
   return (
     <MenuButton icon="pen-brush" label="Sign" tooltip="right" look={active ? 'selected' : null} opens="right">
@@ -17,7 +20,7 @@ export function SignMenuButton() {
             role="menuitem"
             className={`menu-item${active ? ' menu-item-chosen' : ''}`}
             onClick={() => {
-              tools.choose('sign')
+              workspace.choose('sign')
               close()
             }}
           >

@@ -1,8 +1,7 @@
-import { useApplication } from '@/app/ApplicationContext.ts'
 import type { FieldProperties, FormField } from '@/types/protocol.ts'
-import { useFormsState } from '@/hooks/useFormsState.ts'
-import { useToolState } from '@/hooks/useToolState.ts'
 import { SidePanel } from '@/components/ui/SidePanel.tsx'
+import { useFormsStore } from '@/stores/formsStore.ts'
+import { useWorkspaceStore } from '@/stores/workspaceStore.ts'
 
 function propertiesOf(field: FormField): FieldProperties {
   return {
@@ -15,9 +14,9 @@ function propertiesOf(field: FormField): FieldProperties {
 }
 
 export function FieldPanel() {
-  const { forms } = useApplication()
-  const { fields, selected } = useFormsState()
-  const { tool } = useToolState()
+  const forms = useFormsStore()
+  const { fields, selected } = forms
+  const { tool } = useWorkspaceStore()
   const field = fields.find((candidate) => candidate.id === selected)
   if (tool !== 'form' || !field) return null
   const current = propertiesOf(field)

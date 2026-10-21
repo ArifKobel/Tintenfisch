@@ -1,6 +1,6 @@
 import { useRef } from 'react'
-import type { TileAddress } from '@/services/TileLoader.ts'
 import { useTile } from '@/hooks/useTile.ts'
+import type { TileAddress } from '@/services/tiles.ts'
 
 export function TileCanvas({ address, pixelRatio }: { address: TileAddress; pixelRatio: number }) {
   const canvas = useRef<HTMLCanvasElement>(null)

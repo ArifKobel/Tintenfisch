@@ -1,8 +1,9 @@
+import { createRouter, RouterProvider } from '@tanstack/react-router'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { App } from '@/app/App.tsx'
-import { Application } from '@/app/Application.ts'
-import { ApplicationContext } from '@/app/ApplicationContext.ts'
+import { routeTree } from '@/routeTree.gen.ts'
+import { engine } from '@/services/EngineClient.ts'
+import { useAutoSaveStore } from '@/stores/autoSaveStore.ts'
 import EngineWorker from '@/worker/engine.worker.ts?worker'
 import '@/styles/tokens.css'
 import '@/styles/controls.css'
@@ -25,22 +26,19 @@ import '@/styles/protection.css'
 import '@/styles/printing.css'
 import '@/styles/thumbnails.css'
 
-function localStore(): Storage | null {
-  try {
-    return window.localStorage
-  } catch {
-    return null
+const router = createRouter({ routeTree })
+
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof router
   }
 }
 
-const application = new Application(new EngineWorker(), { indexedDB, window, storage: localStore(), fetch: window.fetch.bind(window) })
-void application.files.start()
-window.addEventListener('pagehide', () => void application.autoSave.flush())
+engine.connect(new EngineWorker())
+window.addEventListener('pagehide', () => void useAutoSaveStore.getState().flush())
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ApplicationContext value={application}>
-      <App />
-    </ApplicationContext>
+    <RouterProvider router={router} />
   </StrictMode>,
 )

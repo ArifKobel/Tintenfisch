@@ -1,9 +1,8 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { useApplication } from '@/app/ApplicationContext.ts'
-import type { ReadyDocument } from '@/stores/DocumentStore.ts'
-import { CSS_PIXELS_PER_POINT, PAGE_GAP, PageLayout } from '@/lib/PageLayout.ts'
 import { PageSlot } from '@/components/viewer/PageSlot.tsx'
-import { useViewportState } from '@/hooks/useViewportState.ts'
+import { CSS_PIXELS_PER_POINT, PAGE_GAP, PageLayout } from '@/lib/PageLayout.ts'
+import type { ReadyDocument } from '@/stores/documentStore.ts'
+import { useViewportStore } from '@/stores/viewportStore.ts'
 
 const WHEEL_ZOOM_SPEED = 1 / 300
 
@@ -15,8 +14,7 @@ interface Scroll {
 }
 
 export function DocumentScroller({ document }: { document: ReadyDocument }) {
-  const { viewport } = useApplication()
-  const { zoom, focusRequest } = useViewportState()
+  const { zoom, focusRequest, reportAvailableWidth, fitWidth, setZoom, reportViewTop, setCurrentPage } = useViewportStore()
   const container = useRef<HTMLDivElement>(null)
   const [scroll, setScroll] = useState<Scroll>({ top: 0, left: 0, width: 0, height: 0 })
   const layout = useMemo(() => new PageLayout(document.pages, zoom), [document.pages, zoom])
@@ -31,7 +29,7 @@ export function DocumentScroller({ document }: { document: ReadyDocument }) {
     const measure = () =>
       setScroll({ top: element.scrollTop, left: element.scrollLeft, width: element.clientWidth, height: element.clientHeight })
     const observer = new ResizeObserver(() => {
-      viewport.reportAvailableWidth(element.clientWidth - 2 * PAGE_GAP)
+      reportAvailableWidth(element.clientWidth - 2 * PAGE_GAP)
       measure()
     })
     observer.observe(element)
@@ -46,14 +44,14 @@ export function DocumentScroller({ document }: { document: ReadyDocument }) {
       element.removeEventListener('scroll', onScroll)
       cancelAnimationFrame(frame)
     }
-  }, [viewport])
+  }, [reportAvailableWidth])
 
   useLayoutEffect(() => {
     const available = (container.current?.clientWidth ?? 0) - 2 * PAGE_GAP
-    viewport.reportAvailableWidth(available)
-    if (available < widestAtZoomOne) viewport.fitWidth(widestAtZoomOne)
-    else viewport.setZoom(1)
-  }, [viewport, document.session, widestAtZoomOne])
+    reportAvailableWidth(available)
+    if (available < widestAtZoomOne) fitWidth(widestAtZoomOne)
+    else setZoom(1)
+  }, [reportAvailableWidth, fitWidth, setZoom, document.session, widestAtZoomOne])
 
   useLayoutEffect(() => {
     const element = container.current
@@ -70,11 +68,11 @@ export function DocumentScroller({ document }: { document: ReadyDocument }) {
     const onWheel = (event: WheelEvent) => {
       if (!event.ctrlKey && !event.metaKey) return
       event.preventDefault()
-      viewport.setZoom(viewport.getSnapshot().zoom * Math.exp(-event.deltaY * WHEEL_ZOOM_SPEED))
+      setZoom(useViewportStore.getState().zoom * Math.exp(-event.deltaY * WHEEL_ZOOM_SPEED))
     }
     element.addEventListener('wheel', onWheel, { passive: false })
     return () => element.removeEventListener('wheel', onWheel)
-  }, [viewport])
+  }, [setZoom])
 
   useEffect(() => {
     if (!focusRequest || !container.current || focusRequest.sequence === shownFocus.current) return
@@ -88,13 +86,13 @@ export function DocumentScroller({ document }: { document: ReadyDocument }) {
 
   const topPlacement = layout.placements[layout.anchorAt(scroll.top).index]
   useEffect(() => {
-    if (topPlacement) viewport.reportViewTop(topPlacement.id, Math.max(0, scroll.top + PAGE_GAP - topPlacement.top) / (zoom * CSS_PIXELS_PER_POINT))
-  }, [viewport, topPlacement, scroll.top, zoom])
+    if (topPlacement) reportViewTop(topPlacement.id, Math.max(0, scroll.top + PAGE_GAP - topPlacement.top) / (zoom * CSS_PIXELS_PER_POINT))
+  }, [reportViewTop, topPlacement, scroll.top, zoom])
 
   const center = layout.placements[layout.anchorAt(scroll.top + scroll.height / 2).index]
   useEffect(() => {
-    if (center) viewport.setCurrentPage(center.id)
-  }, [viewport, center])
+    if (center) setCurrentPage(center.id)
+  }, [setCurrentPage, center])
 
   const contentWidth = Math.max(scroll.width, layout.widestPage + 2 * PAGE_GAP)
   const visible = layout.visible(scroll.top - scroll.height, scroll.top + 2 * scroll.height)

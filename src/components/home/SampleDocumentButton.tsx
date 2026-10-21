@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { useApplication } from '@/app/ApplicationContext.ts'
 import sampleUrl from '@/assets/sample.pdf?url'
+import { useOpenFile } from '@/hooks/useOpenFile.ts'
+import { useToastStore } from '@/stores/toastStore.ts'
 
 export function SampleDocumentButton() {
-  const { files } = useApplication()
+  const openFile = useOpenFile()
   const [loading, setLoading] = useState(false)
 
   async function openSample() {
@@ -11,9 +12,9 @@ export function SampleDocumentButton() {
     try {
       const response = await fetch(sampleUrl)
       if (!response.ok) throw new Error(`The sample document could not be loaded (${response.status}).`)
-      await files.openNew('Tintenfisch sample.pdf', new Uint8Array(await response.arrayBuffer()))
+      await openFile('Tintenfisch sample.pdf', new Uint8Array(await response.arrayBuffer()))
     } catch (error) {
-      files.report((error as Error).message)
+      useToastStore.getState().show('library', (error as Error).message)
     } finally {
       setLoading(false)
     }

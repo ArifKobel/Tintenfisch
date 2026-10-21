@@ -1,7 +1,6 @@
 import type { PointerEvent } from 'react'
-import { useApplication } from '@/app/ApplicationContext.ts'
 import type { Highlight } from '@/types/protocol.ts'
-import type { ImageChoice } from '@/stores/ImagesStore.ts'
+import { useImagesStore, type ImageChoice } from '@/stores/imagesStore.ts'
 
 const SMALLEST = 8
 
@@ -27,7 +26,7 @@ function placement(frame: Highlight, cssScale: number) {
 }
 
 export function ImageBox({ frame, choice, selected, cssScale }: { frame: Highlight; choice: ImageChoice; selected: boolean; cssScale: number }) {
-  const { images } = useApplication()
+  const images = useImagesStore()
 
   function drag(reshape: Reshape) {
     return (event: PointerEvent<HTMLElement>) => {

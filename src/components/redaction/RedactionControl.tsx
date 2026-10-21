@@ -1,11 +1,10 @@
-import { useApplication } from '@/app/ApplicationContext.ts'
-import { useCommentsState } from '@/hooks/useCommentsState.ts'
-import { useRedactionState } from '@/hooks/useRedactionState.ts'
+import { useCommentsStore } from '@/stores/commentsStore.ts'
+import { useRedactionStore } from '@/stores/redactionStore.ts'
 
 export function RedactionControl() {
-  const { redaction } = useApplication()
-  const { comments } = useCommentsState()
-  const { confirming, applying, notice } = useRedactionState()
+  const redaction = useRedactionStore()
+  const { comments } = useCommentsStore()
+  const { confirming, applying, notice } = redaction
   const marks = comments.filter((comment) => comment.subtype === 'Redact').length
   if (marks === 0 && !notice) return null
   return (

@@ -1,26 +1,25 @@
 import { useEffect, useState, type PointerEvent } from 'react'
-import { useApplication } from '@/app/ApplicationContext.ts'
-import { useDocumentState } from '@/hooks/useDocumentState.ts'
 import type { Box, Target } from '@/types/protocol.ts'
 import { LinkBox } from '@/components/links/LinkBox.tsx'
-import { useLinksState } from '@/hooks/useLinksState.ts'
-import { useToolState } from '@/hooks/useToolState.ts'
-import { usePageRevision } from '@/hooks/usePageRevision.ts'
+import { useDocumentStore } from '@/stores/documentStore.ts'
+import { useLinksStore } from '@/stores/linksStore.ts'
+import { useWorkspaceStore } from '@/stores/workspaceStore.ts'
 
 const SMALLEST_DRAWN = 4
 
 export function LinkLayer({ pageId, cssScale }: { pageId: string; cssScale: number }) {
-  const { links } = useApplication()
-  const { tool } = useToolState()
-  const { pages, selected } = useLinksState()
-  const document = useDocumentState()
-  const revision = usePageRevision(pageId)
+  const links = useLinksStore()
+  const load = useLinksStore((state) => state.load)
+  const { tool } = useWorkspaceStore()
+  const { pages, selected } = links
+  const document = useDocumentStore((state) => state.document)
+  const revision = useDocumentStore((state) => state.pageRevisions[pageId] ?? 0)
   const [drawn, setDrawn] = useState<Box | null>(null)
   const active = tool === 'select' || tool === 'link'
 
   useEffect(() => {
-    if (active) void links.load(pageId)
-  }, [links, pageId, revision, active])
+    if (active) void load(pageId)
+  }, [load, pageId, revision, active])
 
   if (!active) return null
   const pageLinks = pages[pageId] ?? []

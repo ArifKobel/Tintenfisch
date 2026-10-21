@@ -1,8 +1,6 @@
 import { useState, type DragEvent, type KeyboardEvent } from 'react'
-import { useApplication } from '@/app/ApplicationContext.ts'
 import type { Bookmark } from '@/types/protocol.ts'
-import type { BookmarkPlace } from '@/stores/BookmarksStore.ts'
-import { useBookmarksState } from '@/hooks/useBookmarksState.ts'
+import { useBookmarksStore, type BookmarkPlace } from '@/stores/bookmarksStore.ts'
 
 export const BOOKMARK_TYPE = 'application/x-tintenfisch-bookmark'
 
@@ -15,8 +13,8 @@ function zoneOf(event: DragEvent<HTMLElement>): Zone {
 }
 
 export function BookmarkRow({ bookmark, parent, index, depth }: { bookmark: Bookmark; parent: string | null; index: number; depth: number }) {
-  const { bookmarks } = useApplication()
-  const { selected, renaming } = useBookmarksState()
+  const bookmarks = useBookmarksStore()
+  const { selected, renaming } = bookmarks
   const [zone, setZone] = useState<Zone | null>(null)
   const collapsed = bookmarks.isCollapsed(bookmark)
   const hasChildren = bookmark.children.length > 0

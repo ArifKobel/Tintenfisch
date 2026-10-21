@@ -1,13 +1,12 @@
 import { useRef, type ChangeEvent } from 'react'
-import { useApplication } from '@/app/ApplicationContext.ts'
 import { PICTURE_TYPES } from '@/components/images/ImageLayer.tsx'
-import { useImagesState } from '@/hooks/useImagesState.ts'
-import { useToolState } from '@/hooks/useToolState.ts'
+import { useImagesStore } from '@/stores/imagesStore.ts'
+import { useWorkspaceStore } from '@/stores/workspaceStore.ts'
 
 export function ImageControls() {
-  const { images } = useApplication()
-  const { selected, notice } = useImagesState()
-  const { tool } = useToolState()
+  const images = useImagesStore()
+  const { selected, notice } = images
+  const { tool } = useWorkspaceStore()
   const picker = useRef<HTMLInputElement>(null)
 
   async function picked(event: ChangeEvent<HTMLInputElement>) {

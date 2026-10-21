@@ -1,6 +1,6 @@
 import type { SignatureInfo } from '@/types/protocol.ts'
-import { useDigitalSignatureState } from '@/hooks/useDigitalSignatureState.ts'
 import { Icon } from '@/components/ui/Icon.tsx'
+import { useDigitalSignatureStore } from '@/stores/digitalSignatureStore.ts'
 
 function verdict(report: SignatureInfo): string {
   switch (report.status) {
@@ -14,7 +14,7 @@ function verdict(report: SignatureInfo): string {
 }
 
 export function SignatureStatusList() {
-  const { reports } = useDigitalSignatureState()
+  const { reports } = useDigitalSignatureStore()
   if (reports.length === 0) return null
   return (
     <ul className="message-bar" aria-label="Signatures">

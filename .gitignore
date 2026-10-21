@@ -13,3 +13,4 @@ engine/wasm/pkg
 
 local/
 local-*
+.tanstack

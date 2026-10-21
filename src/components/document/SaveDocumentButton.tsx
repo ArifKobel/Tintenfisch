@@ -1,16 +1,14 @@
-import { useApplication } from '@/app/ApplicationContext.ts'
-import { FileDownload } from '@/services/FileDownload.ts'
-import { useDocumentState } from '@/hooks/useDocumentState.ts'
 import { Icon } from '@/components/ui/Icon.tsx'
+import { FileDownload } from '@/services/FileDownload.ts'
+import { useDocumentStore } from '@/stores/documentStore.ts'
 
 export function SaveDocumentButton() {
-  const { documents } = useApplication()
-  const state = useDocumentState()
+  const state = useDocumentStore((store) => store.document)
   if (state.phase !== 'ready') return null
 
   async function save() {
     if (state.phase !== 'ready') return
-    FileDownload.offer(state.name, await documents.save())
+    FileDownload.offer(state.name, await useDocumentStore.getState().save())
   }
 
   return (

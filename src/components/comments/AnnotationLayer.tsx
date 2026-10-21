@@ -1,9 +1,7 @@
 import { useState, type PointerEvent } from 'react'
-import { useApplication } from '@/app/ApplicationContext.ts'
-import { useCommentsState } from '@/hooks/useCommentsState.ts'
 import type { MarkupRequest, Point } from '@/types/protocol.ts'
-import { DRAWING_TOOLS, type Tool } from '@/stores/ToolStore.ts'
-import { useToolState } from '@/hooks/useToolState.ts'
+import { useWorkspaceStore, DRAWING_TOOLS, type Tool } from '@/stores/workspaceStore.ts'
+import { useCommentsStore } from '@/stores/commentsStore.ts'
 
 const NOTE_HALF = 10
 const SMALLEST_SHAPE = 3
@@ -34,9 +32,9 @@ function finished({ tool, points }: Sketch): MarkupRequest | null {
 }
 
 export function AnnotationLayer({ pageId, cssScale }: { pageId: string; cssScale: number }) {
-  const { comments } = useApplication()
-  const { tool, stampLabel } = useToolState()
-  const { comments: all, selected } = useCommentsState()
+  const comments = useCommentsStore()
+  const { tool, stampLabel } = useWorkspaceStore()
+  const { comments: all, selected } = comments
   const [sketch, setSketch] = useState<Sketch | null>(null)
   const drawing = DRAWING_TOOLS.includes(tool)
 

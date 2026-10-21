@@ -1,11 +1,8 @@
-import { useApplication } from '@/app/ApplicationContext.ts'
-import { useDocumentState } from '@/hooks/useDocumentState.ts'
-import { usePanelState } from '@/hooks/usePanelState.ts'
 import { SignMenuButton } from '@/components/signing/SignMenuButton.tsx'
 import { ToolGroupButton } from '@/components/tools/ToolGroupButton.tsx'
-import type { Tool } from '@/stores/ToolStore.ts'
-import { useToolState } from '@/hooks/useToolState.ts'
 import { IconButton } from '@/components/ui/IconButton.tsx'
+import { useDocumentStore } from '@/stores/documentStore.ts'
+import { useWorkspaceStore, type Tool } from '@/stores/workspaceStore.ts'
 
 const GROUPS: { label: string; tools: readonly Tool[] }[] = [
   { label: 'Select', tools: ['select'] },
@@ -17,11 +14,9 @@ const GROUPS: { label: string; tools: readonly Tool[] }[] = [
 ]
 
 export function QuickToolbar() {
-  const { panels } = useApplication()
-  const { tool } = useToolState()
-  const { left, sheet } = usePanelState()
-  const document = useDocumentState()
-  if (document.phase !== 'ready') return null
+  const { tool, left, sheet, openSheet, closeSheet } = useWorkspaceStore()
+  const phase = useDocumentStore((state) => state.document.phase)
+  if (phase !== 'ready') return null
   return (
     <div className="quick-toolbar-gutter">
       <div className="quick-toolbar" role="toolbar" aria-label="Quick tools" aria-orientation="vertical">
@@ -36,7 +31,7 @@ export function QuickToolbar() {
             tooltip={null}
             look={sheet ? 'toggled' : null}
             pressed={sheet}
-            onClick={() => (sheet ? panels.closeSheet() : panels.openSheet())}
+            onClick={sheet ? closeSheet : openSheet}
           />
         </span>
       </div>

@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react'
-import { useApplication } from '@/app/ApplicationContext.ts'
-import { CancelledError } from '@/services/EngineClient.ts'
+import { CancelledError, engine } from '@/services/EngineClient.ts'
+import { useDocumentStore } from '@/stores/documentStore.ts'
 import type { Highlight } from '@/types/protocol.ts'
-import { usePageRevision } from '@/hooks/usePageRevision.ts'
 
 export function usePageTextBlocks(pageId: string): Highlight[] {
-  const { engine } = useApplication()
-  const revision = usePageRevision(pageId)
+  const revision = useDocumentStore((state) => state.pageRevisions[pageId] ?? 0)
   const [blocks, setBlocks] = useState<Highlight[]>([])
 
   useEffect(() => {
@@ -18,7 +16,7 @@ export function usePageTextBlocks(pageId: string): Highlight[] {
         if (!(error instanceof CancelledError)) setBlocks([])
       })
     return () => controller.abort()
-  }, [engine, pageId, revision])
+  }, [pageId, revision])
 
   return blocks
 }

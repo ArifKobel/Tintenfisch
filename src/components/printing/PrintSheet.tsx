@@ -1,8 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
-import { useApplication } from '@/app/ApplicationContext.ts'
-import type { PrintedPage } from '@/stores/PrintStore.ts'
-import { usePrintState } from '@/hooks/usePrintState.ts'
+import { usePrintStore, type PrintedPage } from '@/stores/printStore.ts'
 
 const orientationOf = (page: PrintedPage) => (page.width > page.height ? 'landscape' : 'portrait')
 
@@ -15,18 +13,17 @@ function pageRules(sheet: readonly PrintedPage[], actual: boolean): string {
 }
 
 export function PrintSheet() {
-  const { printing } = useApplication()
-  const { sheet, settings } = usePrintState()
+  const { sheet, settings, finish } = usePrintStore()
   const holder = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!sheet) return
-    const finished = () => printing.finish()
+    const finished = () => finish()
     window.addEventListener('afterprint', finished)
     const pictures = [...(holder.current?.querySelectorAll('img') ?? [])]
     void Promise.all(pictures.map((picture) => picture.decode())).then(() => window.print())
     return () => window.removeEventListener('afterprint', finished)
-  }, [printing, sheet])
+  }, [finish, sheet])
 
   if (!sheet) return null
   const actual = settings.fit === 'actual'

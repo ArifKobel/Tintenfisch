@@ -1,6 +1,6 @@
 import type { PointerEvent } from 'react'
-import { useApplication } from '@/app/ApplicationContext.ts'
 import type { EditSession } from '@/lib/EditSession.ts'
+import { useEditingStore } from '@/stores/editingStore.ts'
 import type { Highlight } from '@/types/protocol.ts'
 
 const MIN_WIDTH = 12
@@ -8,21 +8,21 @@ const MIN_WIDTH = 12
 type Drag = (session: EditSession, dx: number, dy: number) => EditSession
 
 export function EditFrame({ frame, cssScale }: { frame: Highlight; cssScale: number }) {
-  const { editing } = useApplication()
+  const edit = useEditingStore((state) => state.edit)
 
   function drag(apply: Drag) {
     return (event: PointerEvent<HTMLDivElement>) => {
-      if (event.button !== 0 || !editing.session) return
+      const start = useEditingStore.getState().session()
+      if (event.button !== 0 || !start) return
       event.preventDefault()
       event.stopPropagation()
       const handle = event.currentTarget
       handle.setPointerCapture(event.pointerId)
-      const start = editing.session
       const origin = { x: event.clientX, y: event.clientY }
       const move = (moved: globalThis.PointerEvent) => {
         const dx = (moved.clientX - origin.x) / cssScale
         const dy = (moved.clientY - origin.y) / cssScale
-        editing.edit(() => apply(start, dx, dy))
+        edit(() => apply(start, dx, dy))
       }
       const release = () => {
         handle.removeEventListener('pointermove', move)

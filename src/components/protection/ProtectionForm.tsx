@@ -1,7 +1,6 @@
 import { useState, type FormEvent } from 'react'
-import { useApplication } from '@/app/ApplicationContext.ts'
 import type { Permissions, ProtectionState } from '@/types/protocol.ts'
-import { useProtectionState } from '@/hooks/useProtectionState.ts'
+import { useProtectionStore } from '@/stores/protectionStore.ts'
 
 const PERMISSIONS: { key: keyof Permissions; label: string }[] = [
   { key: 'print', label: 'Printing' },
@@ -16,8 +15,8 @@ const PERMISSIONS: { key: keyof Permissions; label: string }[] = [
 const EVERYTHING: Permissions = { print: true, printFaithful: true, modify: true, copy: true, annotate: true, fillForms: true, assemble: true }
 
 export function ProtectionForm({ current }: { current: ProtectionState }) {
-  const { protection } = useApplication()
-  const { notice } = useProtectionState()
+  const protection = useProtectionStore()
+  const { notice } = protection
   const restricted = Object.values(current.permissions).some((granted) => !granted)
   const [openWithPassword, setOpenWithPassword] = useState(false)
   const [userPassword, setUserPassword] = useState('')

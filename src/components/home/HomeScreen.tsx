@@ -2,10 +2,10 @@ import { OpenDocumentButton } from '@/components/document/OpenDocumentButton.tsx
 import { DeleteFileDialog } from '@/components/home/DeleteFileDialog.tsx'
 import { RecentFiles } from '@/components/home/RecentFiles.tsx'
 import { SampleDocumentButton } from '@/components/home/SampleDocumentButton.tsx'
-import { useFilesState } from '@/hooks/useFilesState.ts'
+import { useLibraryStore } from '@/stores/libraryStore.ts'
 
 export function HomeScreen() {
-  const { files, missing } = useFilesState()
+  const { files, missing } = useLibraryStore()
   return (
     <div className="home">
       <section className="start-card">

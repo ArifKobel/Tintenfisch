@@ -1,8 +1,8 @@
 import { LinkForm } from '@/components/links/LinkForm.tsx'
-import { useLinksState } from '@/hooks/useLinksState.ts'
+import { useLinksStore } from '@/stores/linksStore.ts'
 
 export function LinkDialog() {
-  const { draft } = useLinksState()
+  const { draft } = useLinksStore()
   if (!draft) return null
   return <LinkForm key={`${draft.pageId}:${draft.linkId ?? 'new'}`} draft={draft} />
 }

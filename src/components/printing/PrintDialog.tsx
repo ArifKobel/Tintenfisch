@@ -1,7 +1,5 @@
 import type { FormEvent } from 'react'
-import { useApplication } from '@/app/ApplicationContext.ts'
-import type { PrintChoice, PrintFit } from '@/stores/PrintStore.ts'
-import { usePrintState } from '@/hooks/usePrintState.ts'
+import { usePrintStore, type PrintChoice, type PrintFit } from '@/stores/printStore.ts'
 
 const CHOICES: { choice: PrintChoice; label: string }[] = [
   { choice: 'all', label: 'All pages' },
@@ -12,8 +10,8 @@ const CHOICES: { choice: PrintChoice; label: string }[] = [
 const RESOLUTIONS = [150, 300]
 
 export function PrintDialog() {
-  const { printing } = useApplication()
-  const { dialogOpen, settings, progress, notice } = usePrintState()
+  const printing = usePrintStore()
+  const { dialogOpen, settings, progress, notice } = printing
   if (!dialogOpen) return null
 
   function submit(event: FormEvent) {

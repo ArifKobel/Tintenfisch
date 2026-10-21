@@ -1,13 +1,12 @@
 import { useState, type FormEvent } from 'react'
-import { useApplication } from '@/app/ApplicationContext.ts'
-import { useDocumentState } from '@/hooks/useDocumentState.ts'
-import type { LinkDraft } from '@/stores/LinksStore.ts'
+import { useLinksStore, type LinkDraft } from '@/stores/linksStore.ts'
+import { useDocumentStore } from '@/stores/documentStore.ts'
 
 const SCHEME = /^[a-z][a-z0-9+.-]*:/i
 
 export function LinkForm({ draft }: { draft: LinkDraft }) {
-  const { links } = useApplication()
-  const document = useDocumentState()
+  const links = useLinksStore()
+  const document = useDocumentStore((state) => state.document)
   const pages = document.phase === 'ready' ? document.pages : []
   const target = draft.target
   const startPage = target?.kind === 'page' ? pages.findIndex((page) => page.id === target.pageId) + 1 : 1

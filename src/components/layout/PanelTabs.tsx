@@ -1,6 +1,4 @@
-import { useApplication } from '@/app/ApplicationContext.ts'
-import type { LeftPanel } from '@/stores/PanelStore.ts'
-import { usePanelState } from '@/hooks/usePanelState.ts'
+import { useWorkspaceStore, type LeftPanel } from '@/stores/workspaceStore.ts'
 
 const TABS: { panel: LeftPanel; label: string }[] = [
   { panel: 'tools', label: 'All tools' },
@@ -8,12 +6,11 @@ const TABS: { panel: LeftPanel; label: string }[] = [
 ]
 
 export function PanelTabs({ className }: { className: string }) {
-  const { panels } = useApplication()
-  const { left } = usePanelState()
+  const { left, showLeft } = useWorkspaceStore()
   return (
     <nav className={`panel-tabs ${className}`} aria-label="Tool panels">
       {TABS.map(({ panel, label }) => (
-        <button key={panel} type="button" className={`header-tab${left === panel ? ' header-tab-active' : ''}`} aria-pressed={left === panel} onClick={() => panels.showLeft(panel)}>
+        <button key={panel} type="button" className={`header-tab${left === panel ? ' header-tab-active' : ''}`} aria-pressed={left === panel} onClick={() => showLeft(panel)}>
           {label}
         </button>
       ))}

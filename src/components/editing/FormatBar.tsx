@@ -1,7 +1,8 @@
 import type { MouseEvent } from 'react'
-import { useApplication } from '@/app/ApplicationContext.ts'
 import { FontPicker } from '@/components/editing/FontPicker.tsx'
-import { useEditingState } from '@/hooks/useEditingState.ts'
+import { catalogFamilies } from '@/services/fontCatalog.ts'
+import { useEditingStore } from '@/stores/editingStore.ts'
+import { useFontStore } from '@/stores/fontStore.ts'
 import type { Rgb, TextStyle } from '@/types/protocol.ts'
 import { Icon } from '@/components/ui/Icon.tsx'
 
@@ -24,20 +25,21 @@ function keepFocus(event: MouseEvent) {
 }
 
 export function FormatBar() {
-  const { editing, fontCatalog, fontReplacements } = useApplication()
-  const { active, fonts } = useEditingState()
+  const editing = useEditingStore()
+  const { active, fonts } = editing
+  const catalogFont = useFontStore((state) => state.catalogFont)
   if (!active) return null
   const { look } = active
   const format = (style: TextStyle) => editing.edit((session) => session.formatted(style))
   const size = Math.round(look.size * 10) / 10
   const sizes = SIZES.includes(size) ? SIZES : [...SIZES, size].sort((left, right) => left - right)
-  const documentFonts = editing.session?.origin ? [] : fonts
+  const documentFonts = editing.session()?.origin ? [] : fonts
 
   async function restyle(style: { bold?: boolean; italic?: boolean }) {
     const font = look.font
     if (font?.kind !== 'catalog') return format(style)
-    const family = (await fontCatalog.families()).find((candidate) => candidate.source === font.source && candidate.id === font.id)
-    const choice = family && (await fontReplacements.catalogFont(family, (style.bold ?? look.bold) ? 700 : 400, style.italic ?? look.italic))
+    const family = (await catalogFamilies()).find((candidate) => candidate.source === font.source && candidate.id === font.id)
+    const choice = family && (await catalogFont(family, (style.bold ?? look.bold) ? 700 : 400, style.italic ?? look.italic))
     if (choice) format({ ...style, font: choice })
   }
   return (

@@ -1,9 +1,9 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react'
-import { useApplication } from '@/app/ApplicationContext.ts'
 import type { TextLook } from '@/lib/EditSession.ts'
 import { FontOptions } from '@/lib/FontOptions.ts'
 import type { BundledFamily, FontChoice, PageFont } from '@/types/protocol.ts'
-import type { CatalogFamily } from '@/services/FontCatalog.ts'
+import { catalogFamilies, type CatalogFamily } from '@/services/fontCatalog.ts'
+import { useFontStore } from '@/stores/fontStore.ts'
 
 const BUNDLED: { family: BundledFamily; label: string }[] = [
   { family: 'sans', label: 'Sans' },
@@ -44,7 +44,7 @@ function labelOf(font: FontChoice | null, options: FontOptions): string {
 }
 
 export function FontPicker({ look, fonts, onChoose }: { look: TextLook; fonts: readonly PageFont[]; onChoose: (font: FontChoice) => void }) {
-  const { fontCatalog, fontReplacements } = useApplication()
+  const catalogFont = useFontStore((state) => state.catalogFont)
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [active, setActive] = useState(0)
@@ -61,7 +61,7 @@ export function FontPicker({ look, fonts, onChoose }: { look: TextLook; fonts: r
     if (!open) return
     const previous = document.activeElement
     search.current?.focus()
-    void fontCatalog.families().then(setFamilies)
+    void catalogFamilies().then(setFamilies)
     const dismiss = (event: PointerEvent) => {
       if (!root.current?.contains(event.target as Node)) setOpen(false)
     }
@@ -73,7 +73,7 @@ export function FontPicker({ look, fonts, onChoose }: { look: TextLook; fonts: r
       window.removeEventListener('resize', away)
       if (previous instanceof HTMLElement) previous.focus({ preventScroll: true })
     }
-  }, [open, fontCatalog])
+  }, [open])
 
   const show = () => {
     const bounds = root.current?.getBoundingClientRect()
@@ -96,7 +96,7 @@ export function FontPicker({ look, fonts, onChoose }: { look: TextLook; fonts: r
     close()
     setLoading(family.family)
     try {
-      const choice = await fontReplacements.catalogFont(family, weightOf(current, look, fonts), look.italic)
+      const choice = await catalogFont(family, weightOf(current, look, fonts), look.italic)
       if (choice) onChoose(choice)
     } finally {
       setLoading(null)

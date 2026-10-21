@@ -1,13 +1,13 @@
 import type { ChangeEvent } from 'react'
-import { useApplication } from '@/app/ApplicationContext.ts'
+import { useOpenFile } from '@/hooks/useOpenFile.ts'
 
 export function OpenDocumentButton() {
-  const { files } = useApplication()
+  const openFile = useOpenFile()
 
   async function openSelectedFile(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]
     event.target.value = ''
-    if (file) await files.openNew(file.name, new Uint8Array(await file.arrayBuffer()))
+    if (file) await openFile(file.name, new Uint8Array(await file.arrayBuffer()))
   }
 
   return (

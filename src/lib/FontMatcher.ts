@@ -1,5 +1,5 @@
 import type { PageFont } from '@/types/protocol.ts'
-import type { CatalogFamily, CatalogStyle } from '@/services/FontCatalog.ts'
+import type { CatalogFamily, CatalogStyle } from '@/services/fontCatalog.ts'
 
 export interface FontMatch {
   family: CatalogFamily

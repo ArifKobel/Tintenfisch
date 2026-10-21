@@ -1,10 +1,10 @@
-import { useDocumentState } from '@/hooks/useDocumentState.ts'
-import { useProtectionState } from '@/hooks/useProtectionState.ts'
 import { Icon } from '@/components/ui/Icon.tsx'
+import { useDocumentStore } from '@/stores/documentStore.ts'
+import { useProtectionStore } from '@/stores/protectionStore.ts'
 
 export function DocumentTitle() {
-  const state = useDocumentState()
-  const { pending } = useProtectionState()
+  const state = useDocumentStore((store) => store.document)
+  const pending = useProtectionStore((store) => store.pending)
   if (state.phase === 'empty') return null
   if (state.phase !== 'ready') {
     const detail = state.phase === 'loading' ? 'Opening' : state.phase === 'locked' ? 'Password required' : state.message

@@ -6,7 +6,8 @@
     "oxc"
   ],
   "ignorePatterns": [
-    "engine/**"
+    "engine/**",
+    "src/routeTree.gen.ts"
   ],
   "rules": {
     "react/rules-of-hooks": "error",
@@ -31,5 +32,15 @@
         ]
       }
     ]
-  }
+  },
+  "overrides": [
+    {
+      "files": [
+        "src/routes/**"
+      ],
+      "rules": {
+        "react/only-export-components": "off"
+      }
+    }
+  ]
 }

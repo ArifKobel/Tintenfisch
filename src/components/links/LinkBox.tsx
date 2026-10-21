@@ -1,6 +1,6 @@
 import type { PointerEvent } from 'react'
-import { useApplication } from '@/app/ApplicationContext.ts'
 import type { Box, DocumentLink } from '@/types/protocol.ts'
+import { useLinksStore } from '@/stores/linksStore.ts'
 
 const SMALLEST = 6
 
@@ -17,7 +17,7 @@ const placement = (rect: Box, cssScale: number) => ({
 })
 
 export function LinkBox({ link, pageId, selected, cssScale }: { link: DocumentLink; pageId: string; selected: boolean; cssScale: number }) {
-  const { links } = useApplication()
+  const links = useLinksStore()
   const choice = { pageId, id: link.id }
 
   function drag(reshape: Reshape) {

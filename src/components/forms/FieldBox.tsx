@@ -1,6 +1,6 @@
 import type { PointerEvent } from 'react'
-import { useApplication } from '@/app/ApplicationContext.ts'
 import type { Box, FormField, FormWidget } from '@/types/protocol.ts'
+import { useFormsStore } from '@/stores/formsStore.ts'
 
 const SMALLEST = 6
 
@@ -10,7 +10,7 @@ const moved: Reshape = (start, dx, dy) => ({ ...start, x: start.x + dx, y: start
 const resized: Reshape = (start, dx, dy) => ({ ...start, width: Math.max(SMALLEST, start.width + dx), height: Math.max(SMALLEST, start.height + dy) })
 
 export function FieldBox({ field, widget, selected, cssScale }: { field: FormField; widget: FormWidget; selected: boolean; cssScale: number }) {
-  const { forms } = useApplication()
+  const forms = useFormsStore()
 
   function drag(reshape: Reshape) {
     return (event: PointerEvent<HTMLElement>) => {

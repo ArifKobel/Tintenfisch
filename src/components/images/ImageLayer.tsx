@@ -1,24 +1,25 @@
 import { useEffect, useRef, type ChangeEvent, type MouseEvent } from 'react'
-import { useApplication } from '@/app/ApplicationContext.ts'
 import { ImageBox } from '@/components/images/ImageBox.tsx'
-import { useImagesState } from '@/hooks/useImagesState.ts'
-import { useToolState } from '@/hooks/useToolState.ts'
-import { usePageRevision } from '@/hooks/usePageRevision.ts'
+import { useImagesStore } from '@/stores/imagesStore.ts'
+import { useWorkspaceStore } from '@/stores/workspaceStore.ts'
+import { useDocumentStore } from '@/stores/documentStore.ts'
 
 export const PICTURE_TYPES = 'image/png,image/jpeg'
 
 export function ImageLayer({ pageId, cssScale }: { pageId: string; cssScale: number }) {
-  const { images, tools } = useApplication()
-  const { tool } = useToolState()
-  const { pages, selected } = useImagesState()
-  const revision = usePageRevision(pageId)
+  const images = useImagesStore()
+  const load = useImagesStore((state) => state.load)
+  const workspace = useWorkspaceStore()
+  const { tool } = workspace
+  const { pages, selected } = images
+  const revision = useDocumentStore((state) => state.pageRevisions[pageId] ?? 0)
   const picker = useRef<HTMLInputElement>(null)
   const target = useRef<[number, number] | null>(null)
   const shown = tool === 'edit' || tool === 'addImage'
 
   useEffect(() => {
-    if (shown) void images.load(pageId)
-  }, [images, pageId, revision, shown])
+    if (shown) void load(pageId)
+  }, [load, pageId, revision, shown])
 
   if (!shown) return null
   const frames = pages[pageId] ?? []
@@ -36,7 +37,7 @@ export function ImageLayer({ pageId, cssScale }: { pageId: string; cssScale: num
     const point = target.current
     if (!file || !point) return
     await images.insert(pageId, new Uint8Array(await file.arrayBuffer()), point[0], point[1])
-    tools.choose('edit')
+    workspace.choose('edit')
   }
 
   const placing = tool === 'addImage'

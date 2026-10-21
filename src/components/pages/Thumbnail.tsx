@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type DragEvent, type MouseEvent } from 'react'
 import type { PageSummary } from '@/types/protocol.ts'
-import { usePageRevision } from '@/hooks/usePageRevision.ts'
 import { useTile } from '@/hooks/useTile.ts'
+import { useDocumentStore } from '@/stores/documentStore.ts'
 
 export const THUMBNAIL_WIDTH = 120
 
@@ -26,7 +26,7 @@ export function Thumbnail({ session, page, number, current, selected, dropBefore
   const canvas = useRef<HTMLCanvasElement>(null)
   const button = useRef<HTMLButtonElement>(null)
   const [nearView, setNearView] = useState(false)
-  const revision = usePageRevision(page.id)
+  const revision = useDocumentStore((state) => state.pageRevisions[page.id] ?? 0)
   const pixelRatio = window.devicePixelRatio || 1
   const scale = (THUMBNAIL_WIDTH * pixelRatio) / page.width
   const tile = { x: 0, y: 0, width: Math.ceil(page.width * scale), height: Math.ceil(page.height * scale) }

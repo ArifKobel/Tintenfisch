@@ -1,10 +1,8 @@
 import { useEffect, useRef } from 'react'
-import { useApplication } from '@/app/ApplicationContext.ts'
-import { useFontConsentState } from '@/hooks/useFontConsentState.ts'
+import { useFontStore } from '@/stores/fontStore.ts'
 
 export function FontConsentDialog() {
-  const { fontConsent } = useApplication()
-  const { asking, downloads } = useFontConsentState()
+  const { asking, downloads, answer } = useFontStore()
   const allow = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
@@ -29,10 +27,10 @@ export function FontConsentDialog() {
         <p className="dialog-hint">Your browser then sends its IP address to these services. Your documents never leave this device. Without downloads, missing letters use a built-in font.</p>
         <p className="hint">You can change this later under More options.{downloads !== 'unknown' && ` Currently ${downloads === 'allowed' ? 'allowed' : 'not allowed'}.`}</p>
         <div className="dialog-actions">
-          <button type="button" className="button" onClick={() => fontConsent.answer(false)}>
+          <button type="button" className="button" onClick={() => answer(false)}>
             Don't allow
           </button>
-          <button ref={allow} type="button" className="button button-primary" onClick={() => fontConsent.answer(true)}>
+          <button ref={allow} type="button" className="button button-primary" onClick={() => answer(true)}>
             Allow downloads
           </button>
         </div>

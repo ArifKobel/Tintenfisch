@@ -1,7 +1,8 @@
 import type { MouseEvent } from 'react'
-import { useApplication } from '@/app/ApplicationContext.ts'
 import type { Comment } from '@/types/protocol.ts'
 import { IconButton } from '@/components/ui/IconButton.tsx'
+import { useCommentsStore } from '@/stores/commentsStore.ts'
+import { useViewportStore } from '@/stores/viewportStore.ts'
 
 const KINDS: Record<string, string> = {
   Highlight: 'Highlight',
@@ -23,7 +24,8 @@ function readableDate(date: string): string {
 }
 
 export function CommentItem({ comment, pageNumber, selected }: { comment: Comment; pageNumber: number; selected: boolean }) {
-  const { comments, viewport } = useApplication()
+  const comments = useCommentsStore()
+  const viewport = useViewportStore()
 
   function reveal() {
     comments.select(comment.id)

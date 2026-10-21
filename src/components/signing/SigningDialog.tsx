@@ -1,13 +1,12 @@
 import { useState, type FormEvent } from 'react'
-import { useApplication } from '@/app/ApplicationContext.ts'
 import { FileDownload } from '@/services/FileDownload.ts'
-import { useFormsState } from '@/hooks/useFormsState.ts'
-import { useDigitalSignatureState } from '@/hooks/useDigitalSignatureState.ts'
+import { useDigitalSignatureStore } from '@/stores/digitalSignatureStore.ts'
+import { useFormsStore } from '@/stores/formsStore.ts'
 
 export function SigningDialog() {
-  const { digitalSignatures } = useApplication()
-  const { dialogOpen, signing, notice, reports } = useDigitalSignatureState()
-  const { fields } = useFormsState()
+  const digitalSignatures = useDigitalSignatureStore()
+  const { dialogOpen, signing, notice, reports } = digitalSignatures
+  const { fields } = useFormsStore()
   const [fieldId, setFieldId] = useState('')
   const [certificate, setCertificate] = useState<File | null>(null)
   const [password, setPassword] = useState('')

@@ -1,10 +1,10 @@
 import { PasswordPrompt } from '@/components/document/PasswordPrompt.tsx'
-import { useDocumentState } from '@/hooks/useDocumentState.ts'
 import { HomeScreen } from '@/components/home/HomeScreen.tsx'
 import { DocumentScroller } from '@/components/viewer/DocumentScroller.tsx'
+import { useDocumentStore } from '@/stores/documentStore.ts'
 
 export function DocumentView() {
-  const state = useDocumentState()
+  const state = useDocumentStore((store) => store.document)
   if (state.phase === 'ready') {
     return (
       <section className="document-view">

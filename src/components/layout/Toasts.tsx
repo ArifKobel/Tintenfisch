@@ -1,13 +1,24 @@
-import { EditingNotice } from '@/components/layout/EditingNotice.tsx'
-import { FilesNotice } from '@/components/layout/FilesNotice.tsx'
-import { FormsNotice } from '@/components/layout/FormsNotice.tsx'
+import { useToastStore } from '@/stores/toastStore.ts'
 
 export function Toasts() {
+  const { toasts } = useToastStore()
   return (
     <div className="toasts" aria-live="polite">
-      <EditingNotice />
-      <FormsNotice />
-      <FilesNotice />
+      {toasts.editing && (
+        <span className="toast" role="status">
+          {toasts.editing}
+        </span>
+      )}
+      {toasts.forms && (
+        <span className="toast" role="status">
+          {toasts.forms}
+        </span>
+      )}
+      {toasts.library && (
+        <span className="toast" role="alert">
+          {toasts.library}
+        </span>
+      )}
     </div>
   )
 }

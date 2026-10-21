@@ -1,10 +1,9 @@
 import { useState, type FormEvent } from 'react'
-import { useApplication } from '@/app/ApplicationContext.ts'
-import { useProtectionState } from '@/hooks/useProtectionState.ts'
+import { useProtectionStore } from '@/stores/protectionStore.ts'
 
 export function OwnerPasswordForm() {
-  const { protection } = useApplication()
-  const { notice } = useProtectionState()
+  const protection = useProtectionStore()
+  const { notice } = protection
   const [password, setPassword] = useState('')
 
   function submit(event: FormEvent) {

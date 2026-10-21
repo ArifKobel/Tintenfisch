@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
-import { useApplication } from '@/app/ApplicationContext.ts'
 import type { EditSession } from '@/lib/EditSession.ts'
 import type { Highlight } from '@/types/protocol.ts'
+import { useEditingStore } from '@/stores/editingStore.ts'
 
 const KEY_TARGETS: Record<string, (session: EditSession) => number> = {
   ArrowLeft: (session) => session.caret - 1,
@@ -26,12 +26,12 @@ const INPUT_EDITS: Record<string, (session: EditSession, data: string) => EditSe
 }
 
 export function EditInput({ caret, cssScale }: { caret: Highlight | null; cssScale: number }) {
-  const { editing } = useApplication()
   const input = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
     const field = input.current
     if (!field) return
+    const editing = useEditingStore.getState()
     const typed = (event: InputEvent) => {
       if (event.isComposing) return
       event.preventDefault()
@@ -74,7 +74,7 @@ export function EditInput({ caret, cssScale }: { caret: Highlight | null; cssSca
       field.removeEventListener('keydown', pressed)
       field.removeEventListener('blur', left)
     }
-  }, [editing])
+  }, [])
 
   useEffect(() => input.current?.focus({ preventScroll: true }), [caret])
 

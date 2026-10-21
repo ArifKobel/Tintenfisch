@@ -1,11 +1,11 @@
 import { useState, type DragEvent, type KeyboardEvent } from 'react'
-import { useApplication } from '@/app/ApplicationContext.ts'
-import { useDocumentState } from '@/hooks/useDocumentState.ts'
 import { OrganizeToolbar } from '@/components/pages/OrganizeToolbar.tsx'
-import { useOrganizeState } from '@/hooks/useOrganizeState.ts'
 import { Thumbnail, type ThumbnailGesture } from '@/components/pages/Thumbnail.tsx'
 import { SidePanel } from '@/components/ui/SidePanel.tsx'
-import { useViewportState } from '@/hooks/useViewportState.ts'
+import { useDocumentStore } from '@/stores/documentStore.ts'
+import { usePagesStore } from '@/stores/pagesStore.ts'
+import { useViewportStore } from '@/stores/viewportStore.ts'
+import { useWorkspaceStore } from '@/stores/workspaceStore.ts'
 
 interface Drag {
   pageIds: string[]
@@ -13,10 +13,12 @@ interface Drag {
 }
 
 export function PagesPanel() {
-  const { organize, panels, viewport } = useApplication()
-  const document = useDocumentState()
-  const { selection } = useOrganizeState()
-  const { currentPageId } = useViewportState()
+  const organize = usePagesStore()
+  const workspace = useWorkspaceStore()
+  const viewport = useViewportStore()
+  const document = useDocumentStore((state) => state.document)
+  const { selection } = organize
+  const { currentPageId } = viewport
   const [drag, setDrag] = useState<Drag | null>(null)
   if (document.phase !== 'ready') return null
   const order = document.pages.map((page) => page.id)
@@ -53,7 +55,7 @@ export function PagesPanel() {
   }
 
   return (
-    <SidePanel title="Pages" side="right" onClose={() => panels.showRight(null)} onKeyDown={press}>
+    <SidePanel title="Pages" side="right" onClose={() => workspace.showRight(null)} onKeyDown={press}>
       <OrganizeToolbar />
       <div className="thumbnail-list" onDragOver={(event) => drag && event.preventDefault()} onDrop={drop} onDragEnd={() => setDrag(null)}>
         {document.pages.map((page, index) => (

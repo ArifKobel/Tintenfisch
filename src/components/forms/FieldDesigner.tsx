@@ -1,9 +1,8 @@
 import { useState, type PointerEvent } from 'react'
-import { useApplication } from '@/app/ApplicationContext.ts'
 import type { Box, NewFieldKind } from '@/types/protocol.ts'
 import { FieldBox } from '@/components/forms/FieldBox.tsx'
-import { useFormsState } from '@/hooks/useFormsState.ts'
-import { useToolState } from '@/hooks/useToolState.ts'
+import { useFormsStore } from '@/stores/formsStore.ts'
+import { useWorkspaceStore } from '@/stores/workspaceStore.ts'
 
 const SMALLEST = 4
 const DEFAULT_SIZES: Record<NewFieldKind, [number, number]> = {
@@ -16,9 +15,9 @@ const DEFAULT_SIZES: Record<NewFieldKind, [number, number]> = {
 }
 
 export function FieldDesigner({ pageId, cssScale }: { pageId: string; cssScale: number }) {
-  const { forms } = useApplication()
-  const { fields, selected } = useFormsState()
-  const { fieldKind } = useToolState()
+  const forms = useFormsStore()
+  const { fields, selected } = forms
+  const { fieldKind } = useWorkspaceStore()
   const [drawn, setDrawn] = useState<{ from: [number, number]; to: [number, number] } | null>(null)
 
   function point(event: PointerEvent<HTMLDivElement>): [number, number] {

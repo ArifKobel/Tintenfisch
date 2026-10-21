@@ -1,11 +1,10 @@
-import { useApplication } from '@/app/ApplicationContext.ts'
-import { useLinksState } from '@/hooks/useLinksState.ts'
-import { useToolState } from '@/hooks/useToolState.ts'
+import { useLinksStore } from '@/stores/linksStore.ts'
+import { useWorkspaceStore } from '@/stores/workspaceStore.ts'
 
 export function LinkControls() {
-  const { links } = useApplication()
-  const { selected, notice } = useLinksState()
-  const { tool } = useToolState()
+  const links = useLinksStore()
+  const { selected, notice } = links
+  const { tool } = useWorkspaceStore()
   if (tool !== 'link') return null
   return (
     <div className="context-group" role="group" aria-label="Link">

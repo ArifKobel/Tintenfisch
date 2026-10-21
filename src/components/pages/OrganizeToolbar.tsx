@@ -1,12 +1,11 @@
 import { useRef, useState, type ChangeEvent, type FormEvent } from 'react'
-import { useApplication } from '@/app/ApplicationContext.ts'
 import { FileDownload } from '@/services/FileDownload.ts'
-import { useOrganizeState } from '@/hooks/useOrganizeState.ts'
 import { IconButton } from '@/components/ui/IconButton.tsx'
+import { usePagesStore } from '@/stores/pagesStore.ts'
 
 export function OrganizeToolbar() {
-  const { organize } = useApplication()
-  const { selection, notice, lockedInsert } = useOrganizeState()
+  const organize = usePagesStore()
+  const { selection, notice, lockedInsert } = organize
   const [password, setPassword] = useState('')
   const picker = useRef<HTMLInputElement>(null)
   const nothingSelected = selection.size === 0

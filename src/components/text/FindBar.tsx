@@ -1,14 +1,15 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
-import { useApplication } from '@/app/ApplicationContext.ts'
-import { useDocumentState } from '@/hooks/useDocumentState.ts'
-import { useFindState } from '@/hooks/useFindState.ts'
 import { Icon } from '@/components/ui/Icon.tsx'
 import { IconButton } from '@/components/ui/IconButton.tsx'
+import { useDocumentStore } from '@/stores/documentStore.ts'
+import { useFindStore } from '@/stores/findStore.ts'
+import { useViewportStore } from '@/stores/viewportStore.ts'
 
 export function FindBar() {
-  const { find, viewport } = useApplication()
-  const document = useDocumentState()
-  const { query, matches, current } = useFindState()
+  const phase = useDocumentStore((state) => state.document.phase)
+  const find = useFindStore()
+  const { query, matches, current } = find
+  const focusPage = useViewportStore((state) => state.focusPage)
   const [open, setOpen] = useState(false)
   const input = useRef<HTMLInputElement>(null)
 
@@ -28,10 +29,10 @@ export function FindBar() {
   const matchPage = matches[current]?.pageId
   const matchTop = matches[current]?.rects[0]?.y ?? 0
   useEffect(() => {
-    if (matchPage) viewport.focusPage(matchPage, matchTop)
-  }, [viewport, matchPage, matchTop])
+    if (matchPage) focusPage(matchPage, matchTop)
+  }, [focusPage, matchPage, matchTop])
 
-  if (document.phase !== 'ready') return null
+  if (phase !== 'ready') return null
   if (!open) return <IconButton icon="search" label="Find text" onClick={() => setOpen(true)} />
 
   function close() {

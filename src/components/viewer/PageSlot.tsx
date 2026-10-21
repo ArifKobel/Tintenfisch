@@ -9,7 +9,7 @@ import { PageBackdrop } from '@/components/viewer/PageBackdrop.tsx'
 import type { PagePlacement } from '@/lib/PageLayout.ts'
 import { TileCanvas } from '@/components/viewer/TileCanvas.tsx'
 import { TileGrid, type PixelArea } from '@/lib/TileGrid.ts'
-import { usePageRevision } from '@/hooks/usePageRevision.ts'
+import { useDocumentStore } from '@/stores/documentStore.ts'
 
 export interface PageSlotProps {
   session: number
@@ -23,7 +23,7 @@ export interface PageSlotProps {
 }
 
 export function PageSlot({ session, page, placement, left, scale, cssScale, pixelRatio, visibleArea }: PageSlotProps) {
-  const revision = usePageRevision(page.id)
+  const revision = useDocumentStore((state) => state.pageRevisions[page.id] ?? 0)
   const grid = new TileGrid(placement.width * pixelRatio, placement.height * pixelRatio)
   const tiles = grid.covering(visibleArea)
   return (

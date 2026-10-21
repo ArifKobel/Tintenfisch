@@ -1,12 +1,11 @@
-import { useApplication } from '@/app/ApplicationContext.ts'
-import { TOOL_CATALOG } from '@/lib/toolCatalog.ts'
-import type { Tool } from '@/stores/ToolStore.ts'
+import { TOOL_CATALOG } from '@/components/tools/toolCatalog.ts'
+import { useWorkspaceStore, type Tool } from '@/stores/workspaceStore.ts'
 import { Icon } from '@/components/ui/Icon.tsx'
 import { IconButton } from '@/components/ui/IconButton.tsx'
 import { MenuButton } from '@/components/ui/MenuButton.tsx'
 
 export function ToolGroupButton({ label, tools: group, current }: { label: string; tools: readonly Tool[]; current: Tool }) {
-  const { tools } = useApplication()
+  const tools = useWorkspaceStore()
   const active = group.includes(current)
   const shown = TOOL_CATALOG[active ? current : group[0]]
   if (group.length === 1) {

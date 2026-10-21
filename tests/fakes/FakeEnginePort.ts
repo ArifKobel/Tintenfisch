@@ -1,4 +1,4 @@
-import type { EnginePort } from '@/services/EngineClient.ts'
+import { engine, type EngineClient, type EnginePort } from '@/services/EngineClient.ts'
 import type { Request, Response, WorkerMessage } from '@/types/protocol.ts'
 
 export interface SentMessage {
@@ -9,6 +9,12 @@ export interface SentMessage {
 export class FakeEnginePort implements EnginePort {
   onmessage: ((event: MessageEvent<Response>) => void) | null = null
   readonly sent: SentMessage[] = []
+
+  static attach(client: EngineClient = engine): FakeEnginePort {
+    const port = new FakeEnginePort()
+    client.connect(port)
+    return port
+  }
 
   postMessage(message: WorkerMessage, transfer: Transferable[]) {
     this.sent.push({ message, transfer })

@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import type { PageFont } from '@/types/protocol.ts'
-import { FontCatalog } from '@/services/FontCatalog.ts'
+import { parseCatalog } from '@/services/fontCatalog.ts'
 import { FontMatcher } from '@/lib/FontMatcher.ts'
 
-const families = FontCatalog.parse({
+const families = parseCatalog({
   fontsource: [
     ['inter', 'Inter', 'sans-serif', [400, 700], true, true],
     ['source-serif-4', 'Source Serif 4', 'serif', [400, 700], false, false],

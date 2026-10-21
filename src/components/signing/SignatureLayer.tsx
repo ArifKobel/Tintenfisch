@@ -1,8 +1,7 @@
 import { useState, type PointerEvent } from 'react'
-import { useApplication } from '@/app/ApplicationContext.ts'
 import type { Box, Point } from '@/types/protocol.ts'
-import { useSignatureState } from '@/hooks/useSignatureState.ts'
-import { useToolState } from '@/hooks/useToolState.ts'
+import { useSignatureStore } from '@/stores/signatureStore.ts'
+import { useWorkspaceStore } from '@/stores/workspaceStore.ts'
 
 const DEFAULT_WIDTH = 180
 const DEFAULT_HEIGHT = 60
@@ -13,9 +12,9 @@ function boxBetween([x0, y0]: Point, [x1, y1]: Point): Box {
 }
 
 export function SignatureLayer({ pageId, cssScale }: { pageId: string; cssScale: number }) {
-  const { signing } = useApplication()
-  const { tool } = useToolState()
-  const { mark } = useSignatureState()
+  const signing = useSignatureStore()
+  const { tool } = useWorkspaceStore()
+  const { mark } = signing
   const [drag, setDrag] = useState<{ from: Point; to: Point } | null>(null)
   if (tool !== 'sign' || !mark) return null
 

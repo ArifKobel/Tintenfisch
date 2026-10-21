@@ -24,13 +24,15 @@ interface PendingRequest {
 }
 
 export class EngineClient {
-  readonly #port: EnginePort
+  #port: EnginePort | null = null
   readonly #pending = new Map<number, PendingRequest>()
   readonly #changeListeners = new Set<() => void>()
   #nextId = 1
   #revision = ''
 
-  constructor(port: EnginePort) {
+  connect(port: EnginePort) {
+    this.#pending.clear()
+    this.#revision = ''
     this.#port = port
     port.onmessage = (event) => this.#settle(event.data)
   }
@@ -46,12 +48,14 @@ export class EngineClient {
 
   request<C extends Command>(command: C, options: RequestOptions = {}): Promise<Results[C['kind']]> {
     const { priority = 'interactive', group, signal } = options
+    const port = this.#port
+    if (!port) return Promise.reject(new Error('the engine is not connected'))
     if (signal?.aborted) return Promise.reject(new CancelledError())
     const id = this.#nextId++
     return new Promise((resolve, reject) => {
       this.#pending.set(id, { resolve: resolve as (result: unknown) => void, reject })
       signal?.addEventListener('abort', () => this.#cancel(id), { once: true })
-      this.#port.postMessage({ ...command, id, priority, group }, EngineClient.#transferablesOf(command))
+      port.postMessage({ ...command, id, priority, group }, EngineClient.#transferablesOf(command))
     })
   }
 
@@ -60,7 +64,7 @@ export class EngineClient {
     if (!pending) return
     this.#pending.delete(id)
     pending.reject(new CancelledError())
-    this.#port.postMessage({ kind: 'cancel', ids: [id] }, [])
+    this.#port?.postMessage({ kind: 'cancel', ids: [id] }, [])
   }
 
   static #transferablesOf(command: Command): Transferable[] {
@@ -79,3 +83,5 @@ export class EngineClient {
     else pending.reject(response.cancelled ? new CancelledError() : new Error(response.error))
   }
 }
+
+export const engine = new EngineClient()

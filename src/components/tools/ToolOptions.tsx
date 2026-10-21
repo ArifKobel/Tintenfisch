@@ -1,8 +1,6 @@
-import { useApplication } from '@/app/ApplicationContext.ts'
 import type { NewFieldKind, Rgb } from '@/types/protocol.ts'
-import { TOOL_CATALOG } from '@/lib/toolCatalog.ts'
-import { DRAWING_TOOLS, EDITING_TOOLS, MARKUP_COLORS, STAMP_LABELS } from '@/stores/ToolStore.ts'
-import { useToolState } from '@/hooks/useToolState.ts'
+import { TOOL_CATALOG } from '@/components/tools/toolCatalog.ts'
+import { useWorkspaceStore, DRAWING_TOOLS, EDITING_TOOLS, MARKUP_COLORS, STAMP_LABELS } from '@/stores/workspaceStore.ts'
 import { Icon } from '@/components/ui/Icon.tsx'
 
 const FIELD_KINDS: { kind: NewFieldKind; label: string }[] = [
@@ -19,12 +17,11 @@ const COLOR_NAMES = ['Red', 'Blue', 'Green', 'Yellow']
 const css = ([r, g, b]: Rgb) => `rgb(${r * 255} ${g * 255} ${b * 255})`
 
 export function ToolOptions() {
-  const { tools } = useApplication()
-  const state = useToolState()
-  const { tool, stampLabel, fieldKind } = state
+  const workspace = useWorkspaceStore()
+  const { tool, stampLabel, fieldKind } = workspace
   if (tool === 'select' || EDITING_TOOLS.includes(tool)) return null
   const colored = tool === 'highlight' || (DRAWING_TOOLS.includes(tool) && tool !== 'redactArea')
-  const color = tool === 'highlight' ? state.highlightColor : state.color
+  const color = tool === 'highlight' ? workspace.highlightColor : workspace.color
   return (
     <div className="tool-options" role="group" aria-label={`${TOOL_CATALOG[tool].label} options`}>
       <span className="tool-options-name">
@@ -42,13 +39,13 @@ export function ToolOptions() {
               aria-label={COLOR_NAMES[index]}
               className={`swatch${swatch === color ? ' swatch-chosen' : ''}`}
               style={{ background: css(swatch) }}
-              onClick={() => tools.setColor(swatch)}
+              onClick={() => workspace.setColor(swatch)}
             />
           ))}
         </div>
       )}
       {tool === 'form' && (
-        <select className="field field-compact" value={fieldKind} onChange={(event) => tools.setFieldKind(event.target.value as NewFieldKind)} aria-label="Field kind">
+        <select className="field field-compact" value={fieldKind} onChange={(event) => workspace.setFieldKind(event.target.value as NewFieldKind)} aria-label="Field kind">
           {FIELD_KINDS.map((entry) => (
             <option key={entry.kind} value={entry.kind}>
               {entry.label}
@@ -57,7 +54,7 @@ export function ToolOptions() {
         </select>
       )}
       {tool === 'stamp' && (
-        <select className="field field-compact" value={stampLabel} onChange={(event) => tools.setStampLabel(event.target.value)} aria-label="Stamp">
+        <select className="field field-compact" value={stampLabel} onChange={(event) => workspace.setStampLabel(event.target.value)} aria-label="Stamp">
           {STAMP_LABELS.map((label) => (
             <option key={label}>{label}</option>
           ))}

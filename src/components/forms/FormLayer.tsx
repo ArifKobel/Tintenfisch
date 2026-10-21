@@ -1,11 +1,11 @@
 import { FieldDesigner } from '@/components/forms/FieldDesigner.tsx'
 import { FormControl } from '@/components/forms/FormControl.tsx'
-import { useFormsState } from '@/hooks/useFormsState.ts'
-import { useToolState } from '@/hooks/useToolState.ts'
+import { useFormsStore } from '@/stores/formsStore.ts'
+import { useWorkspaceStore } from '@/stores/workspaceStore.ts'
 
 export function FormLayer({ pageId, cssScale }: { pageId: string; cssScale: number }) {
-  const { fields } = useFormsState()
-  const { tool } = useToolState()
+  const { fields } = useFormsStore()
+  const { tool } = useWorkspaceStore()
   if (tool === 'form') return <FieldDesigner pageId={pageId} cssScale={cssScale} />
   if (tool !== 'select') return null
   return (

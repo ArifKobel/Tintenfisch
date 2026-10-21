@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
-import { useApplication } from '@/app/ApplicationContext.ts'
 import { Icon } from '@/components/ui/Icon.tsx'
+import { useOpenFile } from '@/hooks/useOpenFile.ts'
+import { useToastStore } from '@/stores/toastStore.ts'
 
 const carriesFiles = (event: DragEvent) => event.dataTransfer?.types.includes('Files') ?? false
 
 const isPdf = (file: File) => file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')
 
 export function FileDropZone() {
-  const { files } = useApplication()
+  const openFile = useOpenFile()
   const [dragging, setDragging] = useState(false)
 
   useEffect(() => {
@@ -35,8 +36,8 @@ export function FileDropZone() {
       setDragging(false)
       const dropped = [...(event.dataTransfer?.files ?? [])]
       const pdf = dropped.find(isPdf)
-      if (pdf) await files.openNew(pdf.name, new Uint8Array(await pdf.arrayBuffer()))
-      else if (dropped.length > 0) files.report('Only PDF files can be opened.')
+      if (pdf) await openFile(pdf.name, new Uint8Array(await pdf.arrayBuffer()))
+      else if (dropped.length > 0) useToastStore.getState().show('library', 'Only PDF files can be opened.')
     }
     window.addEventListener('dragenter', enter)
     window.addEventListener('dragover', over)
@@ -48,7 +49,7 @@ export function FileDropZone() {
       window.removeEventListener('dragleave', leave)
       window.removeEventListener('drop', drop)
     }
-  }, [files])
+  }, [openFile])
 
   if (!dragging) return null
   return (

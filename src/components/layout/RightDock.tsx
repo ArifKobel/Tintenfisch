@@ -1,14 +1,14 @@
-import { CommentsPanel } from '@/components/comments/CommentsPanel.tsx'
-import { useDocumentState } from '@/hooks/useDocumentState.ts'
-import { FieldPanel } from '@/components/forms/FieldPanel.tsx'
 import { BookmarksPanel } from '@/components/bookmarks/BookmarksPanel.tsx'
-import { usePanelState } from '@/hooks/usePanelState.ts'
+import { CommentsPanel } from '@/components/comments/CommentsPanel.tsx'
+import { FieldPanel } from '@/components/forms/FieldPanel.tsx'
 import { PagesPanel } from '@/components/pages/PagesPanel.tsx'
+import { useDocumentStore } from '@/stores/documentStore.ts'
+import { useWorkspaceStore } from '@/stores/workspaceStore.ts'
 
-export function RightPanels() {
-  const { right } = usePanelState()
-  const document = useDocumentState()
-  if (document.phase !== 'ready') return null
+export function RightDock() {
+  const right = useWorkspaceStore((state) => state.right)
+  const phase = useDocumentStore((state) => state.document.phase)
+  if (phase !== 'ready') return null
   return (
     <>
       {right === 'comments' && <CommentsPanel />}

@@ -1,7 +1,8 @@
-import { useApplication } from '@/app/ApplicationContext.ts'
-import type { StoredFile } from '@/services/DocumentLibrary.ts'
+import { Link } from '@tanstack/react-router'
 import { Icon } from '@/components/ui/Icon.tsx'
 import { IconButton } from '@/components/ui/IconButton.tsx'
+import type { StoredFile } from '@/services/DocumentLibrary.ts'
+import { useLibraryStore } from '@/stores/libraryStore.ts'
 
 const dates = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' })
 const times = new Intl.DateTimeFormat(undefined, { timeStyle: 'short' })
@@ -17,7 +18,7 @@ function size(bytes: number): string {
 }
 
 export function RecentFiles({ files }: { files: StoredFile[] }) {
-  const { files: store } = useApplication()
+  const askToDelete = useLibraryStore((state) => state.askToDelete)
   return (
     <section className="recent-files" aria-labelledby="recent-title">
       <h2 id="recent-title" className="recent-title">
@@ -38,14 +39,7 @@ export function RecentFiles({ files }: { files: StoredFile[] }) {
           {files.map((file) => (
             <tr key={file.id}>
               <td>
-                <a
-                  className="recent-name"
-                  href={`/documents/${file.id}`}
-                  onClick={(event) => {
-                    event.preventDefault()
-                    store.show(file.id)
-                  }}
-                >
+                <Link className="recent-name" to="/documents/$documentId" params={{ documentId: file.id }}>
                   <span className="recent-icon">
                     <Icon name="file-text" />
                   </span>
@@ -53,12 +47,12 @@ export function RecentFiles({ files }: { files: StoredFile[] }) {
                     <span className="recent-file">{file.name}</span>
                     <span className="recent-kind">PDF</span>
                   </span>
-                </a>
+                </Link>
               </td>
               <td>{when(file.opened)}</td>
               <td>{size(file.size)}</td>
               <td className="recent-actions">
-                <IconButton icon="delete" label={`Delete ${file.name}`} tooltip="left" onClick={() => store.askToDelete(file)} />
+                <IconButton icon="delete" label={`Delete ${file.name}`} tooltip="left" onClick={() => askToDelete(file)} />
               </td>
             </tr>
           ))}

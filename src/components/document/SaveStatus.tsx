@@ -1,8 +1,8 @@
-import { useAutoSaveState } from '@/hooks/useAutoSaveState.ts'
 import { Icon } from '@/components/ui/Icon.tsx'
+import { useAutoSaveStore } from '@/stores/autoSaveStore.ts'
 
 export function SaveStatus() {
-  const { status, error } = useAutoSaveState()
+  const { status, error } = useAutoSaveStore()
   if (status === 'idle') return null
   if (status === 'failed') {
     return (

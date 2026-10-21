@@ -1,17 +1,19 @@
-import { useApplication } from '@/app/ApplicationContext.ts'
-import { useDocumentState } from '@/hooks/useDocumentState.ts'
 import { Icon } from '@/components/ui/Icon.tsx'
 import { MenuButton } from '@/components/ui/MenuButton.tsx'
+import { useDocumentStore } from '@/stores/documentStore.ts'
+import { useFontStore } from '@/stores/fontStore.ts'
+import { usePrintStore } from '@/stores/printStore.ts'
+import { useProtectionStore } from '@/stores/protectionStore.ts'
+import { useWorkspaceStore } from '@/stores/workspaceStore.ts'
 
 export function DocumentMenu() {
-  const { printing, protection, panels, fontConsent } = useApplication()
-  const document = useDocumentState()
-  if (document.phase !== 'ready') return null
+  const phase = useDocumentStore((state) => state.document.phase)
+  if (phase !== 'ready') return null
   const entries = [
-    { label: 'Print', icon: 'print', run: () => printing.openDialog() },
-    { label: 'Protect with password', icon: 'lock', run: () => void protection.openDialog() },
-    { label: 'Organize pages', icon: 'view-grid', run: () => panels.showRight('pages') },
-    { label: 'Font downloads', icon: 'download', run: () => fontConsent.review() },
+    { label: 'Print', icon: 'print', run: () => usePrintStore.getState().openDialog() },
+    { label: 'Protect with password', icon: 'lock', run: () => void useProtectionStore.getState().openDialog() },
+    { label: 'Organize pages', icon: 'view-grid', run: () => useWorkspaceStore.getState().showRight('pages') },
+    { label: 'Font downloads', icon: 'download', run: () => useFontStore.getState().review() },
   ] as const
   return (
     <MenuButton icon="more" label="More options" opens="below">

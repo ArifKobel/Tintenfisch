@@ -91,3 +91,5 @@ export class DocumentLibrary {
     await finished(transaction)
   }
 }
+
+export const documentLibrary = new DocumentLibrary(indexedDB)

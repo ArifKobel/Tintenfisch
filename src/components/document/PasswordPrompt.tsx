@@ -1,13 +1,12 @@
 import { useState, type FormEvent } from 'react'
-import { useApplication } from '@/app/ApplicationContext.ts'
+import { useDocumentStore } from '@/stores/documentStore.ts'
 
 export function PasswordPrompt({ name, wrongPassword }: { name: string; wrongPassword: boolean }) {
-  const { documents } = useApplication()
   const [password, setPassword] = useState('')
 
   function unlock(event: FormEvent) {
     event.preventDefault()
-    void documents.unlock(password)
+    void useDocumentStore.getState().unlock(password)
   }
 
   return (

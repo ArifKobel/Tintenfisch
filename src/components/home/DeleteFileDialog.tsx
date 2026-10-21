@@ -1,9 +1,7 @@
-import { useApplication } from '@/app/ApplicationContext.ts'
-import { useFilesState } from '@/hooks/useFilesState.ts'
+import { useLibraryStore } from '@/stores/libraryStore.ts'
 
 export function DeleteFileDialog() {
-  const { files } = useApplication()
-  const { deleting } = useFilesState()
+  const { deleting, askToDelete, confirmDelete } = useLibraryStore()
   if (!deleting) return null
   return (
     <div className="dialog-backdrop">
@@ -15,10 +13,10 @@ export function DeleteFileDialog() {
           {deleting.name} will be removed from this browser for good. A downloaded copy elsewhere stays untouched.
         </p>
         <div className="dialog-actions">
-          <button type="button" className="button" autoFocus onClick={() => files.askToDelete(null)}>
+          <button type="button" className="button" autoFocus onClick={() => askToDelete(null)}>
             Cancel
           </button>
-          <button type="button" className="button button-danger" onClick={() => void files.confirmDelete()}>
+          <button type="button" className="button button-danger" onClick={() => void confirmDelete()}>
             Delete
           </button>
         </div>

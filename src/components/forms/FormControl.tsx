@@ -1,11 +1,11 @@
 import type { CSSProperties, KeyboardEvent } from 'react'
-import { useApplication } from '@/app/ApplicationContext.ts'
 import type { FormField, FormWidget } from '@/types/protocol.ts'
+import { useFormsStore } from '@/stores/formsStore.ts'
 
 const FONT_SHARE = 0.6
 
 export function FormControl({ field, widget, cssScale }: { field: FormField; widget: FormWidget; cssScale: number }) {
-  const { forms } = useApplication()
+  const forms = useFormsStore()
   const style: CSSProperties = {
     left: widget.rect.x * cssScale,
     top: widget.rect.y * cssScale,

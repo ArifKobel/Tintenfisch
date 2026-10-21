@@ -1,8 +1,7 @@
 import { useState, type ChangeEvent, type PointerEvent } from 'react'
-import { useApplication } from '@/app/ApplicationContext.ts'
 import type { Point, Rgb } from '@/types/protocol.ts'
 import { SignaturePicture } from '@/services/SignaturePicture.ts'
-import { useSignatureState } from '@/hooks/useSignatureState.ts'
+import { useSignatureStore } from '@/stores/signatureStore.ts'
 
 const PAD_WIDTH = 420
 const PAD_HEIGHT = 140
@@ -10,8 +9,8 @@ const PEN_WIDTH = 2.5
 const INK: Rgb = [0.05, 0.12, 0.45]
 
 export function SignaturePad() {
-  const { signing } = useApplication()
-  const { padOpen, notice } = useSignatureState()
+  const signing = useSignatureStore()
+  const { padOpen, notice } = signing
   const [strokes, setStrokes] = useState<Point[][]>([])
   const [drawing, setDrawing] = useState(false)
   if (!padOpen) return null
