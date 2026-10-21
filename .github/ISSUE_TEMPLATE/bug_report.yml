@@ -1,0 +1,42 @@
+name: Bug report
+description: Something does not work as it should
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Please never attach confidential PDFs. If the problem only shows with a certain file, share one without private content or describe what is special about it.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What did you see, and what did you expect instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open a PDF with ...
+        2. Choose ...
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and system
+      placeholder: Firefox 140 on macOS 15
+    validations:
+      required: true
+  - type: textarea
+    id: file
+    attributes:
+      label: About the file
+      description: Which program created the PDF, and what does it contain (scanned pages, forms, signatures, unusual fonts)?
+  - type: textarea
+    id: console
+    attributes:
+      label: Console output
+      description: Errors from the browser console, if there are any.
+      render: text
