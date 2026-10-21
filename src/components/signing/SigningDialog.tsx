@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { isTauri } from '@tauri-apps/api/core'
 import { FileDownload } from '@/services/FileDownload.ts'
 import { useDigitalSignatureStore } from '@/stores/digitalSignatureStore.ts'
 import { useFormsStore } from '@/stores/formsStore.ts'
@@ -27,7 +28,7 @@ export function SigningDialog() {
     const bytes = new Uint8Array(await certificate.arrayBuffer())
     const result = await digitalSignatures.sign({ fieldId: chosen, certificate: bytes, password, reason, location })
     if (!result) return
-    FileDownload.offer(result.name, result.bytes)
+    await FileDownload.offer(result.name, result.bytes)
     setPassword('')
   }
 
@@ -58,7 +59,7 @@ export function SigningDialog() {
             <DialogField label="Location">
               <Input value={location} onChange={(event) => setLocation(event.target.value)} />
             </DialogField>
-            <p className="text-ink-body">Signing saves every change so far and downloads the signed file.</p>
+            <p className="text-ink-body">Signing saves every change so far and {isTauri() ? 'asks where to save' : 'downloads'} the signed file.</p>
           </>
         )}
         {notice && (

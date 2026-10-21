@@ -22,6 +22,8 @@ fn read_opened_file(path: PathBuf, opened: State<OpenedFiles>) -> Result<Respons
 fn main() {
     let launched = std::env::args_os().skip(1).map(PathBuf::from).filter(|path| path.is_file()).collect();
     tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_fs::init())
         .manage(OpenedFiles(Mutex::new(launched)))
         .invoke_handler(tauri::generate_handler![opened_files, read_opened_file])
         .setup(|app| {
@@ -30,7 +32,6 @@ fn main() {
                 .inner_size(1280.0, 860.0)
                 .min_inner_size(640.0, 480.0)
                 .disable_drag_drop_handler()
-                .on_download(|_, _| true)
                 .build()?;
             Ok(())
         })

@@ -64,7 +64,7 @@ Every release also ships a desktop app on the [releases page](https://github.com
 
 The builds are not signed by Apple or Microsoft yet. On macOS, allow the app once under System Settings > Privacy & Security > Open Anyway. On Windows, SmartScreen asks once: More info > Run anyway.
 
-Downloaded PDFs are saved to the Downloads folder.
+Save as… asks where to save the PDF, like any other desktop app.
 
 ## Development
 
