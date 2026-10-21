@@ -2,6 +2,7 @@ import sprite from '@adobe/spectrum-css-workflow-icons/dist/assets/svg-spriteShe
 
 export type IconName =
   | 'add'
+  | 'alert-triangle'
   | 'arrow-head-tool'
   | 'badge-verified'
   | 'bookmark'
@@ -11,10 +12,9 @@ export type IconName =
   | 'chevron-up'
   | 'circle'
   | 'close'
-  | 'cloud-state-error'
-  | 'cloud-state-in-progress'
-  | 'cloud-state-online'
   | 'comment'
+  | 'data'
+  | 'data-refresh'
   | 'delete'
   | 'download'
   | 'draw'
