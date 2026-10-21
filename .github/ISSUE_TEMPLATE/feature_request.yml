@@ -1,0 +1,21 @@
+name: Feature request
+description: Suggest something Tintenfisch should be able to do
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What do you want to do
+      description: Describe the task you are trying to get done and where Tintenfisch gets in the way.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: How it could work
+      description: Your idea for the solution, if you have one. Other PDF editors that already do this are a helpful reference.
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives
+      description: What you do today instead.

@@ -25,6 +25,10 @@ cd engine && cargo test
 
 `docker-compose.yaml` builds the app and serves it with nginx on port 80 inside the container, without publishing a host port, so a reverse proxy such as Coolify's routes the domain to it. `VITE_SITE_URL` from the environment or `.env` is applied when the container starts, so changing it needs no rebuild.
 
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the setup, the project layout and the checks a pull request needs. Security problems go through [SECURITY.md](SECURITY.md).
+
 ## License
 
 MIT. The bundled Liberation and Source Sans 3 fonts are under the SIL Open Font License (`public/fonts/LICENSE`). The interface icons come from Spectrum CSS Workflow Icons under the Apache License 2.0 (`public/licenses/spectrum-css-workflow-icons.txt`).
