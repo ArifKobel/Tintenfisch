@@ -85,4 +85,14 @@ Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) first, and re
 
 ## License
 
-MIT. The bundled Liberation and Source Sans 3 fonts are under the SIL Open Font License (`public/fonts/LICENSE`). The interface icons come from Spectrum CSS Workflow Icons under the Apache License 2.0 (`public/licenses/spectrum-css-workflow-icons.txt`).
+Tintenfisch is released under the [MIT License](LICENSE).
+
+It bundles a few third-party assets, which keep their own licenses:
+
+| Asset | Used for | License |
+| --- | --- | --- |
+| [Source Sans 3](https://github.com/adobe-fonts/source-sans) by Adobe | Interface font | [SIL Open Font License 1.1](public/fonts/LICENSE) |
+| [Liberation fonts](https://github.com/liberationfonts/liberation-fonts) by Red Hat | Built-in fonts for editing text | [SIL Open Font License 1.1](public/fonts/LICENSE) |
+| [Spectrum CSS Workflow Icons](https://github.com/adobe/spectrum-css-workflow-icons) by Adobe | Interface icons | [Apache License 2.0](public/licenses/spectrum-css-workflow-icons.txt) |
+
+Fonts that Tintenfisch downloads on request from Fontshare or Fontsource are not part of this repository and come under the licenses their foundries chose.
