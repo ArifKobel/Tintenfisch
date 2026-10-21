@@ -16,7 +16,7 @@ pnpm install
 pnpm dev
 ```
 
-`pnpm dev` builds the engine to WebAssembly first and then starts Vite.
+`pnpm dev` builds the engine to WebAssembly first and then starts Vite. `pnpm tauri dev` opens the same app in the desktop shell.
 
 ## Project layout
 
@@ -24,6 +24,7 @@ pnpm dev
 engine/
   core/        the PDF engine in Rust, with all document logic and its tests
   wasm/        the thin WebAssembly binding, it only translates
+desktop/       the Tauri shell that ships the web build as a macOS and Windows app
 src/
   routes/      pages (TanStack Router file routes)
   components/  React components, grouped by area, shared building blocks in components/ui
@@ -70,6 +71,7 @@ pnpm lint
 pnpm test
 pnpm build
 cd engine && cargo fmt --check && cargo clippy --all-targets -- -D warnings && cargo test
+cd ../desktop && cargo fmt --check && cargo clippy --all-targets -- -D warnings
 ```
 
 For changes to the interface, check them in the browser on desktop and on a narrow mobile width, and add screenshots to the pull request.

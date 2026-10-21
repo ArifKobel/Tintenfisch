@@ -15,12 +15,14 @@ import { ProtectionDialog } from '@/components/protection/ProtectionDialog.tsx'
 import { SignaturePad } from '@/components/signing/SignaturePad.tsx'
 import { SignatureStatusList } from '@/components/signing/SignatureStatusList.tsx'
 import { SigningDialog } from '@/components/signing/SigningDialog.tsx'
+import { useDesktopFiles } from '@/hooks/useDesktopFiles.ts'
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts.ts'
 
 export const Route = createRootRoute({ component: Shell })
 
 function Shell() {
   useKeyboardShortcuts()
+  useDesktopFiles()
   return (
     <main className="flex h-full flex-col">
       <AppHeader />
