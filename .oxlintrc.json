@@ -26,7 +26,7 @@
               "./*",
               "../*"
             ],
-            "message": "Import through a path alias such as @engine/ instead of a relative path."
+            "message": "Import through a path alias such as @/stores/ instead of a relative path."
           }
         ]
       }

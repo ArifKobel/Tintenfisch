@@ -533,7 +533,7 @@ fn a_point_in_the_draft_maps_back_to_the_offset_whose_caret_is_there() {
 #[test]
 fn a_ligature_stays_one_cluster_so_the_caret_reaches_the_end_of_the_line() {
     let library = library();
-    let sample = include_bytes!("../../../../src/files/sample.pdf");
+    let sample = include_bytes!("../../../../src/assets/sample.pdf");
     let mut document = Document::open(sample.to_vec(), "").unwrap();
     let page = document.view(&library).pages().unwrap()[0].id;
     let lines = document.view(&library).text_layout(page).unwrap().lines().to_vec();

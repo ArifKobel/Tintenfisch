@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react'
-import type { Application } from '@app/Application.ts'
+import type { Application } from '@/app/Application.ts'
 
 export const ApplicationContext = createContext<Application | null>(null)
 

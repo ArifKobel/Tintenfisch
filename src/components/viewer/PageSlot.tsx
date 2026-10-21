@@ -1,0 +1,47 @@
+import { AnnotationLayer } from '@/components/comments/AnnotationLayer.tsx'
+import type { PageSummary } from '@/types/protocol.ts'
+import { FormLayer } from '@/components/forms/FormLayer.tsx'
+import { ImageLayer } from '@/components/images/ImageLayer.tsx'
+import { LinkLayer } from '@/components/links/LinkLayer.tsx'
+import { TextLayer } from '@/components/text/TextLayer.tsx'
+import { SignatureLayer } from '@/components/signing/SignatureLayer.tsx'
+import { PageBackdrop } from '@/components/viewer/PageBackdrop.tsx'
+import type { PagePlacement } from '@/lib/PageLayout.ts'
+import { TileCanvas } from '@/components/viewer/TileCanvas.tsx'
+import { TileGrid, type PixelArea } from '@/lib/TileGrid.ts'
+import { usePageRevision } from '@/hooks/usePageRevision.ts'
+
+export interface PageSlotProps {
+  session: number
+  page: PageSummary
+  placement: PagePlacement
+  left: number
+  scale: number
+  cssScale: number
+  pixelRatio: number
+  visibleArea: PixelArea
+}
+
+export function PageSlot({ session, page, placement, left, scale, cssScale, pixelRatio, visibleArea }: PageSlotProps) {
+  const revision = usePageRevision(page.id)
+  const grid = new TileGrid(placement.width * pixelRatio, placement.height * pixelRatio)
+  const tiles = grid.covering(visibleArea)
+  return (
+    <div className="page-slot" style={{ top: placement.top, left, width: placement.width, height: placement.height }}>
+      <PageBackdrop session={session} page={page} />
+      {tiles.map((tile) => (
+        <TileCanvas
+          key={`${scale}:${tile.x},${tile.y}`}
+          address={{ session, pageId: page.id, revision, scale, tile }}
+          pixelRatio={pixelRatio}
+        />
+      ))}
+      <TextLayer pageId={page.id} cssScale={cssScale} />
+      <ImageLayer pageId={page.id} cssScale={cssScale} />
+      <LinkLayer pageId={page.id} cssScale={cssScale} />
+      <FormLayer pageId={page.id} cssScale={cssScale} />
+      <AnnotationLayer pageId={page.id} cssScale={cssScale} />
+      <SignatureLayer pageId={page.id} cssScale={cssScale} />
+    </div>
+  )
+}
