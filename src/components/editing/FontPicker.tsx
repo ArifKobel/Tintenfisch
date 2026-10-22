@@ -169,7 +169,7 @@ export function FontPicker({ look, fonts, onChoose }: { look: TextLook; fonts: r
 
   return (
     <div ref={root} className="w-full">
-      <button type="button" className={`${FIELD} ${CHEVRON} min-h-8 w-full truncate py-1 pl-2.5 text-left`} aria-haspopup="listbox" aria-expanded={open} disabled={loading !== null} onClick={() => (open ? close() : show())}>
+      <button type="button" className={`${FIELD} ${CHEVRON} min-h-8 w-full truncate py-1 pl-2.5 text-left`} aria-haspopup="listbox" aria-expanded={open} disabled={loading !== null} onMouseDown={(event) => event.preventDefault()} onClick={() => (open ? close() : show())}>
         {shown}
       </button>
       {open && (

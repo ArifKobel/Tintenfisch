@@ -1,0 +1,5 @@
+{
+  "identifier": "default",
+  "windows": ["main"],
+  "permissions": ["core:default", "dialog:allow-save", "fs:allow-write-file"]
+}

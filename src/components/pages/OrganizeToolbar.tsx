@@ -21,7 +21,7 @@ export function OrganizeToolbar() {
 
   async function extract() {
     const extracted = await organize.extract()
-    if (extracted) FileDownload.offer(extracted.name, extracted.bytes)
+    if (extracted) await FileDownload.offer(extracted.name, extracted.bytes)
   }
 
   function unlock(event: FormEvent) {

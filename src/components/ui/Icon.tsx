@@ -34,6 +34,7 @@ export type IconName =
   | 'rectangle-horiz'
   | 'rotate-ccw'
   | 'rotate-cw'
+  | 'save-floppy'
   | 'search'
   | 'select'
   | 'select-rectangle'

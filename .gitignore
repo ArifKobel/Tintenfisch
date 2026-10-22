@@ -4,6 +4,8 @@ dist
 *.local
 engine/target
 engine/wasm/pkg
+desktop/target
+desktop/gen
 
 .vscode/*
 !.vscode/extensions.json
