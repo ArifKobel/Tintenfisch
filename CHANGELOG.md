@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/ArifKobel/Tintenfisch/compare/v0.3.0...v0.4.0) (2026-10-22)
+
+
+### Features
+
+* **desktop:** make the app icon red so it reads as a PDF ([9f7556d](https://github.com/ArifKobel/Tintenfisch/commit/9f7556dd608b1ebbb67f3fad990723153b5880b4))
+
 ## [0.3.0](https://github.com/ArifKobel/Tintenfisch/compare/v0.2.0...v0.3.0) (2026-10-22)
 
 
