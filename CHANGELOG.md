@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.2.0](https://github.com/ArifKobel/Tintenfisch/compare/v0.1.0...v0.2.0) (2026-10-22)
+
+
+### Features
+
+* **desktop:** add a desktop app that opens PDFs from the system ([23953f3](https://github.com/ArifKobel/Tintenfisch/commit/23953f345f8fa1336badd14fa6661279e6392c1e))
+* **desktop:** hide the GitHub star link in the desktop app ([ff7034f](https://github.com/ArifKobel/Tintenfisch/commit/ff7034f80ee2291a15b6bce2224201170a0f17a7))
+* **desktop:** save files through a native save dialog ([4f5d4c6](https://github.com/ArifKobel/Tintenfisch/commit/4f5d4c696c5c6065cd94d5bd3dc81a6b900945e9))
+* **desktop:** ship Tintenfisch as a macOS and Windows app ([d24daba](https://github.com/ArifKobel/Tintenfisch/commit/d24daba8ae9f7b3e4f40ff702e8afdb33d834ea1))
+
+
+### Bug Fixes
+
+* **editing:** delete text with Backspace and Delete in WebKit ([cfde0ee](https://github.com/ArifKobel/Tintenfisch/commit/cfde0eeb1d4ee0aadb20c1feb1e9677c8d0fc365))
+* **editing:** keep editing when the font picker opens in WebKit ([fa0606b](https://github.com/ArifKobel/Tintenfisch/commit/fa0606b212a21aa44bd19e30110e52fce640cb01))
+
 ## 0.1.0 (2026-10-21)
 
 The first release of Tintenfisch, a PDF editor that runs entirely in the browser on its own PDF engine in Rust and WebAssembly.
