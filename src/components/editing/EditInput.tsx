@@ -16,6 +16,12 @@ const COMMAND_KEYS: Record<string, (session: EditSession) => EditSession> = {
   i: (session) => session.formatted({ italic: !session.look.italic }),
 }
 
+const KEY_EDITS: Record<string, (session: EditSession) => EditSession> = {
+  Enter: (session) => session.insert('\n'),
+  Backspace: (session) => session.deleteBackward(),
+  Delete: (session) => session.deleteForward(),
+}
+
 const INPUT_EDITS: Record<string, (session: EditSession, data: string) => EditSession> = {
   insertText: (session, data) => session.insert(data),
   insertLineBreak: (session) => session.insert('\n'),
@@ -45,6 +51,7 @@ export function EditInput({ caret, cssScale }: { caret: Highlight | null; cssSca
     const pressed = (event: KeyboardEvent) => {
       const target = KEY_TARGETS[event.key]
       const command = event.metaKey || event.ctrlKey ? COMMAND_KEYS[event.key.toLowerCase()] : undefined
+      const keyEdit = event.isComposing ? undefined : KEY_EDITS[event.key]
       if (target) {
         event.preventDefault()
         editing.edit((session) => (event.shiftKey ? session.extendTo(target(session)) : session.moveTo(target(session))))
@@ -52,9 +59,9 @@ export function EditInput({ caret, cssScale }: { caret: Highlight | null; cssSca
         event.preventDefault()
         event.stopPropagation()
         editing.edit(command)
-      } else if (event.key === 'Enter' && !event.isComposing) {
+      } else if (keyEdit) {
         event.preventDefault()
-        editing.edit((session) => session.insert('\n'))
+        editing.edit(keyEdit)
       } else if (event.key === 'Escape') {
         event.preventDefault()
         void editing.commit()
