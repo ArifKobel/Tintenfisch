@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/ArifKobel/Tintenfisch/compare/v0.2.0...v0.3.0) (2026-10-22)
+
+
+### Features
+
+* **desktop:** use a PDF page with the octopus as the app icon ([002a261](https://github.com/ArifKobel/Tintenfisch/commit/002a2618961cda392fbb026d1da36d41d1045929))
+
 ## [0.2.0](https://github.com/ArifKobel/Tintenfisch/compare/v0.1.0...v0.2.0) (2026-10-22)
 
 
